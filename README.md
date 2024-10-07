@@ -19,3 +19,5 @@ Using the [public auction site in Romania](https://www.e-licitatie.ro/) create a
 A SEAP parser already exists on [github](https://github.com/ciocan/sicap-parser) but you need to update and adapt it to our needs.
 
 The output should be an application that can list (at least when searching for a keyword) all the possible fraud acquisitions.
+
+## State-Of-The-Art - [Google Docs](https://docs.google.com/document/d/1khW6D4M9_Q3xdARc4_Uziu9aKsAsyfqkWWYO639XdLI/edit)
