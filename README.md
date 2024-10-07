@@ -7,5 +7,5 @@
 - Bojescu Bianca
 - Constantin Ana Maria
 - Galatianu Mihai
-- Muteanu Denis
+- Muteanu Denisa
 - Tiplea Matei
