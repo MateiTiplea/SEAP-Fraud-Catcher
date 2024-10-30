@@ -1,0 +1,22 @@
+Design patterns:
+
+- The Strategy Pattern is used in the call_api method.
+Here, different request methods (GET, POST) are encapsulated as classes
+(GetRequestStrategy and PostRequestStrategy classes in request_strategy.py).
+
+- Template Method Pattern: fetch_data_from_acquisitions is the template
+for retrieving data for multiple days and fetch_data_for_one_day is
+handling the details for each day, which the template method then aggregates
+into the final result. (methods from AcquisitionFetcher class in acquisition_fetcher.py)
+
+- The Factory Method Pattern is used in the get_body method, which creates the JSON
+body for API requests based on the parameters it receives.
+(from AcquisitionFetcher class in acquisition_fetcher.py)
+
+- Facade Pattern: The AcquisitionFetcher class itself can be seen as a Facade that
+simplifies access to complex acquisition data. It manages calling multiple APIs
+(acquisition and view), constructs request bodies, and retrieves and processes
+acquisition data. By using this class, other parts of the application can retrieve
+data without needing to know the specific details of API calls, headers, or request
+handling, making it easier for users of this class to interact with the API in a
+simplified manner. (AcquisitionFetcher class in acquisition_fetcher.py)
