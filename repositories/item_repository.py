@@ -101,3 +101,20 @@ class ItemRepository:
             A list of Items objects.
         """
         return Item.objects.all()
+
+    @staticmethod
+    def get_items_by_cpv_code_id(cpv_code_id):
+        """
+        Retrieves all items associated with a specific cpv_code_id.
+
+        Parameters:
+        -----------
+        cpv_code_id : int
+            The cpv_code_id whose items are to be retrieved.
+
+        Returns:
+        --------
+        list
+            A list of Items objects associated with the cpv_code_id.
+        """
+        return Item.objects(cpv_code_id=cpv_code_id)

@@ -87,3 +87,20 @@ class ItemService:
             A list of all items.
         """
         return ItemRepository.get_all_items()
+
+    @staticmethod
+    def get_items_by_cpv_code_id(cpv_code_id):
+        """
+        Retrieves all items associated with a given cpv_code_id.
+
+        Parameters:
+        -----------
+        cpv_code_id : int
+            The cpv_code_id.
+
+        Returns:
+        --------
+        list
+            A list of items associated with the cpv_code_id.
+        """
+        return ItemRepository.get_items_by_cpv_code_id(cpv_code_id)

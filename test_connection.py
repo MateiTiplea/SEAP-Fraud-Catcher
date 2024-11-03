@@ -13,7 +13,9 @@ def run_test():
         "name": "Acquisition Test 1",
         "description": "This is a test acquisition",
         "identification_code": "ACQ12345",
-        "aquisition_id": "1",
+        "aquisition_id": "0",
+        "cpv_code_id": "20",
+        "cpv_code_text": "test",
     }
 
     items_data = [
@@ -23,6 +25,8 @@ def run_test():
             "unit_type": "bucata",
             "quantity": 10,
             "closing_price": 100.50,
+            "cpv_code_id": "20",
+            "cpv_code_text": "test",
         },
         {
             "name": "Item 2",
@@ -30,6 +34,8 @@ def run_test():
             "unit_type": "kg",
             "quantity": 5,
             "closing_price": 200.75,
+            "cpv_code_id": "20",
+            "cpv_code_text": "test",
         },
     ]
 
@@ -82,6 +88,18 @@ def run_test():
         print("All associated items have been successfully deleted.")
     else:
         print("Some items are still present after acquisition deletion.")
+
+    print("\n=== Test: Get Acquisitions by cvp_code_id ===")
+    cpv_code_id = 13121
+    acquisitions = AcquisitionService.get_acquisitions_by_cpv_code_id(cpv_code_id)
+    for acquisition in acquisitions:
+        print(acquisition.name, acquisition.description)
+
+    print("\n=== Test: Get Items by cvp_code_id ===")
+    cpv_code_id = 13121
+    items = ItemService.get_items_by_cpv_code_id(cpv_code_id)
+    for item in items:
+        print(item.name, item.description)
 
 
 db_connection = MongoDBConnection(env_file=ENV_FILE_PATH)
