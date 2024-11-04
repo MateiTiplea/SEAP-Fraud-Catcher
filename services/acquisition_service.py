@@ -103,3 +103,20 @@ class AcquisitionService:
             A list of all acquisitions.
         """
         return AcquisitionRepository.get_all_acquisitions()
+
+    @staticmethod
+    def get_acquisitions_by_cpv_code_id(cpv_code_id):
+        """
+        Retrieves all acquisitions with the specified CPV code ID.
+
+        Parameters:
+        -----------
+        cpv_code_id : int
+            The CPV code ID to filter acquisitions.
+
+        Returns:
+        --------
+        list
+            A list of Acquisition objects that match the given CPV code ID.
+        """
+        return AcquisitionRepository.get_acquisitions_by_cpv_code_id(cpv_code_id)
