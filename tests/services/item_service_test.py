@@ -166,3 +166,33 @@ def test_get_all_items(acquisition, item_data):
     assert items[0].name == "Test Item 1"
     assert items[1].name == "Test Item 2"
 
+def test_get_items_by_cpv_code_id(acquisition, item_data):
+    item1 = Item(
+        name="Test Item 1",
+        description="Test Item Description 1",
+        unit_type="kg",
+        quantity=10.0,
+        closing_price=100.0,
+        cpv_code_id=123,
+        cpv_code_text="Some CPV Text",
+        acquisition=acquisition
+    )
+    item1.save()
+
+    item2 = Item(
+        name="Test Item 2",
+        description="Test Item Description 2",
+        unit_type="kg",
+        quantity=10.0,
+        closing_price=100.0,
+        cpv_code_id=123,
+        cpv_code_text="Some CPV Text",
+        acquisition=acquisition
+    )
+    item2.save()
+
+    items = ItemService.get_items_by_cpv_code_id(123)
+
+    assert len(items) == 2
+    assert items[0].name == "Test Item 1"
+    assert items[1].name == "Test Item 2"
