@@ -1,7 +1,7 @@
 from clustering.Algorithms.AgglomerativeClusteringStrategy import AgglomerativeClusteringStrategy
 from clustering.Algorithms.KMeansClusteringStrategy import KMeansClusteringStrategy
 from clustering.Algorithms.DBSCANClusteringStrategy import DBSCANClusteringStrategy
-from clustering.StringClustering import StringClustering
+from clustering.StringClustering import StringClastering
 from services.item_service import ItemService
 
 from db_connection import MongoDBConnection
@@ -37,23 +37,33 @@ def main():
     #13045
     #18792
     #10265
-    items = find_items_with_cvp_code_id(10265)
+    #10527
+    items = find_items_with_cvp_code_id(10527)
     item_names = [item.name.lower() for item in items]
 
     # preprocessed data clustering
+    """
     if len(items) > 1:
 
         clustering_strategy_1 = AgglomerativeClusteringStrategy()
         clustering_strategy_2 = KMeansClusteringStrategy()
 
-        string_clustering = StringClustering(clustering_strategy_1)
+        string_clustering = StringClustering(clustering_strategy_2)
 
-        #single_strategy_clusters = string_clustering.get_clusters(item_names, hybrid=False)
-        hybrid_clusters = string_clustering.get_clusters(item_names, hybrid=True)
+        single_strategy_clusters = string_clustering.get_clusters(item_names, hybrid=False)
+        #hybrid_clusters = string_clustering.get_clusters(item_names, hybrid=True)
 
-        write_clusters_to_file("clustered_items.txt", hybrid_clusters)
+        write_clusters_to_file("clustered_items.txt", single_strategy_clusters)
     else:
         write_item_names_to_file("clustered_items.txt", item_names)
+    """
+
+    clustering_strategy_2 = AgglomerativeClusteringStrategy()
+    clustering = StringClastering(item_names, clustering_strategy_2)
+    results = clustering.get_clusters(False)
+    results_hybrid = clustering.get_clusters(True)
+    write_clusters_to_file("simple_clusters.txt", results)
+    write_clusters_to_file("hybrid_clusters.txt", results_hybrid)
 
     # close database connection
     db_connection.disconnect()

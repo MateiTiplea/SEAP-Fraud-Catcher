@@ -15,7 +15,7 @@ class DBSCANClusteringStrategy(ClusteringStrategy):
             # Remove special characters (optional)
             name = re.sub(r'[^a-zA-Z0-9\s]', '', name)
             # Remove numbers if necessary (optional)
-            name = re.sub(r'\d+', '', name).strip()  # Uncomment if you want to remove numbers
+            name = re.sub(r'\d+', '', name).strip()
             # Normalize spaces (optional)
             name = re.sub(r'\s+', ' ', name)
             normalized_names.append(name)
