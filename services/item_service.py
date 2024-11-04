@@ -1,4 +1,5 @@
 from repositories.item_repository import ItemRepository
+from utils.filter_utils import filter_item_data
 
 
 class ItemService:
@@ -21,7 +22,8 @@ class ItemService:
         Items
             The created item object.
         """
-        return ItemRepository.insert_item(item_data)
+        filtered_item_data = filter_item_data(item_data)
+        return ItemRepository.insert_item(filtered_item_data)
 
     @staticmethod
     def get_items_by_acquisition(acquisition_id):
@@ -57,7 +59,8 @@ class ItemService:
         Items
             The updated item object.
         """
-        return ItemRepository.update_item(item_id, update_data)
+        filtered_item_data = filter_item_data(update_data)
+        return ItemRepository.update_item(item_id, filtered_item_data)
 
     @staticmethod
     def delete_item(item_id):
