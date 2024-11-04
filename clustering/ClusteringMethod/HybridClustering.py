@@ -1,11 +1,6 @@
-import numpy as np
-from sklearn.metrics import silhouette_score
-from rapidfuzz.distance import Levenshtein
-
-from clustering.BaseClusteringTemplate import BaseClusteringTemplate
+from clustering.AbstractBaseClasses.BaseClusteringTemplate import BaseClusteringTemplate
 from clustering.Algorithms.KMeansClusteringStrategy import KMeansClusteringStrategy
-from clustering.Algorithms.AgglomerativeClusteringStrategy import AgglomerativeClusteringStrategy
-from clustering.OldClusternig import SimpleClustering
+from clustering.ClusteringMethod.SimpleClustering import SimpleClustering
 
 
 class HybridClustering(BaseClusteringTemplate):

@@ -1,8 +1,6 @@
 import numpy as np
 from sklearn.cluster import KMeans
-from sklearn.cluster import DBSCAN
-from sklearn.feature_extraction.text import TfidfVectorizer
-from clustering.ClusteringStrategy import ClusteringStrategy
+from clustering.AbstractBaseClasses.ClusteringStrategy import ClusteringStrategy
 
 
 class KMeansClusteringStrategy(ClusteringStrategy):

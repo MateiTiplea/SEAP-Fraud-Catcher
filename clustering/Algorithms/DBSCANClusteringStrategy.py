@@ -1,7 +1,7 @@
 import re
 
 from sklearn.cluster import DBSCAN
-from clustering.ClusteringStrategy import ClusteringStrategy
+from clustering.AbstractBaseClasses.ClusteringStrategy import ClusteringStrategy
 
 
 class DBSCANClusteringStrategy(ClusteringStrategy):

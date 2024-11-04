@@ -1,5 +1,5 @@
-from clustering.HybridClustering import HybridClustering
-from clustering.OldClusternig import SimpleClustering
+from clustering.ClusteringMethod.HybridClustering import HybridClustering
+from clustering.ClusteringMethod.SimpleClustering import SimpleClustering
 
 
 class StringClastering:
