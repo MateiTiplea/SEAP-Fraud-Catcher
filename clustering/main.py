@@ -37,17 +37,21 @@ def main():
     #13045
     #18792
     #10265
-    items = find_items_with_cvp_code_id(13045)
+    items = find_items_with_cvp_code_id(10265)
     item_names = [item.name.lower() for item in items]
 
     # preprocessed data clustering
     if len(items) > 1:
+
         clustering_strategy_1 = AgglomerativeClusteringStrategy()
         clustering_strategy_2 = KMeansClusteringStrategy()
-        # clustering_strategy_3 = DBSCANClusteringStrategy()
-        string_clustering = StringClustering(clustering_strategy_2)
-        clustered_items = string_clustering.get_clusters(item_names)
-        write_clusters_to_file("clustered_items.txt", clustered_items)
+
+        string_clustering = StringClustering(clustering_strategy_1)
+
+        #single_strategy_clusters = string_clustering.get_clusters(item_names, hybrid=False)
+        hybrid_clusters = string_clustering.get_clusters(item_names, hybrid=True)
+
+        write_clusters_to_file("clustered_items.txt", hybrid_clusters)
     else:
         write_item_names_to_file("clustered_items.txt", item_names)
 

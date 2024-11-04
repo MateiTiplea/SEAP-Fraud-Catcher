@@ -2,6 +2,8 @@ import numpy as np
 import Levenshtein
 from sklearn.metrics import silhouette_score
 
+from clustering.Algorithms.AgglomerativeClusteringStrategy import AgglomerativeClusteringStrategy
+from clustering.Algorithms.KMeansClusteringStrategy import KMeansClusteringStrategy
 from clustering.ClusteringStrategy import ClusteringStrategy
 
 
@@ -69,9 +71,7 @@ class StringClustering:
 
         return best_n_clusters
 
-    def get_clusters(self, list_of_strings):
-
-        n_clusters = self.find_optimal_clusters(list_of_strings)
+    def cluster_with_single_strategy(self, list_of_strings, n_clusters):
 
         # Create the final distance matrix again
         distance_matrix = self.levenshtein_distance_matrix(list_of_strings)
@@ -88,3 +88,52 @@ class StringClustering:
 
         return cluster_dict
 
+    def calculate_cluster_center(self, cluster_members):
+        """Calculates the center of a cluster as the string with the minimum total distance to other members."""
+        distances = []
+        for member in cluster_members:
+            total_distance = sum(Levenshtein.distance(member, other) for other in cluster_members)
+            distances.append(total_distance)
+        center_index = np.argmin(distances)
+        return cluster_members[center_index]
+
+    def get_hybrid_clusters(self, list_of_strings):
+        # Create the distance matrix
+        distance_matrix = self.levenshtein_distance_matrix(list_of_strings)
+
+        # Use Agglomerative Clustering to find the initial clusters
+        agglomerative_strategy = AgglomerativeClusteringStrategy()
+        n_clusters = self.find_optimal_clusters(list_of_strings)
+        agglomerative_clusters = agglomerative_strategy.cluster(distance_matrix, n_clusters)
+
+        # Calculate the center of each cluster
+        cluster_centers = []
+        for cluster_id in range(n_clusters):
+            cluster_members = [list_of_strings[i] for i in range(len(list_of_strings)) if agglomerative_clusters[i] == cluster_id]
+            center = self.calculate_cluster_center(cluster_members)
+            cluster_centers.append(center)
+
+        # Create a distance matrix for the cluster centers
+        center_distance_matrix = self.levenshtein_distance_matrix(cluster_centers)
+
+        # Apply KMeans on the cluster centers
+        kmeans_strategy = KMeansClusteringStrategy()
+        refined_clusters = kmeans_strategy.cluster(center_distance_matrix, n_clusters)
+
+        # Map original strings to the final clusters
+        cluster_dict = {}
+        for string, cluster in zip(list_of_strings, agglomerative_clusters):
+            # Assign the original string to the refined cluster
+            refined_cluster_id = refined_clusters[cluster]
+            if refined_cluster_id not in cluster_dict:
+                cluster_dict[refined_cluster_id] = []
+            cluster_dict[refined_cluster_id].append(string)
+
+        return cluster_dict
+
+    def get_clusters(self, list_of_strings, hybrid=False):
+        if hybrid:
+            return self.get_hybrid_clusters(list_of_strings)
+        else:
+            n_clusters = self.find_optimal_clusters(list_of_strings)
+            return self.cluster_with_single_strategy(list_of_strings, n_clusters)
