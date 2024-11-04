@@ -135,3 +135,32 @@ def test_get_all_acquisitions(mongo_connection):
     assert len(acquisitions) == 2
     assert acquisitions[0].name == "Test Acquisition 1"
     assert acquisitions[1].name == "Test Acquisition 2"
+
+def test_get_acquisitions_by_cpv_code_id(mongo_connection):
+        acquisition1 = Acquisition(
+            name="Test Acquisition 1",
+            identification_code="ID123",
+            aquisition_id="A123",
+            cpv_code_id=123,
+            cpv_code_text="Some CPV Text"
+        )
+        acquisition1.save()
+
+        acquisition2 = Acquisition(
+            name="Test Acquisition 2",
+            identification_code="ID124",
+            aquisition_id="A124",
+            cpv_code_id=124,
+            cpv_code_text="Another CPV Text"
+        )
+        acquisition2.save()
+
+        acquisitions = AcquisitionService.get_acquisitions_by_cpv_code_id(123)
+
+        assert len(acquisitions) == 1
+        assert acquisitions[0].name == "Test Acquisition 1"
+
+        acquisitions = AcquisitionService.get_acquisitions_by_cpv_code_id(124)
+
+        assert len(acquisitions) == 1
+        assert acquisitions[0].name == "Test Acquisition 2"
