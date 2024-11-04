@@ -1,0 +1,18 @@
+Design Patterns:
+
+- Strategy Pattern is implemented in the ClusteringStrategy abstract class and its subclasses (AgglomerativeClusteringStrategy,
+DBSCANClusteringStrategy, and KMeansClusteringStrategy). The ClusteringStrategy defines a cluster method, which each subclass
+implements with different clustering algorithms, allowing the BaseClusteringTemplate to switch between different clustering
+strategies without altering its structure.
+
+- Template Method Pattern is seen in the BaseClusteringTemplate class, which defines a series of steps in the execute_clustering
+method, with perform_clustering as an abstract method. Subclasses like HybridClustering and SimpleClustering provide specific
+implementations for perform_clustering, thus allowing flexibility in the clustering process while maintaining a consistent flow.
+
+- Factory Method Pattern: Although not explicitly named, a form of factory behavior is used when HybridClustering initializes
+SimpleClustering with a new KMeansClusteringStrategy within the perform_clustering method. This approach dynamically creates
+clustering objects based on specific requirements, allowing the HybridClustering class to adapt the clustering process.
+
+- Composite Pattern: The HybridClustering class combines results from multiple clustering stages (an initial clustering
+followed by sub-clustering), treating individual clusters and nested clusters as composite structures. This allows complex
+cluster hierarchies to be treated as individual entities while still permitting nested clustering operations within larger structures.

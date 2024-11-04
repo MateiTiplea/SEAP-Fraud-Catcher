@@ -1,0 +1,13 @@
+Design Patterns:
+
+- Observer Pattern: In content.js, the setInterval function monitors the URL for changes, triggering data extraction if
+a new URL is detected. This mimics the observer pattern, where changes in the observed subject (URL) initiate data scraping
+and storage.
+
+- Facade Pattern: background.js acts as a simplified interface to handle messages between content.js and popup.js, abstracting
+the complexity of message routing and error handling between the components in the Chrome extension. This allows each component
+to interact without directly managing communication intricacies.
+
+- Template Pattern: The HTML structure in popup.html and its styling in style.css together establish a consistent UI template,
+ensuring any dynamic updates from popup.js follow a uniform format for displaying fetched data. This is a static version of the
+Template Pattern in UI, where the general layout and style are predetermine.
