@@ -1,3 +1,5 @@
+import json
+
 from repositories.acquisition_repository import AcquisitionRepository
 from repositories.item_repository import ItemRepository
 from utils.filter_utils import filter_acquisition_data, filter_item_data
@@ -25,13 +27,16 @@ class AcquisitionService:
         Acquisition
             The created acquisition object.
         """
-        # Insert acquisition first
         filtered_acquisition_data = filter_acquisition_data(acquisition_data)
+        if not filtered_acquisition_data.get("acquisition_id"):
+            raise ValueError(
+                "acquisition_id is None or missing in the acquisition data"
+            )
+
         acquisition = AcquisitionRepository.insert_acquisition(
             filtered_acquisition_data
         )
 
-        # Insert associated items, linking each one to the acquisition
         for item_data in items_data:
             filtered_item_data = filter_item_data(item_data)
             filtered_item_data["acquisition"] = acquisition

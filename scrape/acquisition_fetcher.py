@@ -1,9 +1,16 @@
 import json
 import os
 from datetime import datetime, timedelta
+
+from requests.exceptions import ConnectionError, HTTPError, RequestException, Timeout
+from tenacity import (
+    retry,
+    retry_if_exception_type,
+    stop_after_attempt,
+    wait_exponential,
+)
+
 from scrape.request_strategy import GetRequestStrategy, PostRequestStrategy
-from requests.exceptions import HTTPError, Timeout, ConnectionError, RequestException
-from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 
 ENV_FILE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".env"))
 
@@ -21,7 +28,7 @@ def get_body(
         "showOngoingDa": False,
         "pageIndex": page_index,
         "finalizationDateStart": start_date.strftime("%Y-%m-%d"),
-        "finalizationDateEnd": end_date.strftime("%Y-%m-%d")
+        "finalizationDateEnd": end_date.strftime("%Y-%m-%d"),
     }
     if acquisition_state_id:
         body["sysDirectAcquisitionStateId"] = acquisition_state_id
@@ -59,8 +66,10 @@ class AcquisitionFetcher:
     @retry(
         stop=stop_after_attempt(3),
         wait=wait_exponential(min=1, max=10),
-        retry=retry_if_exception_type((HTTPError, Timeout, ConnectionError, RequestException)),
-        reraise=True
+        retry=retry_if_exception_type(
+            (HTTPError, Timeout, ConnectionError, RequestException)
+        ),
+        reraise=True,
     )
     def call_api(self, url, method, body=None):
         strategy = self.request_strategies.get(method)
@@ -156,6 +165,7 @@ class AcquisitionFetcher:
             return response.json()
         else:
             print(message)
+            return None
 
     def get_all_acquisitions_data(
         self,
@@ -174,5 +184,6 @@ class AcquisitionFetcher:
         acquisitions_full_data = []
         for acquisition_id in acquisitions_ids:
             view_data = self.fetch_data_from_view(acquisition_id)
-            acquisitions_full_data.append(view_data)
+            if view_data:
+                acquisitions_full_data.append(view_data)
         return acquisitions_full_data
