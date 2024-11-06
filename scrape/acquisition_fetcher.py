@@ -1,9 +1,9 @@
 import json
 import os
 from datetime import datetime, timedelta
-
-from request_strategy import GetRequestStrategy, PostRequestStrategy
-from requests.exceptions import ConnectionError, HTTPError, RequestException, Timeout
+from scrape.request_strategy import GetRequestStrategy, PostRequestStrategy
+from requests.exceptions import HTTPError, Timeout, ConnectionError, RequestException
+from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 
 ENV_FILE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".env"))
 
@@ -20,8 +20,8 @@ def get_body(
         "pageSize": page_size,
         "showOngoingDa": False,
         "pageIndex": page_index,
-        "finalizationDateStart": start_date,
-        "finalizationDateEnd": end_date,
+        "finalizationDateStart": start_date.strftime("%Y-%m-%d"),
+        "finalizationDateEnd": end_date.strftime("%Y-%m-%d")
     }
     if acquisition_state_id:
         body["sysDirectAcquisitionStateId"] = acquisition_state_id
@@ -56,6 +56,12 @@ class AcquisitionFetcher:
             "POST": PostRequestStrategy(),
         }
 
+    @retry(
+        stop=stop_after_attempt(3),
+        wait=wait_exponential(min=1, max=10),
+        retry=retry_if_exception_type((HTTPError, Timeout, ConnectionError, RequestException)),
+        reraise=True
+    )
     def call_api(self, url, method, body=None):
         strategy = self.request_strategies.get(method)
         if not strategy:
@@ -74,8 +80,8 @@ class AcquisitionFetcher:
             message = f"Error: HTTP URL: {url} Message: {http_err}"  # HTTP error (e.g., 404, 500)
         except Timeout:
             message = f"Error: Timeout URL: {url}"
-        except ConnectionError:
-            message = f"Error: Connection error URL: {url}"
+        except ConnectionError as conn_err:
+            message = f"Error: Connection error URL: {url} Message: {conn_err}"
         except RequestException as req_err:
             message = f"Error: Request Exception URL: {url} Message: {req_err}"
         except Exception as e:
