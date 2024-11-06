@@ -1,5 +1,8 @@
+import json
+
 from repositories.acquisition_repository import AcquisitionRepository
 from repositories.item_repository import ItemRepository
+from utils.filter_utils import filter_acquisition_data, filter_item_data
 
 
 class AcquisitionService:
@@ -24,13 +27,20 @@ class AcquisitionService:
         Acquisition
             The created acquisition object.
         """
-        # Insert acquisition first
-        acquisition = AcquisitionRepository.insert_acquisition(acquisition_data)
+        filtered_acquisition_data = filter_acquisition_data(acquisition_data)
+        if not filtered_acquisition_data.get("acquisition_id"):
+            raise ValueError(
+                "acquisition_id is None or missing in the acquisition data"
+            )
 
-        # Insert associated items, linking each one to the acquisition
+        acquisition = AcquisitionRepository.insert_acquisition(
+            filtered_acquisition_data
+        )
+
         for item_data in items_data:
-            item_data["acquisition"] = acquisition  # Link acquisition to each item
-            ItemRepository.insert_item(item_data)
+            filtered_item_data = filter_item_data(item_data)
+            filtered_item_data["acquisition"] = acquisition
+            ItemRepository.insert_item(filtered_item_data)
 
         return acquisition
 
@@ -68,7 +78,10 @@ class AcquisitionService:
         Acquisition
             The updated acquisition object.
         """
-        return AcquisitionRepository.update_acquisition(acquisition_id, update_data)
+        filtered_update_data = filter_acquisition_data(update_data)
+        return AcquisitionRepository.update_acquisition(
+            acquisition_id, filtered_update_data
+        )
 
     @staticmethod
     def delete_acquisition(acquisition_id):

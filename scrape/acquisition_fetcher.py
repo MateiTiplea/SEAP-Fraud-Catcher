@@ -1,26 +1,34 @@
 import json
 import os
 from datetime import datetime, timedelta
+
+from requests.exceptions import ConnectionError, HTTPError, RequestException, Timeout
+from tenacity import (
+    retry,
+    retry_if_exception_type,
+    stop_after_attempt,
+    wait_exponential,
+)
+
 from scrape.request_strategy import GetRequestStrategy, PostRequestStrategy
-from requests.exceptions import HTTPError, Timeout, ConnectionError, RequestException
-from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 
 ENV_FILE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".env"))
 
 
 def get_body(
-        start_date,
-        end_date,
-        page_index,
-        page_size=20,
-        acquisition_state_id=None,
-        cpv_code_id=None):
+    start_date,
+    end_date,
+    page_index,
+    page_size=20,
+    acquisition_state_id=None,
+    cpv_code_id=None,
+):
     body = {
         "pageSize": page_size,
         "showOngoingDa": False,
         "pageIndex": page_index,
         "finalizationDateStart": start_date.strftime("%Y-%m-%d"),
-        "finalizationDateEnd": end_date.strftime("%Y-%m-%d")
+        "finalizationDateEnd": end_date.strftime("%Y-%m-%d"),
     }
     if acquisition_state_id:
         body["sysDirectAcquisitionStateId"] = acquisition_state_id
@@ -42,7 +50,7 @@ class AcquisitionFetcher:
         "view": {
             "url": "http://e-licitatie.ro/api-pub/PublicDirectAcquisition/getView/{acquisition_id}",
             "method": "GET",
-        }
+        },
     }
 
     def __init__(self):
@@ -58,13 +66,17 @@ class AcquisitionFetcher:
     @retry(
         stop=stop_after_attempt(3),
         wait=wait_exponential(min=1, max=10),
-        retry=retry_if_exception_type((HTTPError, Timeout, ConnectionError, RequestException)),
-        reraise=True
+        retry=retry_if_exception_type(
+            (HTTPError, Timeout, ConnectionError, RequestException)
+        ),
+        reraise=True,
     )
     def call_api(self, url, method, body=None):
         strategy = self.request_strategies.get(method)
         if not strategy:
-            message = f"Error: HTTP method {method} is not supported for this url:{url}."
+            message = (
+                f"Error: HTTP method {method} is not supported for this url:{url}."
+            )
             return [None, message]
 
         try:
@@ -87,23 +99,30 @@ class AcquisitionFetcher:
         return [None, message]
 
     def fetch_data_for_one_day(
-            self,
-            finalization_day: datetime,
-            page_size=200,
-            cpv_code_id=None,
-            acquisition_state_id=None
+        self,
+        finalization_day: datetime,
+        page_size=200,
+        cpv_code_id=None,
+        acquisition_state_id=None,
     ):
         page_index = 0
         has_more_data = True
         acquisitions = []
 
         while has_more_data:
-            body = get_body(finalization_day, finalization_day,
-                            page_index, page_size,
-                            acquisition_state_id, cpv_code_id)
-            response, message = self.call_api(self.API_DICT["acquisition"]["url"],
-                                              self.API_DICT["acquisition"]["method"],
-                                              body=body)
+            body = get_body(
+                finalization_day,
+                finalization_day,
+                page_index,
+                page_size,
+                acquisition_state_id,
+                cpv_code_id,
+            )
+            response, message = self.call_api(
+                self.API_DICT["acquisition"]["url"],
+                self.API_DICT["acquisition"]["method"],
+                body=body,
+            )
 
             if message == "Success":
                 data = response.json()
@@ -116,12 +135,12 @@ class AcquisitionFetcher:
         return acquisitions
 
     def fetch_data_from_acquisitions(
-            self,
-            finalization_date_start: datetime,
-            finalization_date_end: datetime,
-            page_size=200,
-            acquisition_state_id=7,
-            cpv_code_id=None,
+        self,
+        finalization_date_start: datetime,
+        finalization_date_end: datetime,
+        page_size=200,
+        acquisition_state_id=7,
+        cpv_code_id=None,
     ):
         all_acquisitions = []
 
@@ -131,7 +150,7 @@ class AcquisitionFetcher:
                 finalization_day=current_day,
                 page_size=page_size,
                 cpv_code_id=cpv_code_id,
-                acquisition_state_id=acquisition_state_id
+                acquisition_state_id=acquisition_state_id,
             )
             all_acquisitions.extend(daily_acquisitions)
 
@@ -146,22 +165,25 @@ class AcquisitionFetcher:
             return response.json()
         else:
             print(message)
+            return None
 
     def get_all_acquisitions_data(
-            self,
-            finalization_date_start: datetime,
-            finalization_date_end: datetime,
-            acquisition_state_id=7,
-            cpv_code_id=None):
+        self,
+        finalization_date_start: datetime,
+        finalization_date_end: datetime,
+        acquisition_state_id=7,
+        cpv_code_id=None,
+    ):
         acquisitions = self.fetch_data_from_acquisitions(
             finalization_date_start=finalization_date_start,
             finalization_date_end=finalization_date_end,
             acquisition_state_id=acquisition_state_id,
-            cpv_code_id=cpv_code_id
+            cpv_code_id=cpv_code_id,
         )
         acquisitions_ids = get_acquisitions_ids(acquisitions)
         acquisitions_full_data = []
         for acquisition_id in acquisitions_ids:
             view_data = self.fetch_data_from_view(acquisition_id)
-            acquisitions_full_data.append(view_data)
+            if view_data:
+                acquisitions_full_data.append(view_data)
         return acquisitions_full_data

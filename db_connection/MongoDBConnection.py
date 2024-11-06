@@ -93,7 +93,6 @@ class MongoDBConnection:
         try:
             # Build the connection URI
             connection_uri = f"mongodb://{quote_plus(self.username)}:{quote_plus(self.password)}@{self.host}:{self.port}/?authSource={self.authentication_database}"
-            print(f"Connecting to MongoDB at {connection_uri}...")
 
             # Connect to MongoDB using MongoEngine
             connect(
