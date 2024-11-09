@@ -1,3 +1,5 @@
+from dateutil import parser
+
 ACQUISITION_MAPPING = {
     "directAcquisitionID": "acquisition_id",
     "directAcquisitionName": "name",
@@ -32,6 +34,12 @@ def filter_acquisition_data(acquisition_data):
     filtered_data = {
         ACQUISITION_MAPPING[key]: acquisition_data[key] for key in fields_to_keep
     }
+    filtered_data["publication_date"] = parser.isoparse(
+        filtered_data["publication_date"]
+    )
+    filtered_data["finalization_date"] = parser.isoparse(
+        filtered_data["finalization_date"]
+    )
     filtered_data["cpv_code_id"] = acquisition_data["cpvCode"]["id"]
     filtered_data["cpv_code_text"] = "{} - {}".format(
         acquisition_data["cpvCode"]["localeKey"], acquisition_data["cpvCode"]["text"]
