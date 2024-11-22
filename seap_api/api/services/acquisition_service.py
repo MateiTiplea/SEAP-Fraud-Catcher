@@ -1,6 +1,6 @@
-from repositories.acquisition_repository import AcquisitionRepository
-from repositories.item_repository import ItemRepository
-from seap_api.api.utils.filter_utils import filter_acquisition_data, filter_item_data
+from ..repositories.acquisition_repository import AcquisitionRepository
+from ..repositories.item_repository import ItemRepository
+from ..utils.filter_utils import filter_acquisition_data, filter_item_data
 
 
 class AcquisitionService:

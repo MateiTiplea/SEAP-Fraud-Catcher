@@ -1,6 +1,7 @@
-from mongoengine import Document, FloatField, ReferenceField, StringField, IntField
+from mongoengine import FloatField, ReferenceField, StringField, IntField
+from django_mongoengine import Document
 
-from models.acquisition import Acquisition
+from ..models.acquisition import Acquisition
 
 
 class Item(Document):

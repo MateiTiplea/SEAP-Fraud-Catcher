@@ -1,5 +1,5 @@
-from models.acquisition import Acquisition
-from models.item import Item
+from ..models.acquisition import Acquisition
+from ..models.item import Item
 
 
 class AcquisitionRepository:
@@ -37,8 +37,13 @@ class AcquisitionRepository:
         # Execute the aggregation pipeline
         result = list(Acquisition.objects.aggregate(pipeline))
 
-        # Return the first acquisition with its items, or None if no result
-        return result[0] if result else None
+        if result:
+            # Convert ObjectId fields to strings
+            result[0]["_id"] = str(result[0]["_id"])
+            for item in result[0]["items"]:
+                item["_id"] = str(item["_id"])
+                item["acquisition"] = str(item["acquisition"])
+            return result[0]
 
     @staticmethod
     def insert_acquisition(acquisition_data):
