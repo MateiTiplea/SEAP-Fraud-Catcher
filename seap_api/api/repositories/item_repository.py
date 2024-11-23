@@ -1,3 +1,4 @@
+from .acquisition_repository import AcquisitionRepository
 from ..models.acquisition import Acquisition
 from ..models.item import Item
 
@@ -41,9 +42,11 @@ class ItemRepository:
         list
             A list of Items objects associated with the acquisition.
         """
-        acquisition = Acquisition.objects(aquisition_id=acquisition_id).first()
+        acquisition = Acquisition.objects(acquisition_id=acquisition_id).first()
+
         if acquisition:
-            return Item.objects(acquisition=acquisition)
+            acquisition_details = AcquisitionRepository.get_acquisition_with_items(acquisition["acquisition_id"])
+            return acquisition_details["items"]
         return []
 
     @staticmethod

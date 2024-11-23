@@ -81,7 +81,7 @@ class AcquisitionRepository:
         Acquisition
             The updated Acquisition object.
         """
-        acquisition = Acquisition.objects(aquisition_id=acquisition_id).first()
+        acquisition = Acquisition.objects(acquisition_id=acquisition_id).first()
         if acquisition:
             acquisition.update(**update_data)
             acquisition.reload()  # Reload to get the updated document
@@ -102,7 +102,7 @@ class AcquisitionRepository:
         bool
             True if the deletion was successful, False if not found.
         """
-        acquisition = Acquisition.objects(aquisition_id=acquisition_id).first()
+        acquisition = Acquisition.objects(acquisition_id=acquisition_id).first()
         if acquisition:
             acquisition.delete()
             return True

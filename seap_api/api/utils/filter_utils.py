@@ -60,4 +60,6 @@ def filter_item_data(item_data):
     filtered_data["cpv_code_text"] = "{} - {}".format(
         item_data["cpvCode"]["localeKey"], item_data["cpvCode"]["text"]
     )
+    if "directAcquisitionID" in item_data:
+        filtered_data["acquisition_id"] = item_data["directAcquisitionID"]
     return filtered_data
