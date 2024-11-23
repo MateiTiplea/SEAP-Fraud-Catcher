@@ -41,7 +41,7 @@ class ItemRepository:
         list
             A list of Items objects associated with the acquisition.
         """
-        acquisition = Acquisition.objects(aquisition_id=acquisition_id).first()
+        acquisition = Acquisition.objects(acquisition_id=acquisition_id).first()
         if acquisition:
             return Item.objects(acquisition=acquisition)
         return []
