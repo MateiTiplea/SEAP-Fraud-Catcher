@@ -134,7 +134,7 @@ class ItemDetailView(APIView):
     @handle_exceptions(error_types=(ValueError, TypeError))
     def post(self, request):
         """
-        Creează un nou item în baza de date.
+        Creates a new item in the database.
         """
         try:
             item_data = request.data
@@ -146,6 +146,8 @@ class ItemDetailView(APIView):
         except Exception as e:
             return Response({"error": f"Internal Server Error: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    @log_method_calls
+    @handle_exceptions(error_types=(ValueError, TypeError))
     def put(self, request, item_id):
         """
         Update an item by item_id.
@@ -179,12 +181,14 @@ class ItemDetailView(APIView):
 
 class ItemsByCpvCodeView(APIView):
     """
-    View pentru a obține toate itemele asociate unui cpv_code_id specific.
+    API endpoint that allows items to be viewed by their CPV code ID.
     """
 
+    @log_method_calls
+    @handle_exceptions(error_types=(ValueError, KeyError))
     def get(self, request, cpv_code_id):
         """
-        Returnează toate itemele asociate unui cpv_code_id.
+        Retrieve all items associated with a specific CPV code ID.
         """
         try:
             items = ItemService.get_items_by_cpv_code_id(cpv_code_id)
