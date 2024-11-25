@@ -1,3 +1,5 @@
+from aspects.error_handlers import handle_exceptions
+from aspects.loggers import log_method_calls
 from .acquisition_repository import AcquisitionRepository
 from ..models.acquisition import Acquisition
 from ..models.item import Item
@@ -9,6 +11,8 @@ class ItemRepository:
     """
 
     @staticmethod
+    @log_method_calls
+    @handle_exceptions(error_types=(ValueError, TypeError))
     def insert_item(item_data):
         """
         Inserts a new item into the database.
@@ -28,6 +32,8 @@ class ItemRepository:
         return item
 
     @staticmethod
+    @log_method_calls
+    @handle_exceptions(error_types=(ValueError, KeyError))
     def get_items_by_acquisition(acquisition_id):
         """
         Retrieves all items associated with a specific acquisition.
@@ -50,6 +56,8 @@ class ItemRepository:
         return []
 
     @staticmethod
+    @log_method_calls
+    @handle_exceptions(error_types=(ValueError, TypeError))
     def update_item(item_id, update_data):
         """
         Updates an existing item in the database.
@@ -73,6 +81,8 @@ class ItemRepository:
         return item
 
     @staticmethod
+    @log_method_calls
+    @handle_exceptions(error_types=(ValueError, TypeError))
     def delete_item(item_id):
         """
         Deletes an item from the database by its ID.
@@ -94,6 +104,8 @@ class ItemRepository:
         return False
 
     @staticmethod
+    @log_method_calls
+    @handle_exceptions(error_types=(ValueError, KeyError))
     def get_all_items():
         """
         Retrieves all items from the database.
@@ -106,6 +118,8 @@ class ItemRepository:
         return Item.objects.all()
 
     @staticmethod
+    @log_method_calls
+    @handle_exceptions(error_types=(ValueError, KeyError))
     def get_items_by_cpv_code_id(cpv_code_id):
         """
         Retrieves all items associated with a specific cpv_code_id.

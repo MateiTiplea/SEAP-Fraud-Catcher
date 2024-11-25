@@ -1,6 +1,9 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+
+from aspects.error_handlers import handle_exceptions
+from aspects.loggers import log_method_calls
 from .services.acquisition_service import AcquisitionService
 from .serializers import AcquisitionSerializer
 from .serializers import ItemSerializer
@@ -8,6 +11,8 @@ from .services.item_service import ItemService
 
 
 class AcquisitionListView(APIView):
+    @log_method_calls
+    @handle_exceptions(error_types=(ValueError, KeyError))
     def get(self, request):
         """
         Retrieves the last 10 acquisitions for display purposes.
@@ -17,6 +22,8 @@ class AcquisitionListView(APIView):
         serializer = AcquisitionSerializer(acquisitions, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    @log_method_calls
+    @handle_exceptions(error_types=(ValueError, TypeError))
     def post(self, request):
         """
         Creates a new acquisition along with associated items.
@@ -32,6 +39,8 @@ class AcquisitionListView(APIView):
 
 
 class AcquisitionDetailView(APIView):
+    @log_method_calls
+    @handle_exceptions(error_types=(ValueError, KeyError))
     def get(self, request, acquisition_id):
         """
         Retrieve a single acquisition and its associated items by acquisition_id.
@@ -47,6 +56,8 @@ class AcquisitionDetailView(APIView):
             print(f"Error fetching acquisition: {str(e)}")  # Debug log
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    @log_method_calls
+    @handle_exceptions(error_types=(ValueError, TypeError))
     def put(self, request, acquisition_id):
         """
         Update an acquisition by acquisition_id.
@@ -59,6 +70,8 @@ class AcquisitionDetailView(APIView):
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    @log_method_calls
+    @handle_exceptions(error_types=(ValueError, TypeError))
     def delete(self, request, acquisition_id):
         """
         Delete an acquisition by acquisition_id.
@@ -73,6 +86,8 @@ class AcquisitionDetailView(APIView):
 
 
 class ItemsListView(APIView):
+    @log_method_calls
+    @handle_exceptions(error_types=(ValueError, KeyError))
     def get(self, request):
         """
         Retrieves the last 10 items for display purposes.
@@ -82,6 +97,8 @@ class ItemsListView(APIView):
         serializer = ItemSerializer(items, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    @log_method_calls
+    @handle_exceptions(error_types=(ValueError, TypeError))
     def post(self, request):
         """
         Creates a new acquisition along with associated items.
@@ -96,6 +113,8 @@ class ItemsListView(APIView):
 
 
 class ItemDetailView(APIView):
+    @log_method_calls
+    @handle_exceptions(error_types=(ValueError, KeyError))
     def get(self, request, acquisition_id):
         """
         Retrieve a single item by acquisition_id.
@@ -111,6 +130,8 @@ class ItemDetailView(APIView):
             print(f"Error fetching item: {str(e)}")  # Debug log
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    @log_method_calls
+    @handle_exceptions(error_types=(ValueError, TypeError))
     def put(self, request, item_id):
         """
         Update an item by item_id.
@@ -123,6 +144,8 @@ class ItemDetailView(APIView):
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    @log_method_calls
+    @handle_exceptions(error_types=(ValueError, TypeError))
     def delete(self, request, item_id):
         """
         Delete an item by item_id.

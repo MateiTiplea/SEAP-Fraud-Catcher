@@ -3,25 +3,22 @@ import os
 from datetime import datetime, timedelta
 
 from requests.exceptions import ConnectionError, HTTPError, RequestException, Timeout
-from tenacity import (
-    retry,
-    retry_if_exception_type,
-    stop_after_attempt,
-    wait_exponential,
-)
 
+from aspects.error_handlers import handle_exceptions
+from aspects.loggers import log_method_calls
+from aspects.validation import validate_types
 from scrape.request_strategy import GetRequestStrategy, PostRequestStrategy
 
 ENV_FILE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".env"))
 
 
 def get_body(
-    start_date,
-    end_date,
-    page_index,
-    page_size=20,
-    acquisition_state_id=None,
-    cpv_code_id=None,
+        start_date,
+        end_date,
+        page_index,
+        page_size=20,
+        acquisition_state_id=None,
+        cpv_code_id=None,
 ):
     body = {
         "pageSize": page_size,
@@ -63,47 +60,49 @@ class AcquisitionFetcher:
             "POST": PostRequestStrategy(),
         }
 
-    @retry(
-        stop=stop_after_attempt(3),
-        wait=wait_exponential(min=1, max=10),
-        retry=retry_if_exception_type(
-            (HTTPError, Timeout, ConnectionError, RequestException)
-        ),
-        reraise=True,
+    @log_method_calls
+    @handle_exceptions(
+        error_types=(HTTPError, Timeout, ConnectionError, RequestException),
+        num_retries=3,
+        reraise=True
     )
-    def call_api(self, url, method, body=None):
+    @validate_types
+    def call_api(self, url: str, method: str, body: dict = None):
+        """
+        Makes an API call using the appropriate request strategy.
+
+        Parameters:
+        -----------
+        url : str
+            The URL to make the request to
+        method : str
+            The HTTP method to use
+        body : dict, optional
+            The request body data
+
+        Returns:
+        --------
+        tuple
+            A tuple containing (response, message)
+        """
         strategy = self.request_strategies.get(method)
         if not strategy:
-            message = (
-                f"Error: HTTP method {method} is not supported for this url:{url}."
-            )
+            message = f"Error: HTTP method {method} is not supported for this url:{url}."
             return [None, message]
 
-        try:
-            response = strategy.make_request(url, headers=self.headers, body=body)
-            response.raise_for_status()  # Raise an error for HTTP status codes 4xx/5xx
-            message = "Success"
-            return [response, message]
+        response = strategy.make_request(url, headers=self.headers, body=body)
+        response.raise_for_status()  # Raise an error for HTTP status codes 4xx/5xx
+        return [response, "Success"]
 
-        except HTTPError as http_err:
-            message = f"Error: HTTP URL: {url} Message: {http_err}"  # HTTP error (e.g., 404, 500)
-        except Timeout:
-            message = f"Error: Timeout URL: {url}"
-        except ConnectionError as conn_err:
-            message = f"Error: Connection error URL: {url} Message: {conn_err}"
-        except RequestException as req_err:
-            message = f"Error: Request Exception URL: {url} Message: {req_err}"
-        except Exception as e:
-            message = f"Error: Generic URL: {url} Message: {e}"
-
-        return [None, message]
-
+    @log_method_calls
+    @handle_exceptions(error_types=(ValueError, KeyError))
+    @validate_types
     def fetch_data_for_one_day(
-        self,
-        finalization_day: datetime,
-        page_size=200,
-        cpv_code_id=None,
-        acquisition_state_id=None,
+            self,
+            finalization_day: datetime,
+            page_size: int = 200,
+            cpv_code_id: int = None,
+            acquisition_state_id: int = None,
     ):
         page_index = 0
         has_more_data = True
@@ -118,6 +117,7 @@ class AcquisitionFetcher:
                 acquisition_state_id,
                 cpv_code_id,
             )
+            body = dict(body=json.loads(body))
             response, message = self.call_api(
                 self.API_DICT["acquisition"]["url"],
                 self.API_DICT["acquisition"]["method"],
@@ -134,13 +134,16 @@ class AcquisitionFetcher:
                 has_more_data = False
         return acquisitions
 
+    @log_method_calls
+    @handle_exceptions(error_types=(ValueError, KeyError))
+    @validate_types
     def fetch_data_from_acquisitions(
-        self,
-        finalization_date_start: datetime,
-        finalization_date_end: datetime,
-        page_size=200,
-        acquisition_state_id=7,
-        cpv_code_id=None,
+            self,
+            finalization_date_start: datetime,
+            finalization_date_end: datetime,
+            page_size: int = 200,
+            acquisition_state_id: int = 7,
+            cpv_code_id: int = None,
     ):
         all_acquisitions = []
 
@@ -158,7 +161,10 @@ class AcquisitionFetcher:
 
         return all_acquisitions
 
-    def fetch_data_from_view(self, acquisition_id):
+    @log_method_calls
+    @handle_exceptions(error_types=(ValueError, KeyError))
+    @validate_types
+    def fetch_data_from_view(self, acquisition_id: int):
         url = self.API_DICT["view"]["url"].format(acquisition_id=acquisition_id)
         response, message = self.call_api(url, self.API_DICT["view"]["method"])
         if message == "Success":
@@ -167,12 +173,15 @@ class AcquisitionFetcher:
             print(message)
             return None
 
+    @log_method_calls
+    @handle_exceptions(error_types=(ValueError, KeyError))
+    @validate_types
     def get_all_acquisitions_data(
-        self,
-        finalization_date_start: datetime,
-        finalization_date_end: datetime,
-        acquisition_state_id=7,
-        cpv_code_id=None,
+            self,
+            finalization_date_start: datetime,
+            finalization_date_end: datetime,
+            acquisition_state_id: int = 7,
+            cpv_code_id: int = None,
     ):
         acquisitions = self.fetch_data_from_acquisitions(
             finalization_date_start=finalization_date_start,

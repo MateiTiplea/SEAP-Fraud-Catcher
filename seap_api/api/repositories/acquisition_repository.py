@@ -1,3 +1,5 @@
+from aspects.error_handlers import handle_exceptions
+from aspects.loggers import log_method_calls
 from ..models.acquisition import Acquisition
 from ..models.item import Item
 
@@ -8,6 +10,8 @@ class AcquisitionRepository:
     """
 
     @staticmethod
+    @log_method_calls
+    @handle_exceptions(error_types=(ValueError, KeyError))
     def get_acquisition_with_items(acquisition_id: str):
         """
         Retrieves an acquisition and its associated items using MongoDB aggregation pipeline.
@@ -46,6 +50,8 @@ class AcquisitionRepository:
             return result[0]
 
     @staticmethod
+    @log_method_calls
+    @handle_exceptions(error_types=(ValueError, TypeError))
     def insert_acquisition(acquisition_data):
         """
         Inserts a new acquisition into the database.
@@ -65,6 +71,8 @@ class AcquisitionRepository:
         return acquisition
 
     @staticmethod
+    @log_method_calls
+    @handle_exceptions(error_types=(ValueError, TypeError))
     def update_acquisition(acquisition_id, update_data):
         """
         Updates an existing acquisition.
@@ -88,6 +96,8 @@ class AcquisitionRepository:
         return acquisition
 
     @staticmethod
+    @log_method_calls
+    @handle_exceptions(error_types=(ValueError, TypeError))
     def delete_acquisition(acquisition_id):
         """
         Deletes an acquisition by its ID.
@@ -109,6 +119,8 @@ class AcquisitionRepository:
         return False
 
     @staticmethod
+    @log_method_calls
+    @handle_exceptions(error_types=(ValueError, KeyError))
     def get_all_acquisitions():
         """
         Retrieves all acquisitions from the database.
@@ -121,6 +133,8 @@ class AcquisitionRepository:
         return Acquisition.objects.all()
 
     @staticmethod
+    @log_method_calls
+    @handle_exceptions(error_types=(ValueError, KeyError))
     def get_acquisitions_by_cpv_code_id(cpv_code_id):
         """
         Retrieves all acquisitions with the specified CPV code ID.
