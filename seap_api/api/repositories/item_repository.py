@@ -1,3 +1,6 @@
+from bson import ObjectId
+from mongoengine import ValidationError
+
 from .acquisition_repository import AcquisitionRepository
 from ..models.acquisition import Acquisition
 from ..models.item import Item
@@ -68,8 +71,13 @@ class ItemRepository:
         """
         item = Item.objects(id=item_id).first()
         if item:
-            item.update(**update_data)
-            item.reload()  # Reload to get the updated document
+            for field, value in update_data.items():
+                setattr(item, field, value)
+            try:
+                item.save()
+                item.reload()
+            except Exception as e:
+                raise ValueError(f"Error saving the item: {e}")
         return item
 
     @staticmethod

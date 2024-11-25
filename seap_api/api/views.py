@@ -111,6 +111,20 @@ class ItemDetailView(APIView):
             print(f"Error fetching item: {str(e)}")  # Debug log
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    def post(self, request):
+        """
+        Creează un nou item în baza de date.
+        """
+        try:
+            item_data = request.data
+            item = ItemService.create_item(item_data)
+            serializer = ItemSerializer(item)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        except ValueError as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({"error": f"Internal Server Error: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
     def put(self, request, item_id):
         """
         Update an item by item_id.
@@ -118,10 +132,14 @@ class ItemDetailView(APIView):
         try:
             update_data = request.data
             item = ItemService.update_item(item_id, update_data)
-            serializer = ItemSerializer(item)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            if item:
+                serializer = ItemSerializer(item)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response({"error": "Item not found"}, status=status.HTTP_404_NOT_FOUND)
+        except ValueError as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({"error": f"Internal Server Error: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def delete(self, request, item_id):
         """
@@ -132,5 +150,24 @@ class ItemDetailView(APIView):
             if success:
                 return Response({"message": "Item deleted successfully"}, status=status.HTTP_200_OK)
             return Response({"error": "Item not found"}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class ItemsByCpvCodeView(APIView):
+    """
+    View pentru a obține toate itemele asociate unui cpv_code_id specific.
+    """
+
+    def get(self, request, cpv_code_id):
+        """
+        Returnează toate itemele asociate unui cpv_code_id.
+        """
+        try:
+            items = ItemService.get_items_by_cpv_code_id(cpv_code_id)
+            if items:
+                serializer = ItemSerializer(items, many=True)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response({"error": "No items found for the given cpv_code_id"}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
