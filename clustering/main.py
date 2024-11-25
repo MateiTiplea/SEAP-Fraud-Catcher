@@ -64,7 +64,7 @@ def main():
     # for test:
     # 12474
     # 12472
-    items = find_items_with_cvp_code_id(12474)
+    items = find_items_with_cvp_code_id(12472)
     item_names = [item.name.lower() for item in items]
 
     #print(len(item_names))
@@ -88,10 +88,10 @@ def main():
 
     clustering_strategy_2 = AgglomerativeClusteringStrategy()
     clustering = StringClastering(item_names, clustering_strategy_2)
-    results = clustering.get_clusters(False)
-    #results_hybrid = clustering.get_clusters(True)
-    write_clusters_to_file("simple_clusters.txt", results)
-    #write_clusters_to_file("hybrid_clusters.txt", results_hybrid)
+    #results = clustering.get_clusters(False)
+    results_hybrid = clustering.get_clusters(True)
+    #write_clusters_to_file("simple_clusters.txt", results)
+    write_clusters_to_file("hybrid_clusters.txt", results_hybrid)
 
 
     # close database connection

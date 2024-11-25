@@ -26,7 +26,7 @@ def test_calculate_max_clusters(sample_strings, mock_strategy):
 
 def test_levenshtein_distance_matrix(sample_strings, mock_strategy):
     clustering = MockClustering(sample_strings, mock_strategy)
-    distance_matrix = clustering.levenshtein_distance_matrix(sample_strings)
+    distance_matrix = clustering.get_distance_matrix(sample_strings)
     assert distance_matrix.shape == (len(sample_strings), len(sample_strings))
     assert np.allclose(distance_matrix, distance_matrix.T)
     for i in range(len(sample_strings)):
