@@ -1,8 +1,9 @@
 from abc import ABC, abstractmethod
 import numpy as np
-from sklearn.metrics import silhouette_score
+from sklearn.metrics import silhouette_score, calinski_harabasz_score, davies_bouldin_score
 import Levenshtein
 from jellyfish import jaro_winkler_similarity
+
 
 class BaseClusteringTemplate(ABC):
     def __init__(self, list_of_strings, clustering_strategy):
@@ -80,16 +81,27 @@ class BaseClusteringTemplate(ABC):
                 distance_matrix[j, i] = dist
         return distance_matrix
 
-    def find_optimal_clusters(self):
-        silhouette_scores = []
+    def find_optimal_clusters(self, metric="calinski_harabasz"):
+        scores = []
         for n_clusters in range(2, self.max_clusters + 1):
             cluster_labels = self.clustering_strategy.cluster(self.distance_matrix, n_clusters)
-            silhouette_avg = silhouette_score(self.distance_matrix, cluster_labels, metric="precomputed")
-            silhouette_scores.append((n_clusters, silhouette_avg))
 
-        if not silhouette_scores:
+            if metric == "silhouette":
+                score = silhouette_score(self.distance_matrix, cluster_labels, metric="precomputed")
+
+            elif metric == "calinski_harabasz":
+                score = calinski_harabasz_score(self.distance_matrix, cluster_labels)
+
+            else:
+                raise ValueError(
+                    f"Metric {metric} not supported. Choose from 'silhouette', 'calinski_harabasz', or 'davies_bouldin'.")
+
+            scores.append((n_clusters, score))
+
+        if not scores:
             return None
-        return max(silhouette_scores, key=lambda x: x[1])[0]
+
+        return max(scores, key=lambda x: x[1])[0]
 
     @abstractmethod
     def perform_clustering(self, n_clusters):

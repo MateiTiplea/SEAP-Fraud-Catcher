@@ -3,6 +3,7 @@ import json
 from clustering.Algorithms.AgglomerativeClusteringStrategy import AgglomerativeClusteringStrategy
 from clustering.Algorithms.KMeansClusteringStrategy import KMeansClusteringStrategy
 from clustering.Algorithms.DBSCANClusteringStrategy import DBSCANClusteringStrategy
+from clustering.Algorithms.OPTICSClusteringStrategy import OPTICSClusteringStrategy
 from clustering.StringClustering import StringClastering
 from services.item_service import ItemService
 
@@ -87,11 +88,12 @@ def main():
     """
 
     clustering_strategy_2 = AgglomerativeClusteringStrategy()
+    clustering_strategy_3 = OPTICSClusteringStrategy()
     clustering = StringClastering(item_names, clustering_strategy_2)
-    #results = clustering.get_clusters(False)
-    results_hybrid = clustering.get_clusters(True)
-    #write_clusters_to_file("simple_clusters.txt", results)
-    write_clusters_to_file("hybrid_clusters.txt", results_hybrid)
+    results = clustering.get_clusters(False)
+    #results_hybrid = clustering.get_clusters(True)
+    write_clusters_to_file("simple_clusters.txt", results)
+    #write_clusters_to_file("hybrid_clusters.txt", results_hybrid)
 
 
     # close database connection
