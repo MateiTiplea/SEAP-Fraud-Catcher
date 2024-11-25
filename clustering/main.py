@@ -4,6 +4,7 @@ from clustering.Algorithms.AgglomerativeClusteringStrategy import AgglomerativeC
 from clustering.Algorithms.KMeansClusteringStrategy import KMeansClusteringStrategy
 from clustering.Algorithms.DBSCANClusteringStrategy import DBSCANClusteringStrategy
 from clustering.Algorithms.OPTICSClusteringStrategy import OPTICSClusteringStrategy
+from clustering.DecisionalMethods.FraudDetectionClustering import FraudDetectionClustering
 from clustering.StringClustering import StringClastering
 from models.item import Item
 from services.item_service import ItemService
@@ -58,11 +59,23 @@ def find_items_from_the_same_category(cpv_code_id):
     return []
 
 
-def get_item_cluster(item_name, clusters_results):
+def get_item_cluster(item, clusters_results):
     for key, values in clusters_results.items():
         for value in values:
-            if item_name == value:
-                return key
+            if item.name == value.name:
+                return values
+    return None
+
+
+def get_fraud_scor_for_item(item, data):
+
+    fraud_detection = FraudDetectionClustering(data)
+    fraud_scores = fraud_detection.detect_fraud()
+
+    for it, score in fraud_scores:
+        if it.name == item.name and item.closing_price == it.closing_price:
+            return score
+
     return None
 
 
@@ -112,17 +125,20 @@ def main():
     clustering_strategy_3 = OPTICSClusteringStrategy()
 
     clustering = StringClastering(items, clustering_strategy_2)
-    #results = clustering.get_clusters(False)
-    results_hybrid = clustering.get_clusters(True)
+    results = clustering.get_clusters(False)
+    #results_hybrid = clustering.get_clusters(True)
 
-    #write_clusters_to_file("simple_clusters.txt", results)
-    write_clusters_to_file("hybrid_clusters.txt", results_hybrid)
+    write_clusters_to_file("simple_clusters.txt", results)
+    #write_clusters_to_file("hybrid_clusters.txt", results_hybrid)
 
     ##################################### Data Classification ##################################
 
     # get cluster of item
 
+    cluster_of_item = get_item_cluster(item, results)
+    fraud_score = get_fraud_scor_for_item(item, cluster_of_item)
 
+    print(f"Fraud Score for {item.name} is: {round(fraud_score, 2)}%")
 
     # close database connection
     db_connection.disconnect()
