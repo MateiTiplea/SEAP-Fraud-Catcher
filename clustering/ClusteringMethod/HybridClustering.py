@@ -23,17 +23,25 @@ class HybridClustering(BaseClusteringTemplate):
 
         for cluster_id, members in sub_cluster_dict.items():
             if len(members) < 2:
+                final_cluster_dict[global_index] = members
+                global_index += 1
                 continue
 
             # second clustering
             simple_clustering_subsequent = SimpleClustering(members, KMeansClusteringStrategy())
-            sub_clusters = simple_clustering_subsequent.execute_clustering()
-            #print(sub_clusters)
+            optimal_sub_clusters = simple_clustering_subsequent.find_optimal_clusters()
 
-            #  add clusters to the final result
-            for sub_cluster_id, sub_members in sub_clusters.items():
-                final_cluster_dict[global_index] = []
-                final_cluster_dict[global_index].extend(sub_members)
-                global_index = global_index + 1
+            if optimal_sub_clusters is None:
+                final_cluster_dict[global_index] = members
+                global_index += 1
+
+            else:
+                sub_clusters = simple_clustering_subsequent.execute_clustering()
+                # print(sub_clusters)
+                #  add clusters to the final result
+                for sub_cluster_id, sub_members in sub_clusters.items():
+                    final_cluster_dict[global_index] = []
+                    final_cluster_dict[global_index].extend(sub_members)
+                    global_index = global_index + 1
 
         return final_cluster_dict

@@ -1,3 +1,5 @@
+import json
+
 from clustering.Algorithms.AgglomerativeClusteringStrategy import AgglomerativeClusteringStrategy
 from clustering.Algorithms.KMeansClusteringStrategy import KMeansClusteringStrategy
 from clustering.Algorithms.DBSCANClusteringStrategy import DBSCANClusteringStrategy
@@ -23,9 +25,35 @@ def write_item_names_to_file(filename, item_names):
             f.write(f"{item}\n")
 
 
-def find_items_with_cvp_code_id(cvp_code_id):
-    found_items = ItemService.get_items_by_cpv_code_id(cvp_code_id)
+def find_items_with_cvp_code_id(cpv_code_id):
+    found_items = []
+    items_from_the_same_category = find_items_from_the_same_category(cpv_code_id)
+    for cpv_item in items_from_the_same_category:
+        found_items.extend(ItemService.get_items_by_cpv_code_id(cpv_item))
     return found_items
+
+
+def find_items_from_the_same_category(cpv_code_id):
+
+    # read json file
+    with open(r'C:\Users\Ana-Maria\IP\SEAP-Fraud-Catcher\scrape\filter_cpvs\final_cpv_mapping.json', 'r', encoding='utf-8') as file:
+        data = json.load(file)
+
+    found = 0
+
+    for category, items in data.items():
+        result = []
+
+        for item in items:
+            result.append(item["seap_cpv_id"])
+            if int(item["seap_cpv_id"]) == int(cpv_code_id):
+                found = 1
+        if found == 1:
+            #print(result)
+            #print()
+            return result
+
+    return []
 
 
 def main():
@@ -33,13 +61,13 @@ def main():
     db_connection = MongoDBConnection(env_file=".env")
     db_connection.connect()
 
-    # data preprocessing
-    #13045
-    #18792
-    #10265
-    #10527
-    items = find_items_with_cvp_code_id(10527)
+    # for test:
+    # 12474
+    # 12472
+    items = find_items_with_cvp_code_id(12474)
     item_names = [item.name.lower() for item in items]
+
+    #print(len(item_names))
 
     # preprocessed data clustering
     """
@@ -61,9 +89,10 @@ def main():
     clustering_strategy_2 = AgglomerativeClusteringStrategy()
     clustering = StringClastering(item_names, clustering_strategy_2)
     results = clustering.get_clusters(False)
-    results_hybrid = clustering.get_clusters(True)
+    #results_hybrid = clustering.get_clusters(True)
     write_clusters_to_file("simple_clusters.txt", results)
-    write_clusters_to_file("hybrid_clusters.txt", results_hybrid)
+    #write_clusters_to_file("hybrid_clusters.txt", results_hybrid)
+
 
     # close database connection
     db_connection.disconnect()

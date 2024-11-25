@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 import numpy as np
 from sklearn.metrics import silhouette_score
 import Levenshtein
-
+# from rapidfuzz.distance import Levenshtein
 
 class BaseClusteringTemplate(ABC):
     def __init__(self, list_of_strings, clustering_strategy):
@@ -35,8 +35,10 @@ class BaseClusteringTemplate(ABC):
             cluster_labels = self.clustering_strategy.cluster(self.distance_matrix, n_clusters)
             silhouette_avg = silhouette_score(self.distance_matrix, cluster_labels, metric="precomputed")
             silhouette_scores.append((n_clusters, silhouette_avg))
-        return max(silhouette_scores, key=lambda x: x[1])[0]
 
+        if not silhouette_scores:
+            return None
+        return max(silhouette_scores, key=lambda x: x[1])[0]
 
     @abstractmethod
     def perform_clustering(self, n_clusters):
