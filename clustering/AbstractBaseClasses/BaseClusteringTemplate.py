@@ -6,9 +6,9 @@ from jellyfish import jaro_winkler_similarity
 
 
 class BaseClusteringTemplate(ABC):
-    def __init__(self, list_of_strings, clustering_strategy):
-        self.list_of_strings = list_of_strings
-        self.distance_matrix = self.get_distance_matrix(list_of_strings)
+    def __init__(self, list_of_items, clustering_strategy):
+        self.list_of_items = list_of_items
+        self.distance_matrix = self.get_distance_matrix(list_of_items)
         self.max_clusters = self.calculate_max_clusters()
         self.clustering_strategy = clustering_strategy
 
@@ -17,8 +17,9 @@ class BaseClusteringTemplate(ABC):
         return self.perform_clustering(n_clusters)
 
     def calculate_max_clusters(self):
-        unique_strings = np.unique(self.list_of_strings)
-        return min(len(unique_strings) - 1, len(self.list_of_strings) - 1)
+        list_of_strings = [item.name.lower() for item in self.list_of_items]
+        unique_strings = np.unique(list_of_strings)
+        return min(len(unique_strings) - 1, len(self.list_of_items) - 1)
 
     def processes_strings(self, str1, str2):
 
@@ -68,15 +69,15 @@ class BaseClusteringTemplate(ABC):
         union = words1 | words2
         return len(intersection) / len(union)
 
-    def get_distance_matrix(self, strings):
-        n = len(strings)
+    def get_distance_matrix(self, items):
+        n = len(items)
         distance_matrix = np.zeros((n, n))
         for i in range(n):
             for j in range(i + 1, n):
-                str1_to_cmp, str2_to_cmp = self.processes_strings(strings[i], strings[j])
+                str1_to_cmp, str2_to_cmp = self.processes_strings(items[i].name.lower(), items[j].name.lower())
                 dist = Levenshtein.distance(str1_to_cmp, str2_to_cmp)
-                #dist = jaro_winkler_similarity(strings[i], strings[j])
-                #dist = 1 - self.jaccard_similarity(str1_to_cmp, str2_to_cmp)
+                # dist = jaro_winkler_similarity(strings[i], strings[j])
+                # dist = 1 - self.jaccard_similarity(str1_to_cmp, str2_to_cmp)
                 distance_matrix[i, j] = dist
                 distance_matrix[j, i] = dist
         return distance_matrix

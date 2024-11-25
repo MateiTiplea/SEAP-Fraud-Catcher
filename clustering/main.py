@@ -5,6 +5,7 @@ from clustering.Algorithms.KMeansClusteringStrategy import KMeansClusteringStrat
 from clustering.Algorithms.DBSCANClusteringStrategy import DBSCANClusteringStrategy
 from clustering.Algorithms.OPTICSClusteringStrategy import OPTICSClusteringStrategy
 from clustering.StringClustering import StringClastering
+from models.item import Item
 from services.item_service import ItemService
 
 from db_connection import MongoDBConnection
@@ -13,7 +14,7 @@ from db_connection import MongoDBConnection
 def write_clusters_to_file(filename, clusters):
     with open(filename, "w", encoding="utf-8") as f:
         for cluster_id, items in clusters.items():
-            f.write(f"Cluster {cluster_id + 1}:\n")
+            f.write(f"Cluster {cluster_id}:\n")
             for item in items:
                 f.write(f"{item}\n")
             f.write("\n")
@@ -57,6 +58,14 @@ def find_items_from_the_same_category(cpv_code_id):
     return []
 
 
+def get_item_cluster(item_name, clusters_results):
+    for key, values in clusters_results.items():
+        for value in values:
+            if item_name == value:
+                return key
+    return None
+
+
 def main():
     # open database connection
     db_connection = MongoDBConnection(env_file=".env")
@@ -65,10 +74,20 @@ def main():
     # for test:
     # 12474
     # 12472
-    items = find_items_with_cvp_code_id(12472)
-    item_names = [item.name.lower() for item in items]
 
-    #print(len(item_names))
+    item = Item(
+        name="Telefon mobil Samsung Galaxy S24, Dual SIM, 8GB RAM, 128GB, 5G, Onyx Black",
+        description="Telefon mobil Samsung Galaxy S24, Dual SIM, 8GB RAM, 128GB, 5G, Onyx Black",
+        unit_type="bucata",
+        quantity= 24,
+        closing_price=2436.96,
+        cpv_code_id=12468,
+        cpv_code_text="32250000-0 - Telefoane mobile (Rev.2)",
+        acquisition='672bb706b040977dc4dcb9ef'
+    )
+
+    items = find_items_with_cvp_code_id(item.cpv_code_id)
+    #item_names = [item.name.lower() for item in items]
 
     # preprocessed data clustering
     """
@@ -87,13 +106,22 @@ def main():
         write_item_names_to_file("clustered_items.txt", item_names)
     """
 
+    ######################################## Data Clustering ###################################
+
     clustering_strategy_2 = AgglomerativeClusteringStrategy()
     clustering_strategy_3 = OPTICSClusteringStrategy()
-    clustering = StringClastering(item_names, clustering_strategy_2)
-    results = clustering.get_clusters(False)
-    #results_hybrid = clustering.get_clusters(True)
-    write_clusters_to_file("simple_clusters.txt", results)
-    #write_clusters_to_file("hybrid_clusters.txt", results_hybrid)
+
+    clustering = StringClastering(items, clustering_strategy_2)
+    #results = clustering.get_clusters(False)
+    results_hybrid = clustering.get_clusters(True)
+
+    #write_clusters_to_file("simple_clusters.txt", results)
+    write_clusters_to_file("hybrid_clusters.txt", results_hybrid)
+
+    ##################################### Data Classification ##################################
+
+    # get cluster of item
+
 
 
     # close database connection

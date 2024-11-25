@@ -4,8 +4,8 @@ from clustering.ClusteringMethod.SimpleClustering import SimpleClustering
 
 
 class HybridClustering(BaseClusteringTemplate):
-    def __init__(self, list_of_strings, clustering_strategy):
-        super().__init__(list_of_strings, clustering_strategy)
+    def __init__(self, list_of_items, clustering_strategy):
+        super().__init__(list_of_items, clustering_strategy)
 
     def perform_clustering(self, n_clusters):
         #first clustering
@@ -17,7 +17,7 @@ class HybridClustering(BaseClusteringTemplate):
         for member_index, label in enumerate(initial_labels):
             if label not in sub_cluster_dict:
                 sub_cluster_dict[label] = []
-            sub_cluster_dict[label].append(self.list_of_strings[member_index])
+            sub_cluster_dict[label].append(self.list_of_items[member_index])
 
         global_index = 0
 
