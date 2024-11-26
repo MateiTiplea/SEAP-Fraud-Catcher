@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 import numpy as np
 from sklearn.metrics import silhouette_score, calinski_harabasz_score, davies_bouldin_score
 import Levenshtein
-from jellyfish import jaro_winkler_similarity
+# from jellyfish import jaro_winkler_similarity
 
 
 class BaseClusteringTemplate(ABC):
