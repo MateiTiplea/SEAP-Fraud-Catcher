@@ -2,6 +2,7 @@ from aspects.error_handlers import handle_exceptions
 from aspects.loggers import log_method_calls
 from aspects.performance import cache_result
 from aspects.validation import validate_types
+
 from ..repositories.acquisition_repository import AcquisitionRepository
 from ..repositories.item_repository import ItemRepository
 from ..utils.filter_utils import filter_acquisition_data, filter_item_data
@@ -54,13 +55,13 @@ class AcquisitionService:
     @handle_exceptions(error_types=(ValueError, KeyError))
     @validate_types
     @cache_result(ttl_seconds=300)
-    def get_acquisition_with_items(acquisition_id: str):
+    def get_acquisition_with_items(acquisition_id: int):
         """
         Retrieves an acquisition along with its associated items using an aggregation pipeline.
 
         Parameters:
         -----------
-        acquisition_id : str
+        acquisition_id : int
             The ID of the acquisition to retrieve.
 
         Returns:

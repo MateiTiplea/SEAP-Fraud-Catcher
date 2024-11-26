@@ -1,12 +1,11 @@
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-
 from aspects.error_handlers import handle_exceptions
 from aspects.loggers import log_method_calls
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from .serializers import AcquisitionSerializer, ItemSerializer
 from .services.acquisition_service import AcquisitionService
-from .serializers import AcquisitionSerializer
-from .serializers import ItemSerializer
 from .services.item_service import ItemService
 
 
@@ -31,7 +30,9 @@ class AcquisitionListView(APIView):
         try:
             acquisition_data = request.data.get("acquisition")
             items_data = request.data.get("items", [])
-            acquisition = AcquisitionService.create_acquisition_with_items(acquisition_data, items_data)
+            acquisition = AcquisitionService.create_acquisition_with_items(
+                acquisition_data, items_data
+            )
             serializer = AcquisitionSerializer(acquisition)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         except ValueError as e:
@@ -46,15 +47,16 @@ class AcquisitionDetailView(APIView):
         Retrieve a single acquisition and its associated items by acquisition_id.
         """
         try:
-            print(f"Fetching acquisition_id: {acquisition_id}")  # Debug log
             acquisition = AcquisitionService.get_acquisition_with_items(acquisition_id)
-            print(f"Acquisition: {acquisition}")  # Debug log
             if acquisition:
                 return Response(acquisition, status=status.HTTP_200_OK)
-            return Response({"error": "Acquisition not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"error": "Acquisition not found"}, status=status.HTTP_404_NOT_FOUND
+            )
         except Exception as e:
-            print(f"Error fetching acquisition: {str(e)}")  # Debug log
-            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(
+                {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
     @log_method_calls
     @handle_exceptions(error_types=(ValueError, TypeError))
@@ -64,11 +66,15 @@ class AcquisitionDetailView(APIView):
         """
         try:
             update_data = request.data
-            acquisition = AcquisitionService.update_acquisition(acquisition_id, update_data)
+            acquisition = AcquisitionService.update_acquisition(
+                acquisition_id, update_data
+            )
             serializer = AcquisitionSerializer(acquisition)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(
+                {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
     @log_method_calls
     @handle_exceptions(error_types=(ValueError, TypeError))
@@ -79,10 +85,17 @@ class AcquisitionDetailView(APIView):
         try:
             success = AcquisitionService.delete_acquisition(acquisition_id)
             if success:
-                return Response({"message": "Acquisition deleted successfully"}, status=status.HTTP_200_OK)
-            return Response({"error": "Acquisition not found"}, status=status.HTTP_404_NOT_FOUND)
+                return Response(
+                    {"message": "Acquisition deleted successfully"},
+                    status=status.HTTP_200_OK,
+                )
+            return Response(
+                {"error": "Acquisition not found"}, status=status.HTTP_404_NOT_FOUND
+            )
         except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(
+                {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 
 class ItemsListView(APIView):
@@ -120,15 +133,16 @@ class ItemDetailView(APIView):
         Retrieve a single item by acquisition_id.
         """
         try:
-            print(f"Fetching item_id: {acquisition_id}")  # Debug log
             item = ItemService.get_items_by_acquisition(acquisition_id)
-            print(f"Item: {item}")  # Debug log
             if item:
                 return Response(item, status=status.HTTP_200_OK)
-            return Response({"error": "Item not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"error": "Item not found"}, status=status.HTTP_404_NOT_FOUND
+            )
         except Exception as e:
-            print(f"Error fetching item: {str(e)}")  # Debug log
-            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(
+                {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
     @log_method_calls
     @handle_exceptions(error_types=(ValueError, TypeError))
@@ -144,7 +158,10 @@ class ItemDetailView(APIView):
         except ValueError as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
-            return Response({"error": f"Internal Server Error: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(
+                {"error": f"Internal Server Error: {str(e)}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
     @log_method_calls
     @handle_exceptions(error_types=(ValueError, TypeError))
@@ -158,11 +175,16 @@ class ItemDetailView(APIView):
             if item:
                 serializer = ItemSerializer(item)
                 return Response(serializer.data, status=status.HTTP_200_OK)
-            return Response({"error": "Item not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"error": "Item not found"}, status=status.HTTP_404_NOT_FOUND
+            )
         except ValueError as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
-            return Response({"error": f"Internal Server Error: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(
+                {"error": f"Internal Server Error: {str(e)}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
     @log_method_calls
     @handle_exceptions(error_types=(ValueError, TypeError))
@@ -173,10 +195,16 @@ class ItemDetailView(APIView):
         try:
             success = ItemService.delete_item(item_id)
             if success:
-                return Response({"message": "Item deleted successfully"}, status=status.HTTP_200_OK)
-            return Response({"error": "Item not found"}, status=status.HTTP_404_NOT_FOUND)
+                return Response(
+                    {"message": "Item deleted successfully"}, status=status.HTTP_200_OK
+                )
+            return Response(
+                {"error": "Item not found"}, status=status.HTTP_404_NOT_FOUND
+            )
         except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(
+                {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 
 class ItemsByCpvCodeView(APIView):
@@ -195,6 +223,11 @@ class ItemsByCpvCodeView(APIView):
             if items:
                 serializer = ItemSerializer(items, many=True)
                 return Response(serializer.data, status=status.HTTP_200_OK)
-            return Response({"error": "No items found for the given cpv_code_id"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"error": "No items found for the given cpv_code_id"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
         except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(
+                {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
