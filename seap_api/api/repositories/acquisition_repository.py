@@ -2,6 +2,10 @@ from aspects.error_handlers import handle_exceptions
 from aspects.loggers import log_method_calls
 from ..models.acquisition import Acquisition
 from ..models.item import Item
+from aspects.profile_resources import profile_resources
+from aspects.trace_calls import trace_calls
+
+from aspects.performance import cache_result
 
 
 class AcquisitionRepository:
@@ -11,6 +15,8 @@ class AcquisitionRepository:
 
     @staticmethod
     @log_method_calls
+    @profile_resources
+    @trace_calls
     @handle_exceptions(error_types=(ValueError, KeyError))
     def get_acquisition_with_items(acquisition_id: str):
         """
@@ -51,6 +57,7 @@ class AcquisitionRepository:
 
     @staticmethod
     @log_method_calls
+    @profile_resources
     @handle_exceptions(error_types=(ValueError, TypeError))
     def insert_acquisition(acquisition_data):
         """
@@ -72,6 +79,7 @@ class AcquisitionRepository:
 
     @staticmethod
     @log_method_calls
+    @profile_resources
     @handle_exceptions(error_types=(ValueError, TypeError))
     def update_acquisition(acquisition_id, update_data):
         """
@@ -97,6 +105,7 @@ class AcquisitionRepository:
 
     @staticmethod
     @log_method_calls
+    @profile_resources
     @handle_exceptions(error_types=(ValueError, TypeError))
     def delete_acquisition(acquisition_id):
         """
@@ -120,6 +129,9 @@ class AcquisitionRepository:
 
     @staticmethod
     @log_method_calls
+    @profile_resources
+    @trace_calls
+    @cache_result(ttl_seconds=300)
     @handle_exceptions(error_types=(ValueError, KeyError))
     def get_all_acquisitions():
         """
@@ -134,6 +146,8 @@ class AcquisitionRepository:
 
     @staticmethod
     @log_method_calls
+    @profile_resources
+    @cache_result(ttl_seconds=300)
     @handle_exceptions(error_types=(ValueError, KeyError))
     def get_acquisitions_by_cpv_code_id(cpv_code_id):
         """

@@ -25,11 +25,16 @@ def cache_result(ttl_seconds=300):
             cache_key = str(cache_args) + str(kwargs)
 
             with cache_lock:
+                logger.info(f"Checking cache for {func.__name__} with key {cache_key}")
                 if cache_key in cache:
                     result, timestamp = cache[cache_key]
                     if time.time() - timestamp < ttl_seconds:
-                        logger.debug(f"Cache hit for {func.__name__}")
+                        logger.info(f"Cache hit for {func.__name__} with key {cache_key}")
                         return result
+                    else:
+                        logger.info(f"Cache expired for {func.__name__} with key {cache_key}")
+                else:
+                    logger.info(f"No cache entry found for {func.__name__} with key {cache_key}")
 
             result = func(*args, **kwargs)
 

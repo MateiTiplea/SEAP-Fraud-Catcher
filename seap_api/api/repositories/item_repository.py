@@ -1,5 +1,7 @@
 from aspects.error_handlers import handle_exceptions
 from aspects.loggers import log_method_calls
+from aspects.profile_resources import profile_resources
+from aspects.trace_calls import trace_calls
 from bson import ObjectId
 from mongoengine import ValidationError
 
@@ -15,6 +17,7 @@ class ItemRepository:
 
     @staticmethod
     @log_method_calls
+    @profile_resources
     @handle_exceptions(error_types=(ValueError, TypeError))
     def insert_item(item_data):
         """
@@ -36,6 +39,8 @@ class ItemRepository:
 
     @staticmethod
     @log_method_calls
+    @trace_calls
+    @profile_resources
     @handle_exceptions(error_types=(ValueError, KeyError))
     def get_items_by_acquisition(acquisition_id):
         """
@@ -113,6 +118,7 @@ class ItemRepository:
 
     @staticmethod
     @log_method_calls
+    @profile_resources
     @handle_exceptions(error_types=(ValueError, KeyError))
     def get_all_items():
         """

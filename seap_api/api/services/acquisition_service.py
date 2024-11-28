@@ -2,6 +2,8 @@ from aspects.error_handlers import handle_exceptions
 from aspects.loggers import log_method_calls
 from aspects.performance import cache_result
 from aspects.validation import validate_types
+from aspects.profile_resources import profile_resources
+from aspects.trace_calls import trace_calls
 
 from ..repositories.acquisition_repository import AcquisitionRepository
 from ..repositories.item_repository import ItemRepository
@@ -54,6 +56,8 @@ class AcquisitionService:
     @log_method_calls
     @handle_exceptions(error_types=(ValueError, KeyError))
     @validate_types
+    @profile_resources
+    @trace_calls
     @cache_result(ttl_seconds=300)
     def get_acquisition_with_items(acquisition_id: int):
         """
@@ -123,6 +127,7 @@ class AcquisitionService:
     @staticmethod
     @log_method_calls
     @handle_exceptions(error_types=(ValueError, KeyError))
+    @profile_resources
     @cache_result(ttl_seconds=3000)
     def get_all_acquisitions():
         """
