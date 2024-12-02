@@ -1,5 +1,6 @@
 from aspects.error_handlers import handle_exceptions
 from aspects.loggers import log_method_calls
+from custom_auth.decorators.auth_decorators import require_auth
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -23,6 +24,7 @@ class AcquisitionListView(APIView):
 
     @log_method_calls
     @handle_exceptions(error_types=(ValueError, TypeError))
+    @require_auth(roles=["admin"])
     def post(self, request):
         """
         Creates a new acquisition along with associated items.
@@ -60,6 +62,7 @@ class AcquisitionDetailView(APIView):
 
     @log_method_calls
     @handle_exceptions(error_types=(ValueError, TypeError))
+    @require_auth(roles=["admin"])
     def put(self, request, acquisition_id):
         """
         Update an acquisition by acquisition_id.
@@ -78,6 +81,7 @@ class AcquisitionDetailView(APIView):
 
     @log_method_calls
     @handle_exceptions(error_types=(ValueError, TypeError))
+    @require_auth(roles=["admin"])
     def delete(self, request, acquisition_id):
         """
         Delete an acquisition by acquisition_id.
@@ -112,6 +116,7 @@ class ItemsListView(APIView):
 
     @log_method_calls
     @handle_exceptions(error_types=(ValueError, TypeError))
+    @require_auth(roles=["admin"])
     def post(self, request):
         """
         Creates a new acquisition along with associated items.
@@ -146,6 +151,7 @@ class ItemDetailView(APIView):
 
     @log_method_calls
     @handle_exceptions(error_types=(ValueError, TypeError))
+    @require_auth(roles=["admin"])
     def post(self, request):
         """
         Creates a new item in the database.
@@ -165,6 +171,7 @@ class ItemDetailView(APIView):
 
     @log_method_calls
     @handle_exceptions(error_types=(ValueError, TypeError))
+    @require_auth(roles=["admin"])
     def put(self, request, item_id):
         """
         Update an item by item_id.
@@ -188,6 +195,7 @@ class ItemDetailView(APIView):
 
     @log_method_calls
     @handle_exceptions(error_types=(ValueError, TypeError))
+    @require_auth(roles=["admin"])
     def delete(self, request, item_id):
         """
         Delete an item by item_id.

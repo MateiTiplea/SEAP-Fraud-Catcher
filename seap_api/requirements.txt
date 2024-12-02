@@ -3,3 +3,5 @@ djangorestframework
 django-mongoengine
 python-dotenv
 mongoengine
+werkzeug
+PyJWT
