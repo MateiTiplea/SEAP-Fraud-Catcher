@@ -1,7 +1,6 @@
 from aspects.error_handlers import handle_exceptions
 from aspects.loggers import log_method_calls
 from ..models.acquisition import Acquisition
-from ..models.item import Item
 from aspects.profile_resources import profile_resources
 from aspects.trace_calls import trace_calls
 
@@ -18,7 +17,7 @@ class AcquisitionRepository:
     @profile_resources
     @trace_calls
     @handle_exceptions(error_types=(ValueError, KeyError))
-    def get_acquisition_with_items(acquisition_id: str):
+    def get_acquisition_with_items(acquisition_id: int):
         """
         Retrieves an acquisition and its associated items using MongoDB aggregation pipeline.
 

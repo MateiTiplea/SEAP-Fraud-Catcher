@@ -58,7 +58,7 @@ class AcquisitionService:
     @validate_types
     @profile_resources
     @trace_calls
-    @cache_result(ttl_seconds=300)
+    # @cache_result(ttl_seconds=300)
     def get_acquisition_with_items(acquisition_id: int):
         """
         Retrieves an acquisition along with its associated items using an aggregation pipeline.
