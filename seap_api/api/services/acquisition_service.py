@@ -128,6 +128,7 @@ class AcquisitionService:
     @log_method_calls
     @handle_exceptions(error_types=(ValueError, KeyError))
     @profile_resources
+    @trace_calls
     @cache_result(ttl_seconds=3000)
     def get_all_acquisitions():
         """
@@ -144,6 +145,7 @@ class AcquisitionService:
     @log_method_calls
     @handle_exceptions(error_types=(ValueError, KeyError))
     @validate_types
+    @trace_calls
     @cache_result(ttl_seconds=300)
     def get_acquisitions_by_cpv_code_id(cpv_code_id: int):
         """
