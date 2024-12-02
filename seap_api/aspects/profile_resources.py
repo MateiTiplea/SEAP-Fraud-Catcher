@@ -1,6 +1,6 @@
 import logging
-from functools import wraps
 import time
+from functools import wraps
 from statistics import mean, stdev
 
 import psutil
@@ -27,10 +27,9 @@ def profile_resources(func):
             memory_after = process.memory_info().rss
             duration = time.time() - start_time
             logger.info(
-                f"{func.__name__} - Durată: {duration:.4f}s, "
-                f"Memorie utilizată: {(memory_after - memory_before) / 1024:.2f} KB"
+                f"{func.__name__} - Duration: {duration:.4f}s, "
+                f"Used memory: {(memory_after - memory_before) / 1024:.2f} KB"
             )
         return result
 
     return wrapper
-
