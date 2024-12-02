@@ -1,4 +1,5 @@
 import os
+import uuid
 from datetime import datetime, timedelta
 from typing import Optional, Tuple
 
@@ -9,14 +10,10 @@ from ..models.user import User
 
 
 class AuthenticationService:
-    """
-    Service for handling authentication-related operations
-    """
+    """Service for handling authentication-related operations"""
 
     def __init__(self):
-        self.secret_key = os.getenv(
-            "JWT_SECRET_KEY", "your-secret-key"
-        )  # Should be in env
+        self.secret_key = os.getenv("JWT_SECRET_KEY", "your-secret-key")
         self.algorithm = "HS256"
         self.access_token_expire_minutes = 30
         self.refresh_token_expire_days = 7
@@ -30,7 +27,6 @@ class AuthenticationService:
 
     def create_tokens(self, user: User) -> Tuple[str, str]:
         """Create access and refresh tokens for the user"""
-        # Access token payload
         access_payload = {
             "user_id": str(user.id),
             "username": user.username,
@@ -39,14 +35,13 @@ class AuthenticationService:
             "type": "access",
         }
 
-        # Refresh token payload
         refresh_payload = {
             "user_id": str(user.id),
             "exp": datetime.now() + timedelta(days=self.refresh_token_expire_days),
             "type": "refresh",
+            "jti": str(uuid.uuid4()),
         }
 
-        # Create tokens
         access_token = jwt.encode(
             access_payload, self.secret_key, algorithm=self.algorithm
         )
@@ -60,7 +55,7 @@ class AuthenticationService:
         """Verify a token and return its payload if valid"""
         try:
             # Check if token is blacklisted
-            if BlacklistedToken.is_blacklisted(token):
+            if BlacklistedToken.is_blacklisted(token, self.secret_key, self.algorithm):
                 return None
 
             # Decode and verify token
@@ -71,27 +66,38 @@ class AuthenticationService:
         except jwt.InvalidTokenError:
             return None
 
-    def refresh_access_token(self, refresh_token: str) -> Optional[str]:
-        """Create a new access token using a refresh token"""
+    def refresh_access_token(self, refresh_token: str) -> Optional[Tuple[str, str]]:
+        """Create new access token and rotate refresh token"""
         payload = self.verify_token(refresh_token)
         if payload and payload.get("type") == "refresh":
             user = User.objects(id=payload["user_id"]).first()
             if user:
-                new_access_token, _ = self.create_tokens(user)
-                return new_access_token
+                # Blacklist the used refresh token
+                self.blacklist_token(refresh_token)
+
+                # Generate new tokens
+                return self.create_tokens(user)
         return None
 
-    def blacklist_token(self, token: str):
+    def blacklist_token(self, token: str, reason: str = "Token rotated"):
         """Add a token to the blacklist"""
         try:
             payload = jwt.decode(token, self.secret_key, algorithms=[self.algorithm])
             expires_at = datetime.fromtimestamp(payload["exp"])
-            BlacklistedToken(token=token, expires_at=expires_at).save()
+            jti = payload.get("jti", str(uuid.uuid4()))
+
+            BlacklistedToken(
+                token=token,
+                token_jti=jti,
+                expires_at=expires_at,
+                blacklisted_by=payload.get("user_id"),
+                reason=reason,
+            ).save()
             return True
         except (jwt.InvalidTokenError, KeyError):
             return False
 
     def validate_token_type(self, token: str, expected_type: str) -> bool:
-        """Validate that a token is of the expected type (access or refresh)"""
+        """Validate that a token is of the expected type"""
         payload = self.verify_token(token)
         return payload and payload.get("type") == expected_type

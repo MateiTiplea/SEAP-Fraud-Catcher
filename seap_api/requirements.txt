@@ -5,3 +5,4 @@ python-dotenv
 mongoengine
 werkzeug
 PyJWT
+django-cors-headers

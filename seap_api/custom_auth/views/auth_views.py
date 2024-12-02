@@ -1,5 +1,8 @@
 from aspects.error_handlers import handle_exceptions
 from aspects.loggers import log_method_calls
+from django.conf import settings
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import ensure_csrf_cookie
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -56,11 +59,12 @@ class RegisterView(APIView):
             )
 
 
+@method_decorator(ensure_csrf_cookie, name="dispatch")
 class LoginView(APIView):
     @log_method_calls
     @handle_exceptions(error_types=(ValueError, TypeError))
     def post(self, request):
-        """Authenticate user and return tokens"""
+        """Authenticate user and set token cookies"""
         try:
             data = request.data
             auth_service = AuthenticationService()
@@ -82,13 +86,29 @@ class LoginView(APIView):
             # Update last login
             user.update_last_login()
 
-            return Response(
-                {
-                    "access_token": access_token,
-                    "refresh_token": refresh_token,
-                    "user": user.to_json(),
-                }
+            response = Response({"user": user.to_json(), "message": "Login successful"})
+
+            # Set cookies
+            response.set_cookie(
+                "access_token",
+                access_token,
+                max_age=30 * 60,  # 30 minutes
+                httponly=True,
+                secure=not settings.DEBUG,  # True in production
+                samesite="Lax",
             )
+
+            response.set_cookie(
+                "refresh_token",
+                refresh_token,
+                max_age=7 * 24 * 60 * 60,  # 7 days
+                httponly=True,
+                secure=not settings.DEBUG,  # True in production
+                samesite="Lax",
+            )
+
+            return response
+
         except Exception as e:
             return Response(
                 {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -99,9 +119,11 @@ class RefreshTokenView(APIView):
     @log_method_calls
     @handle_exceptions(error_types=(ValueError, TypeError))
     def post(self, request):
-        """Refresh access token"""
+        """Refresh access token and rotate refresh token"""
         try:
-            refresh_token = request.data.get("refresh_token")
+            # Get refresh token from cookie
+            refresh_token = request.COOKIES.get("refresh_token")
+
             if not refresh_token:
                 return Response(
                     {"error": "Refresh token required"},
@@ -109,15 +131,40 @@ class RefreshTokenView(APIView):
                 )
 
             auth_service = AuthenticationService()
-            new_access_token = auth_service.refresh_access_token(refresh_token)
+            new_tokens = auth_service.refresh_access_token(refresh_token)
 
-            if not new_access_token:
+            if not new_tokens:
                 return Response(
                     {"error": "Invalid refresh token"},
                     status=status.HTTP_401_UNAUTHORIZED,
                 )
 
-            return Response({"access_token": new_access_token})
+            new_access_token, new_refresh_token = new_tokens
+
+            # Create response with new tokens in cookies
+            response = Response({"message": "Tokens refreshed successfully"})
+
+            # Set new cookies
+            response.set_cookie(
+                "access_token",
+                new_access_token,
+                max_age=30 * 60,  # 30 minutes
+                httponly=True,
+                secure=not settings.DEBUG,
+                samesite="Lax",
+            )
+
+            response.set_cookie(
+                "refresh_token",
+                new_refresh_token,
+                max_age=7 * 24 * 60 * 60,  # 7 days
+                httponly=True,
+                secure=not settings.DEBUG,
+                samesite="Lax",
+            )
+
+            return response
+
         except Exception as e:
             return Response(
                 {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -129,15 +176,30 @@ class LogoutView(APIView):
     @handle_exceptions(error_types=(ValueError, TypeError))
     @require_auth()
     def post(self, request):
-        """Logout user by blacklisting the token"""
+        """Logout user by blacklisting the token and clearing cookies"""
         try:
-            auth_header = request.headers.get("Authorization")
-            token = auth_header.split(" ")[1]
+            # Get token from cookie
+            access_token = request.COOKIES.get("access_token")
+            refresh_token = request.COOKIES.get("refresh_token")
 
             auth_service = AuthenticationService()
-            auth_service.blacklist_token(token)
 
-            return Response({"message": "Successfully logged out"})
+            # Blacklist both tokens if they exist
+            if access_token:
+                auth_service.blacklist_token(access_token, "User logout")
+            if refresh_token:
+                auth_service.blacklist_token(refresh_token, "User logout")
+
+            # Create response and clear cookies
+            response = Response({"message": "Successfully logged out"})
+
+            response.delete_cookie("access_token")
+            response.delete_cookie("refresh_token")
+
+            # Also delete CSRF cookie if you want to completely clear session
+            response.delete_cookie("csrftoken")
+
+            return response
         except Exception as e:
             return Response(
                 {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR

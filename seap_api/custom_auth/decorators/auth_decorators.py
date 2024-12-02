@@ -7,25 +7,24 @@ from ..services.auth_service import AuthenticationService
 
 
 def require_auth(roles=None):
-    """
-    Decorator for views that checks if the user is authenticated and has required roles.
-
-    Args:
-        roles (list): Optional list of roles required to access the endpoint
-    """
-
     def decorator(view_func):
         @wraps(view_func)
         def wrapped_view(view_instance, request, *args, **kwargs):
-            # Get the token from the request
-            auth_header = request.headers.get("Authorization")
-            if not auth_header or not auth_header.startswith("Bearer "):
+            # Try to get token from cookie first, then fallback to Authorization header
+            token = request.COOKIES.get("access_token")
+
+            if not token:
+                # Fallback to Authorization header
+                auth_header = request.headers.get("Authorization")
+                if auth_header and auth_header.startswith("Bearer "):
+                    token = auth_header.split(" ")[1]
+
+            if not token:
                 return Response(
                     {"error": "No valid authorization token provided"},
                     status=status.HTTP_401_UNAUTHORIZED,
                 )
 
-            token = auth_header.split(" ")[1]
             auth_service = AuthenticationService()
 
             # Verify the token
