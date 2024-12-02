@@ -1,0 +1,12 @@
+Se execută clean_invalid_items cu parametrii: (<clustering.MOP.EnhancedClustering.EnhancedClustering object at 0x00000221D3C73C10>,), {}
+Rezultat clean_invalid_items: None
+Se execută validate_items cu parametrii: (<clustering.MOP.EnhancedClustering.EnhancedClustering object at 0x00000221D3C73C10>,), {}
+Rezultat validate_items: True
+Se execută clean_invalid_items cu parametrii: (<clustering.MOP.EnhancedClustering.EnhancedClustering object at 0x000001C5573942D0>,), {}
+Rezultat clean_invalid_items: None
+Se execută validate_items cu parametrii: (<clustering.MOP.EnhancedClustering.EnhancedClustering object at 0x000001C5573942D0>,), {}
+Rezultat validate_items: True
+Se execută clean_invalid_items cu parametrii: (<clustering.MOP.EnhancedClustering.EnhancedClustering object at 0x0000026DB15A6B50>,), {}
+Rezultat clean_invalid_items: None
+Se execută validate_items cu parametrii: (<clustering.MOP.EnhancedClustering.EnhancedClustering object at 0x0000026DB15A6B50>,), {}
+Rezultat validate_items: True

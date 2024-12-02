@@ -12,9 +12,6 @@ class FraudDetectionClustering:
 
     def detect_fraud(self):
 
-        # detect fraud based on price of items
-        # compute fraud_scores based on distance from average price
-
         distance_matrix = self.get_distance_matrix(self.items)
         cluster_labels = self.clustering_algorithm.cluster(distance_matrix, n_clusters=len(self.items))
         fraud_scores = self.calculate_fraud_scores(self.items, cluster_labels)
@@ -33,6 +30,8 @@ class FraudDetectionClustering:
                 distance_matrix[j][i] = distance_matrix[i][j]
 
         return distance_matrix
+
+
 
     def calculate_fraud_scores(self, items, cluster_labels):
 

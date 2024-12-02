@@ -1,0 +1,414 @@
+Executing VALIDATE
+Validating item 1/206: Smartphone Xiaomi Redmi 13C 256GB 8GB RAM Dual SIM Midnight Black
+Item 1 passed validation.
+Validating item 2/206: Smartphone Motorola Moto g24 Power 256GB 8GB RAM Dual SIM Ink Blue
+Item 2 passed validation.
+Validating item 3/206: Accesori discrete terminal tetra portabil Motorola MTH 800
+Item 3 passed validation.
+Validating item 4/206: Casca cu microfon inline PTT statie radio Motorola MTH800 MTP850 MTH600, MTH650 CLP446 PMLN5977
+Item 4 passed validation.
+Validating item 5/206: Casca cu microfon Motorola DP2400, DP2400e, DP2600 DP2600e MTP3150 MTP3250 MTP3550 livrare 2 zile
+Item 5 passed validation.
+Validating item 6/206: Laringofon compatibil statie radio Motorola MTP800 cu buton PTT  si  tub acustic
+Item 6 passed validation.
+Validating item 7/206: JOC CONSTRUCTIE MINIGENERATOR DE CURENT ELECTRIC
+Item 7 passed validation.
+Validating item 8/206: TELEFON MOBIL APPLE IPHONE 15 PRO MAX,DIMENSIUNE ECRAN: 6.7 INCH,E-SIM, 256GB, 5G,USB-C, NATURAL TIT
+Item 8 passed validation.
+Validating item 9/206: TELEFON MOBIL APPLE IPHONE 15 PRO MAX,DIMENSIUNE ECRAN: 6.7 INCH,E-SIM, 256GB, 5G,USB-C, NATURAL TIT
+Item 9 passed validation.
+Validating item 10/206: Telefon Mobil Samsung Galaxy A05, Procesor Octa-Core, PLS LCD 6.7", 4GB RAM, 64GB, (Negru/Non-Eu)
+Item 10 passed validation.
+Validating item 11/206: Telefon mobil Google Pixel 9 Pro, 128GB, 16GB RAM, 5G, Obsidian
+Item 11 passed validation.
+Validating item 12/206: Telefon Mobil Samsung Galaxy A05, Procesor Octa-Core, PLS LCD 6.7", 4GB RAM, 64GB, (Negru/Non-Eu)
+Item 12 passed validation.
+Validating item 13/206: TELEFON FIX OHO 5005
+Item 13 passed validation.
+Validating item 14/206: Telefon Mobil Xiaomi Redmi 13C, Procesor Mediatek MT6769Z Helio G85, IPS LCD Capacitive touchscreen
+Item 14 passed validation.
+Validating item 15/206: Telefon mobil Apple iPhone 16 Pro 512GB Desert Titanium
+Item 15 passed validation.
+Validating item 16/206: Telefon Mobil Samsung Galaxy A05, Procesor Octa-Core, PLS LCD 6.7", 4GB RAM, 64GB, (Negru/Non-Eu)
+Item 16 passed validation.
+Validating item 17/206: Accesorii GSM tip Husa LIUZIHAN Apple iPhone 16 Pro, black
+Item 17 passed validation.
+Validating item 18/206: Telefon mobil Nokia 105 (2023), Dual SIM, Charcoal
+Item 18 passed validation.
+Validating item 19/206: Smartphone Motorola Moto G24 Power DS 8GB 256GB Blue
+Item 19 passed validation.
+Validating item 20/206: Telefon mobil Xiaomi Redmi 13C, 8GB RAM, 256GB, Midnight Black
+Item 20 passed validation.
+Validating item 21/206: Telefon mobil Xiaomi Redmi 13C, 8GB RAM, 256GB, Midnight Black
+Item 21 passed validation.
+Validating item 22/206: Telefon mobil Apple iPhone 13, 128GB, 5G, Starlight
+Item 22 passed validation.
+Validating item 23/206: Telefon mobil Xiaomi Redmi 13C, 8GB RAM, 256GB, Midnight Black
+Item 23 passed validation.
+Validating item 24/206: Telefon mobil Xiaomi Redmi 13, 8GB RAM, 256GB, Midnight Black
+Item 24 passed validation.
+Validating item 25/206: SAMSUNG GALAXY A04S 32 GB 3GB RAM 4G BLACK
+Item 25 passed validation.
+Validating item 26/206: SAMSUNG GALAXY A05S
+Item 26 passed validation.
+Validating item 27/206: Telefon mobil Maxcom Strong MM918, Dual SIM, IP68, 4G, Black
+Item 27 passed validation.
+Validating item 28/206: Telefon mobil Motorola Moto g04, Dual SIM, 4GB RAM, 64GB, Sea Green
+Item 28 passed validation.
+Validating item 29/206: Telefon mobil Samsung Galaxy A05s 64GB 4GB RAM Dual Sim LTE Black
+Item 29 passed validation.
+Validating item 30/206: Telefon mobil Motorola Moto g24, Dual SIM, 8GB RAM, 128GB, Matte Charcoal
+Item 30 passed validation.
+Validating item 31/206: Telefon mobil Motorola Moto g04, Dual SIM, 4GB RAM, 64GB, Concord Black
+Item 31 passed validation.
+Validating item 32/206: Telefon mobil Samsung Galaxy A04s, 32GB, 3GB RAM, 4G, Black
+Item 32 passed validation.
+Validating item 33/206: Telefon mobil Maxcom Strong MM918, Dual SIM, IP68, 4G, Black
+Item 33 passed validation.
+Validating item 34/206: Telefon mobil Motorola Moto g04, Dual SIM, 4GB RAM, 64GB, Concord Black
+Item 34 passed validation.
+Validating item 35/206: Husa de protectie Samsung Silicone Case pentru Galaxy Flip6, Blue
+Item 35 passed validation.
+Validating item 36/206: Telefon mobil Samsung Galaxy Z Flip6, 12GB RAM, 512GB, 5G, Blue.
+Item 36 passed validation.
+Validating item 37/206: Telefon mobil Xiaomi Redmi 13C, 4GB RAM, 128GB, Midnight Black
+Item 37 passed validation.
+Validating item 38/206: Telefon mobil Xiaomi Redmi 13C, 4GB RAM, 128GB, Midnight Black
+Item 38 passed validation.
+Validating item 39/206: Incarcatoare retea, Incarcatoare auto, accesorii smartfon
+Item 39 passed validation.
+Validating item 40/206: Abonament TPARK Control Enforcement Standard
+Item 40 passed validation.
+Validating item 41/206: Telefon mobil Nokia 5310 (2020), Dual SIM, Black/Red
+Item 41 passed validation.
+Validating item 42/206: Telefon mobil Xiaomi Redmi 13C, 4GB RAM, 128GB, Midnight Black
+Item 42 passed validation.
+Validating item 43/206: Telefon Mobil Samsung Galaxy A05, Octa-Core, PLS LCD 6.7", 4GB RAM, 128GB Flash, (Negru/NonEU
+Item 43 passed validation.
+Validating item 44/206: Telefon mobil Motorola Moto E22 4G, 64GB, 4GB RAM, Dual SIM, Astro Black [205905]
+Item 44 passed validation.
+Validating item 45/206: Telefon mobil Samsung Galaxy S24, Dual SIM, 8GB RAM, 128GB, 5G, Onyx Black
+Item 45 passed validation.
+Validating item 46/206: Telefon SAMSUNG Galaxy A55 5G, 256GB, 8GB RAM, Dual SIM, Awesome Navy
+Item 46 passed validation.
+Validating item 47/206: Telefon mobil Samsung Galaxy A15 LTE, 128GB, 4GB, Dual SIM, Negru [217237]
+Item 47 passed validation.
+Validating item 48/206: Terminal mobil Zebra TC21, SE4710, Android, 3GB, 3100 mAh
+Item 48 passed validation.
+Validating item 49/206: Telefon SAMSUNG Galaxy A25 5G, 128GB, 6GB RAM, Dual SIM, Blue Black
+Item 49 passed validation.
+Validating item 50/206: Telefon mobil Motorola Moto g24, Dual SIM, 8GB RAM, 128GB, Matte Charcoal
+Item 50 passed validation.
+Validating item 51/206: Telefon SAMSUNG Galaxy A35 5G 128GB 6GB RAM Dual SIM Awesome
+Item 51 passed validation.
+Validating item 52/206: SMARTPHONE SAMSUNG GALAXY A15 8GB RAM, 256 GB
+Item 52 passed validation.
+Validating item 53/206: Telefon mobil Samsung Galaxy A25, Dual SIM, 6GB RAM, 128GB, 5G, Blue Black
+Item 53 passed validation.
+Validating item 54/206: Smartphone Motorola Moto G14 NFC 128GB 4GB Dual SIM 5000mAh Steel Gray
+Item 54 passed validation.
+Validating item 55/206: Telefon mobil Motorola Moto g24, Dual SIM, 8GB RAM, 128GB, Matte Charcoal
+Item 55 passed validation.
+Validating item 56/206: Telefon mobil Samsung Galaxy A15 LTE, 128GB, 4GB, Dual SIM, Negru [217237]
+Item 56 passed validation.
+Validating item 57/206: Cablu incarcare APPLE MW493ZM/A, USB-C - USB-C, 1m, alb
+Item 57 passed validation.
+Validating item 58/206: Smartphone Samsung Galaxy A04e 32GB 3GB RAM Dual SIM Cooper
+Item 58 passed validation.
+Validating item 59/206: Telefon SAMSUNG Galaxy A15, 128GB, 4GB RAM, Dual SIM, Blue
+Item 59 passed validation.
+Validating item 60/206: Telefon SAMSUNG Galaxy A25 5G, 128GB, 6GB RAM, Dual SIM, Blue Black
+Item 60 passed validation.
+Validating item 61/206: Telefon SAMSUNG Galaxy S24 Ultra 5G, 256GB, 12GB RAM, Dual SIM, Titanium Black
+Item 61 passed validation.
+Validating item 62/206: Telefon mobil Samsung Galaxy A35, Dual SIM, 6GB, 128GB, 5G
+Item 62 passed validation.
+Validating item 63/206: FURNIZARE TERMINALE MOBILE RIGIDIZATE PENTRU INTEROGAREA BAZELOR DE DATE
+Item 63 passed validation.
+Validating item 64/206: Telefon mobil Apple iPhone 13, 128GB, 5G, Midnight
+Item 64 passed validation.
+Validating item 65/206: Telefon SAMSUNG Galaxy A55 5G, 256GB, 8GB RAM, Dual SIM, Awesome Navy
+Item 65 passed validation.
+Validating item 66/206: Telefon Mobil Apple iPhone 15 Pro 5G, 128GB, Black Titanium [208684]
+Item 66 passed validation.
+Validating item 67/206: Telefon mobil Motorola Moto E22 4G, 64GB, 4GB RAM, Dual SIM, Astro Black [205905]
+Item 67 passed validation.
+Validating item 68/206: Smartphone Google Pixel 8
+Item 68 passed validation.
+Validating item 69/206: Telefon XIAOMI Redmi A3, 64GB, 3GB RAM, Dual SIM, Green
+Item 69 passed validation.
+Validating item 70/206: FURNIZARE TERMINALE MOBILE RIGIDIZATE PENTRU INTEROGAREA BAZELOR DE DATE
+Item 70 passed validation.
+Validating item 71/206: Pachet Telefon mobil Samsung Galaxy A25, husa, incarcator, folie de sticla
+Item 71 passed validation.
+Validating item 72/206: Telefon mobil Apple iPhone 15, 128GB, 5G, Black
+Item 72 passed validation.
+Validating item 73/206: Pachet TERMINALE DE ACCES SI INTEROGARE BAZE DE DATE conform ADV1450206
+Item 73 passed validation.
+Validating item 74/206: Telefon MOTOROLA Moto G14, 128GB, 4GB RAM, Dual SIM, Steel Gray
+Item 74 passed validation.
+Validating item 75/206: Telefon mobil Samsung Galaxy A15, Dual SIM, 256GB, 8GB RAM, 4G, Blue Black
+Item 75 passed validation.
+Validating item 76/206: TELEFON MOBIL GOOGLE PIXEL 9 PRO 256GB 16GB RAM 5G OBSIDIAN
+Item 76 passed validation.
+Validating item 77/206: Telefon mobil Samsung Galaxy A54, Dual SIM, 8GB RAM, 128GB, 5G, Awesome Graphite
+Item 77 passed validation.
+Validating item 78/206: Terminale mobile rigidizate pentru interogare baze de date
+Item 78 passed validation.
+Validating item 79/206: Telefon mobil Xiaomi Redmi 13C, 8GB RAM, 256GB, Midnight Black
+Item 79 passed validation.
+Validating item 80/206: Telefon MOTOROLA Moto G14, 128GB, 4GB RAM, Dual SIM, Steel Gray
+Item 80 passed validation.
+Validating item 81/206: Telefon mobil Xiaomi Redmi 13C, 8GB RAM, 256GB, Midnight Black
+Item 81 passed validation.
+Validating item 82/206: Telefon mobil Samsung Galaxy A25 5G, 256GB, 8GB, Dual SIM, Albastru inchis [217222]
+Item 82 passed validation.
+Validating item 83/206: Telefon mobil Samsung Galaxy A15, Dual SIM, 4GB RAM, 128GB, 4G, Blue Black
+Item 83 passed validation.
+Validating item 84/206: Telefon mobil Samsung Galaxy A25 5G, 128GB, 6GB, Dual SIM, Albastru deschis [217227]
+Item 84 passed validation.
+Validating item 85/206: Telefon XIAOMI Redmi A3, 64GB, 3GB RAM, Dual SIM, Green
+Item 85 passed validation.
+Validating item 86/206: Telefon mobil Samsung A53 5G, 6 GB RAM, 128GB, Black
+Item 86 passed validation.
+Validating item 87/206: Telefon mobil Motorola Moto g54 5G, 256GB, 8GB RAM, Pearl Blue [212076]
+Item 87 passed validation.
+Validating item 88/206: Telefon mobil Motorola Moto G14, 128GB, 4GB RAM, Dual Sim, Steel Gray [208580]
+Item 88 passed validation.
+Validating item 89/206: Telefon MOTOROLA Moto G14, 128GB, 4GB RAM, Dual SIM, Steel Gray
+Item 89 passed validation.
+Validating item 90/206: Telefon Mobil Samsung Galaxy A05, Octa-Core, PLS LCD 6.7", 4GB RAM, 128GB Flash, (Negru/NonEU
+Item 90 passed validation.
+Validating item 91/206: Telefon mobil Motorola Moto g24, Dual SIM, 8GB RAM, 128GB, Matte Charcoal
+Item 91 passed validation.
+Validating item 92/206: Telefon Mobil Samsung Galaxy A05s, Procesor Octa-Core, PLS LCD 6.7", 4GB RAM, 128GB Flash, Camera Tr
+Item 92 passed validation.
+Validating item 93/206: Incarcator retea APPLE MHJE3ZM/A, USB-C, 20W, alb
+Item 93 passed validation.
+Validating item 94/206: Telefon MOTOROLA Moto G14, 128GB, 4GB RAM, Dual SIM, Steel Gray
+Item 94 passed validation.
+Validating item 95/206: Telefon MOTOROLA Moto G14, 128GB, 4GB RAM, Dual SIM, Steel Gray
+Item 95 passed validation.
+Validating item 96/206: Telefon mobil Xiaomi Redmi 12, 128GB, 4GB RAM, Dual SIM, Midnight Black [185551]
+Item 96 passed validation.
+Validating item 97/206: Telefon XIAOMI Redmi 13C, 128GB, 4GB RAM, Dual SIM, Midnight Black
+Item 97 passed validation.
+Validating item 98/206: Telefon mobil smart smartphone 2 doua cartele simuri DUAL SIM 64GB 4GB RAM MOTOROLA Moto E22
+Item 98 passed validation.
+Validating item 99/206: Telefon NOKIA 3210 2024, 64MB RAM, 4G, Dual SIM, Black
+Item 99 passed validation.
+Validating item 100/206: Telefon XIAOMI Redmi Note 13 Pro+ 5G, 512GB, 12GB RAM, Dual SIM, White
+Item 100 passed validation.
+Validating item 101/206: Telefon MOTOROLA Moto G14, 128GB, 4GB RAM, Dual SIM, Steel Gray
+Item 101 passed validation.
+Validating item 102/206: Smartphone Samsung Galaxy A04e 32GB 3GB RAM Dual SIM Cooper
+Item 102 passed validation.
+Validating item 103/206: Telefon MOTOROLA Moto G24, 128GB, 8GB RAM, Dual SIM, Matte Charcoal
+Item 103 passed validation.
+Validating item 104/206: Telefon MOTOROLA Moto G24, 128GB, 8GB RAM, Dual SIM, Pink Lavander
+Item 104 passed validation.
+Validating item 105/206: Telefon mobil Apple iPhone 13, 128GB, 5G, Midnight
+Item 105 passed validation.
+Validating item 106/206: Telefon MOTOROLA Moto G14, 128GB, 4GB RAM, Dual SIM, Steel Gray
+Item 106 passed validation.
+Validating item 107/206: Smartphone Samsung Galaxy A04e 32GB 3GB RAM Dual SIM Cooper
+Item 107 passed validation.
+Validating item 108/206: Telefon XIAOMI Redmi 13C, 128GB, 4GB RAM, Dual SIM, Midnight Black
+Item 108 passed validation.
+Validating item 109/206: Telefon mobil Samsung Galaxy A05s, Dual SIM, 4GB RAM, 64GB, 4G, Black
+Item 109 passed validation.
+Validating item 110/206: Telefon Mobil Samsung Galaxy A05, Octa-Core, PLS LCD 6.7", 4GB RAM, 128GB Flash, (Negru/NonEU
+Item 110 passed validation.
+Validating item 111/206: Telefon Mobil Samsung Galaxy A05,  6.7", 4GB RAM, 128GB Flash,  (Verde/Non-Eu)
+Item 111 passed validation.
+Validating item 112/206: Telefon mobil Samsung Galaxy A55, Dual SIM, 8GB, 128GB, 5G, Awesome Navy
+Item 112 passed validation.
+Validating item 113/206: Telefon Mobil Samsung Galaxy A04, Procesor Octa-Core, PLS LCD 6.5", 3GB RAM, 32GB Flash, Camera Dual
+Item 113 passed validation.
+Validating item 114/206: Terminale telefonice mobile
+Item 114 passed validation.
+Validating item 115/206: Terminale mobile 106 buc. conform ADV 1441949
+Item 115 passed validation.
+Validating item 116/206: Telefon mobil Xiaomi Redmi 12C, 64 GB, 3 GB RAM, Dual SIM, Graphite Gray [164813]
+Item 116 passed validation.
+Validating item 117/206: Telefon Mobil OnePlus Nord 4, Procesor Qualcomm SM7675 Snapdragon 7+ Gen 3, Fluid AMOLED Capacitiv t
+Item 117 passed validation.
+Validating item 118/206: Telefon XIAOMI Redmi 13C, 128GB, 4GB RAM, Dual SIM, Midnight Black
+Item 118 passed validation.
+Validating item 119/206: Telefon SAMSUNG Galaxy A55 5G, 256GB, 8GB RAM, Dual SIM, Awesome Navy
+Item 119 passed validation.
+Validating item 120/206: Terminale mobile rigidizate pentru interogarea bazelor de date - 144 bucati
+Item 120 passed validation.
+Validating item 121/206: Terminale mobile rigidizate
+Item 121 passed validation.
+Validating item 122/206: Telefon SAMSUNG Galaxy A55 5G, 256GB, 8GB RAM, Dual SIM, Awesome Navy
+Item 122 passed validation.
+Validating item 123/206: Telefon mobil Samsung Galaxy A55, Dual SIM, 8GB, 256GB, 5G, Awesome Navy
+Item 123 passed validation.
+Validating item 124/206: Telefon mobil Nokia 235 (2024), 2.8", Dual SIM, 4G, Black Cod Podus: [1GF026GPA2L07]
+Item 124 passed validation.
+Validating item 125/206: Terminale mobile rigidizate pentru interogare baze de date
+Item 125 passed validation.
+Validating item 126/206: Telefon Mobil 5G
+Item 126 passed validation.
+Validating item 127/206: Telefon mobil Samsung Galaxy A05s, Dual SIM, 4GB RAM, 64GB, 4G, Black
+Item 127 passed validation.
+Validating item 128/206: Terminal mobil
+Item 128 passed validation.
+Validating item 129/206: Telefon mobil Dual SIM Nokia 110 4G (2023), Charcoal [197882]
+Item 129 passed validation.
+Validating item 130/206: Telefon mobil Samsung Galaxy A23, 4GB RAM, 64GB, 5G , White
+Item 130 passed validation.
+Validating item 131/206: Telefon mobil Samsung Galaxy A54, Dual SIM, 128GB, 8GB RAM,
+Item 131 passed validation.
+Validating item 132/206: Telefon MOTOROLA Moto G14, 128GB, 4GB RAM, Dual SIM, Steel Gray
+Item 132 passed validation.
+Validating item 133/206: Terminale mobile 137 buc. conform ADV1442056
+Item 133 passed validation.
+Validating item 134/206: Furnizare Terminal mobil rigidizat pentru interogarea bazelor de date
+Item 134 passed validation.
+Validating item 135/206: Telefon SAMSUNG Galaxy A15, 128GB, 4GB RAM, Dual SIM, Blue
+Item 135 passed validation.
+Validating item 136/206: Telefon mobil Samsung Galaxy S23 FE, Dual SIM, 8GB RAM, 128GB, 5G, Graphite
+Item 136 passed validation.
+Validating item 137/206: Telefon mobil Samsung Galaxy A55, Dual SIM, 8GB, 128GB, 5G, Awesome Navy
+Item 137 passed validation.
+Validating item 138/206: Telefon Mobil Samsung Galaxy A05, Octa-Core, PLS LCD 6.7", 4GB RAM, 64GB Flash,  (Verde/Non-Eu)
+Item 138 passed validation.
+Validating item 139/206: Terminale rigidizate pentru interogarea bazelor de date în teren
+Item 139 passed validation.
+Validating item 140/206: Telefon mobil Samsung Galaxy A55, Dual SIM, 8GB, 256GB, 5G, Awesome Navy
+Item 140 passed validation.
+Validating item 141/206: Telefon mobil Motorola Moto g14, Dual SIM, 128GB, 4GB RAM, Sky Blue
+Item 141 passed validation.
+Validating item 142/206: TERMINAL MOBIL RIGIDIZAT PENTRU INTEROGAREA BAZELOR DE DATE
+Item 142 passed validation.
+Validating item 143/206: Telefon mobil Dual SIM Nokia 105 (2023), Cyan [197884]
+Item 143 passed validation.
+Validating item 144/206: Terminal mobil rigidizat Samsung Xcover 7 G556B
+Item 144 passed validation.
+Validating item 145/206: TERMINAL MOBIL RIGIDIZAT PENTRU INTEROGAREA BAZELOR DE DATE
+Item 145 passed validation.
+Validating item 146/206: Smartphone XIAOMI
+Item 146 passed validation.
+Validating item 147/206: Telefon mobil Samsung Galaxy Xcover 7, Dual SIM, 128GB, 6GB RAM, 5G, Black
+Item 147 passed validation.
+Validating item 148/206: Terminale mobile rigidizate pentru interogare baze de date
+Item 148 passed validation.
+Validating item 149/206: Terminale mobile rigidizate pentru interogarea bazelor de date
+Item 149 passed validation.
+Validating item 150/206: TERMINAL MOBIL RIGIDIZAT PENTRU INTEROGAREA BAZELOR DE DATE
+Item 150 passed validation.
+Validating item 151/206: Terminal mobil rigidizat Samsung Xcover 7 G556B
+Item 151 passed validation.
+Validating item 152/206: Terminale mobile rigidizate pentru interogarea bazelor de date
+Item 152 passed validation.
+Validating item 153/206: Samsung Xcover 7 G556B 6.6" + husa neagra+ folie protectie + cablu de alimentare si incarcator 230v
+Item 153 passed validation.
+Validating item 154/206: Telefon Mobil Samsung Galaxy A05, Octa-Core, PLS LCD 6.7", 4GB RAM, 128GB Flash, (Negru/NonEU
+Item 154 passed validation.
+Validating item 155/206: Samsung Xcover 7 G556B 6.6" + husa neagra+ folie protectie + cablu de alimentare si incarcator 230v
+Item 155 passed validation.
+Validating item 156/206: Terminale mobile rigidizate
+Item 156 passed validation.
+Validating item 157/206: TERMINAL MOBIL RIGIDIZAT PENTRU INTEROGAREA BAZELOR DE DATE
+Item 157 passed validation.
+Validating item 158/206: Telefon XIAOMI Redmi 13C, 128GB, 4GB RAM, Dual SIM, Midnight Black
+Item 158 passed validation.
+Validating item 159/206: Telefon mobil Samsung Galaxy A05s, Dual SIM, 4GB RAM, 64GB, 4G, Black
+Item 159 passed validation.
+Validating item 160/206: TERMINAL MOBIL RIGIDIZAT PENTRU INTEROGAREA BAZELOR DE DATE
+Item 160 passed validation.
+Validating item 161/206: terminal mobil rigidizat pentru interogarea bazelor de date
+Item 161 passed validation.
+Validating item 162/206: Terminale mobile rigidizate pentru interogare baze de date
+Item 162 passed validation.
+Validating item 163/206: Achizitie terminal mobil rigidizat pentru interogarea bazelor de date
+Item 163 passed validation.
+Validating item 164/206: Terminale mobile rigidizate pentru interogarea bazelor de date
+Item 164 passed validation.
+Validating item 165/206: Terminale mobile rigidizate pentru interogare baze de date
+Item 165 passed validation.
+Validating item 166/206: TERMINAL MOBIL RIGIDIZAT PENTRU INTEROGAREA BAZELOR DE DATE
+Item 166 passed validation.
+Validating item 167/206: Telefon mobil Dual SIM Nokia 105 (2023), Rosu [197885]
+Item 167 passed validation.
+Validating item 168/206: Telefon XIAOMI Redmi 12, 128GB, 4GB RAM, Dual SIM, Midnight Black
+Item 168 passed validation.
+Validating item 169/206: Terminale mobile rigidizate pentru interogare baze de date
+Item 169 passed validation.
+Validating item 170/206: Smartphone Samsung Galaxy A04e 32GB 3GB RAM Dual SIM Cooper
+Item 170 passed validation.
+Validating item 171/206: Telefon mobil Samsung Galaxy S23 FE, Dual SIM, 8GB RAM, 128GB, 5G
+Item 171 passed validation.
+Validating item 172/206: Telefon Mobil Samsung Galaxy Z Fold 5, 12GB RAM, 512GB Flash
+Item 172 passed validation.
+Validating item 173/206: TERMINAL MOBIL RIGIDIZAT PENTRU INTEROGAREA BAZELOR DE DATE
+Item 173 passed validation.
+Validating item 174/206: Telefon mobil Motorola Moto g14, Dual SIM, 128GB, 4GB RAM, Steel Gray
+Item 174 passed validation.
+Validating item 175/206: Telefon mobil Motorola Moto G14, 128GB, 4GB RAM, Dual Sim, Steel Gray [208580]
+Item 175 passed validation.
+Validating item 176/206: Telefon mobil Motorola Moto G14, 128GB, 4GB RAM, Dual Sim, Steel Gray [208580]
+Item 176 passed validation.
+Validating item 177/206: Telefon mobil Motorola Edge 40 5G, 256GB, 8GB RAM, Dual SIM, Leather Nebula Green [181830]
+Item 177 passed validation.
+Validating item 178/206: Terminal mobil rigidizat Samsung Xcover 7 G556B
+Item 178 passed validation.
+Validating item 179/206: Telefon mobil Motorola Moto g13, Dual SIM, 128GB, 4GB RAM, Lavander BlueTelefon mobil Motorola Moto
+Item 179 passed validation.
+Validating item 180/206: Folie de protectie Celly Full Glass pentru Samsung Galaxy A55 5G, sticla securizata
+Item 180 passed validation.
+Validating item 181/206: Carcasa Celly Cromo Samsung Galaxy A55 5G, Culoare Negru
+Item 181 passed validation.
+Validating item 182/206: Telefon mobil Samsung Galaxy A55 5G, 256GB, 8GB, Dual SIM, Awesome Navy
+Item 182 passed validation.
+Validating item 183/206: Telefon XIAOMI Redmi Note 13 Pro+ 5G, 512GB, 12GB RAM, Dual SIM, White
+Item 183 passed validation.
+Validating item 184/206: Terminal mobil rigidizat Samsung Xcover 7 G556B
+Item 184 passed validation.
+Validating item 185/206: TERMINAL MOBIL RIGIDIZAT PENTRU INTEROGAREA BAZELOR DE DATE
+Item 185 passed validation.
+Validating item 186/206: Telefon SAMSUNG Galaxy A25 5G, 128GB, 6GB RAM, Dual SIM, Blue Black
+Item 186 passed validation.
+Validating item 187/206: Telefon XIAOMI Redmi 13, 128GB, 6GB RAM, Dual Sim, Black
+Item 187 passed validation.
+Validating item 188/206: Telefon XIAOMI Redmi 13, 128GB, 6GB RAM, Dual Sim, Black
+Item 188 passed validation.
+Validating item 189/206: Telefon mobil Samsung Galaxy A55, Dual SIM, 8GB, 128GB, 5G, Awesome Navy
+Item 189 passed validation.
+Validating item 190/206: Telefon mobil Xiaomi 14, 12GB RAM, 512GB, 5G, Black
+Item 190 passed validation.
+Validating item 191/206: Telefon mobil Samsung Galaxy S24 Ultra, Dual SIM, 12GB RAM, 512GB, 5G, Titanium Gray
+Item 191 passed validation.
+Validating item 192/206: Telefon SAMSUNG Galaxy A55 5G, 128GB, 8GB RAM, Dual SIM, Awesome Navy
+Item 192 passed validation.
+Validating item 193/206: Telefon mobil Nokia 235 (2024), 2.8", Dual SIM, 4G, Black Cod Podus: [1GF026GPA2L07]
+Item 193 passed validation.
+Validating item 194/206: Telefon telefoane mobil mobile cu butoane taste 2 doua cartele simuri NOKIA 105
+Item 194 passed validation.
+Validating item 195/206: Telefon SAMSUNG Galaxy A55 5G, 128GB, 8GB RAM, Dual SIM, Awesome Navy
+Item 195 passed validation.
+Validating item 196/206: Telefon SAMSUNG Galaxy A55 5G, 128GB, 8GB RAM, Dual SIM, Awesome Ice Blue
+Item 196 passed validation.
+Validating item 197/206: Telefon mobil Motorola Moto g14, Dual SIM, 128GB, 4GB RAM, Sky Blue
+Item 197 passed validation.
+Validating item 198/206: Telefon MOTOROLA Moto G14, 128GB, 4GB RAM, Dual SIM, Steel Gray
+Item 198 passed validation.
+Validating item 199/206: Telefon mobil Samsung Galaxy S23 FE, Dual SIM, 8GB RAM, 128GB, 5G, Graphite
+Item 199 passed validation.
+Validating item 200/206: Telefon mobil Allview V10 Viper, 64GB, 4GB RAM, Dual SIM, Blue Mirror [199809]
+Item 200 passed validation.
+Validating item 201/206: Telefon Mobil Samsung Galaxy A05, Procesor Octa-Core, PLS LCD 6.7", 4GB RAM, 64GB Flash, Camera Dubl
+Item 201 passed validation.
+Validating item 202/206: Telefon MOTOROLA Moto G14, 128GB, 4GB RAM, Dual SIM, Steel Gray
+Item 202 passed validation.
+Validating item 203/206: Telefon MOTOROLA Moto G14, 128GB, 4GB RAM, Dual SIM, Steel Gray
+Item 203 passed validation.
+Validating item 204/206: Telefon SAMSUNG Galaxy A15, 128GB, 4GB RAM, Dual SIM, Blue
+Item 204 passed validation.
+Validating item 205/206: Telefon mobil Motorola Moto g24, Dual SIM, 8GB RAM, 128GB, Matte Charcoal
+Item 205 passed validation.
+Validating item 206/206: Telefon mobil Samsung Galaxy A25 5G, 128GB, 6GB, Dual SIM, Albastru deschis [217227]
+Item 206 passed validation.
+Validation successful

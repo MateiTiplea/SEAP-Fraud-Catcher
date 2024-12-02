@@ -1,16 +1,53 @@
 from abc import ABC, abstractmethod
+from collections import defaultdict
+
 import numpy as np
+from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics import silhouette_score, calinski_harabasz_score, davies_bouldin_score
 import Levenshtein
-# from jellyfish import jaro_winkler_similarity
+from sklearn.metrics.pairwise import cosine_similarity
+from clustering.MOP.ClusteringMeta import ClusteringMeta, monitor_function
 
 
-class BaseClusteringTemplate(ABC):
+
+
+class BaseClusteringTemplate(ABC,metaclass=ClusteringMeta):
     def __init__(self, list_of_items, clustering_strategy):
         self.list_of_items = list_of_items
         self.distance_matrix = self.get_distance_matrix(list_of_items)
         self.max_clusters = self.calculate_max_clusters()
         self.clustering_strategy = clustering_strategy
+
+    def clean_invalid_items(self):
+        """
+        Elimină item-urile care nu respectă anumite reguli de validitate.
+        """
+        print("Executing CLEAN")
+        valid_items = []
+        for item in self.list_of_items:
+            if item.name and item.closing_price > 0 and item.quantity > 0:
+                valid_items.append(item)
+            else:
+                print(f"Invalid item removed: {item.name if item.name else 'Unnamed Item'}")
+        self.list_of_items = valid_items
+
+
+    def validate_items(self):
+        """
+        Validează dacă toate item-urile respectă structura așteptată.
+        """
+        print("Executing VALIDATE")
+        if not self.list_of_items:
+            print("Validation failed: No items found!")
+            return False
+
+        for item in self.list_of_items:
+            if not all([item.name, item.cpv_code_id, item.closing_price]):
+                print(f"Validation failed: Missing fields in item {item.name if item.name else 'Unnamed Item'}")
+                return False
+
+        print("Validation successful")
+        return True
 
     def execute_clustering(self):
         n_clusters = self.find_optimal_clusters()
@@ -76,8 +113,7 @@ class BaseClusteringTemplate(ABC):
             for j in range(i + 1, n):
                 str1_to_cmp, str2_to_cmp = self.processes_strings(items[i].name.lower(), items[j].name.lower())
                 dist = Levenshtein.distance(str1_to_cmp, str2_to_cmp)
-                # dist = jaro_winkler_similarity(strings[i], strings[j])
-                # dist = 1 - self.jaccard_similarity(str1_to_cmp, str2_to_cmp)
+
                 distance_matrix[i, j] = dist
                 distance_matrix[j, i] = dist
         return distance_matrix
@@ -103,6 +139,52 @@ class BaseClusteringTemplate(ABC):
             return None
 
         return max(scores, key=lambda x: x[1])[0]
+
+    def dynamic_filter_by_model(self):
+        """
+        Grupează dinamic elementele pe baza similarității denumirilor lor.
+        """
+        item_names = [item.name.lower() for item in self.list_of_items]
+
+        # Vectorizare text pentru similaritate
+        vectorizer = CountVectorizer().fit_transform(item_names)
+        vectors = vectorizer.toarray()
+
+        # Calculăm similaritatea cosinus
+        similarity_matrix = cosine_similarity(vectors)
+
+        # Grupare bazată pe similaritate
+        threshold = 0.5  # Pragul pentru considerarea unui element ca similar
+        model_groups = defaultdict(list)
+        visited = set()
+
+        for i, item in enumerate(self.list_of_items):
+            if i in visited:
+                continue
+
+            group = [item]
+            visited.add(i)
+
+            for j, other_item in enumerate(self.list_of_items):
+                if j != i and j not in visited:
+                    if similarity_matrix[i, j] >= threshold:
+                        group.append(other_item)
+                        visited.add(j)
+
+            model_name = self.extract_common_words([x.name for x in group])
+            model_groups[model_name].extend(group)
+
+        return model_groups
+
+    @staticmethod
+    def extract_common_words(names):
+        """
+        Extrage cuvintele comune dintr-o listă de denumiri.
+        """
+        word_sets = [set(name.split()) for name in names]
+        common_words = set.intersection(*word_sets) if word_sets else set()
+        return " ".join(common_words) if common_words else "Generic"
+
 
     @abstractmethod
     def perform_clustering(self, n_clusters):

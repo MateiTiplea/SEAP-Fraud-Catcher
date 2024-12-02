@@ -2,6 +2,8 @@ import json
 import os
 import sys
 
+from clustering.MOP.EnhancedClustering import EnhancedClustering
+
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 from clustering.Algorithms.AgglomerativeClusteringStrategy import (
@@ -21,11 +23,14 @@ from services.item_service import ItemService
 
 def write_clusters_to_file(filename, clusters):
     with open(filename, "w", encoding="utf-8") as f:
+        total_items = 0
         for cluster_id, items in clusters.items():
             f.write(f"Cluster {cluster_id}:\n")
             for item in items:
                 f.write(f"{item}\n")
             f.write("\n")
+            total_items += len(items)
+        print(f"Total items written to {filename}: {total_items}")
 
 
 def write_item_names_to_file(filename, item_names):
@@ -96,17 +101,19 @@ def get_fraud_scor_for_item(item, data):
 
     return None
 
+def validate_clusters(clustering_results):
+    for cluster_id, items in clustering_results.items():
+        if len(items) < 2:
+            print(f"Cluster {cluster_id} este prea mic pentru validare!")
+
 
 def main():
-    # open database connection
+    # Deschidere conexiune la baza de date
     env_file_path = os.path.join(os.path.dirname(__file__), "..", ".env")
     db_connection = MongoDBConnection(env_file=env_file_path)
     db_connection.connect()
 
-    # for test:
-    # 12474
-    # 12472
-
+    # Exemplu de item
     item = Item(
         name="Telefon mobil Samsung Galaxy S24, Dual SIM, 8GB RAM, 128GB, 5G, Onyx Black",
         description="Telefon mobil Samsung Galaxy S24, Dual SIM, 8GB RAM, 128GB, 5G, Onyx Black",
@@ -118,49 +125,31 @@ def main():
         acquisition="672bb706b040977dc4dcb9ef",
     )
 
+    # Obține item-uri din aceeași categorie
     items = find_items_with_cvp_code_id(item.cpv_code_id)
-    # item_names = [item.name.lower() for item in items]
 
-    # preprocessed data clustering
-    """
-    if len(items) > 1:
+    # Creează instanța de EnhancedClustering
+    clustering_strategy = AgglomerativeClusteringStrategy()
+    enhanced_clustering = EnhancedClustering(items, clustering_strategy)
 
-        clustering_strategy_1 = AgglomerativeClusteringStrategy()
-        clustering_strategy_2 = KMeansClusteringStrategy()
+    # Curăță și validează item-urile înainte de clustering
+    enhanced_clustering.clean_invalid_items()
+    if not enhanced_clustering.validate_items():
+        print("Validation failed. Exiting.")
+        return
 
-        string_clustering = StringClustering(clustering_strategy_2)
+    # Execută clustering simplu și scrie rezultatele în fișier
+    simple_clusters = enhanced_clustering.get_clusters(hybrid=False)
+    write_clusters_to_file("simple_clusters.txt", simple_clusters)
 
-        single_strategy_clusters = string_clustering.get_clusters(item_names, hybrid=False)
-        #hybrid_clusters = string_clustering.get_clusters(item_names, hybrid=True)
-
-        write_clusters_to_file("clustered_items.txt", single_strategy_clusters)
-    else:
-        write_item_names_to_file("clustered_items.txt", item_names)
-    """
-
-    ######################################## Data Clustering ###################################
-
-    clustering_strategy_2 = AgglomerativeClusteringStrategy()
-    clustering_strategy_3 = OPTICSClusteringStrategy()
-
-    clustering = StringClastering(items, clustering_strategy_2)
-    results = clustering.get_clusters(False)
-    # results_hybrid = clustering.get_clusters(True)
-
-    write_clusters_to_file("simple_clusters.txt", results)
-    # write_clusters_to_file("hybrid_clusters.txt", results_hybrid)
-
-    ##################################### Data Classification ##################################
-
-    # get cluster of item
-
-    cluster_of_item = get_item_cluster(item, results)
+    # Validare și scor de fraudă
+    cluster_of_item = get_item_cluster(item, simple_clusters)
     fraud_score = get_fraud_scor_for_item(item, cluster_of_item)
-
     print(f"Fraud Score for {item.name} is: {round(fraud_score, 2)}%")
 
-    # close database connection
+    # Închidere conexiune la baza de date
     db_connection.disconnect()
+
 
 
 if __name__ == "__main__":
