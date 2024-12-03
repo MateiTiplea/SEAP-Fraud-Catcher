@@ -10,3 +10,7 @@ Se execută clean_invalid_items cu parametrii: (<clustering.MOP.EnhancedClusteri
 Rezultat clean_invalid_items: None
 Se execută validate_items cu parametrii: (<clustering.MOP.EnhancedClustering.EnhancedClustering object at 0x0000026DB15A6B50>,), {}
 Rezultat validate_items: True
+Se execută clean_invalid_items cu parametrii: (<clustering.MOP.EnhancedClustering.EnhancedClustering object at 0x00000212D6093150>,), {}
+Rezultat clean_invalid_items: None
+Se execută validate_items cu parametrii: (<clustering.MOP.EnhancedClustering.EnhancedClustering object at 0x00000212D6093150>,), {}
+Rezultat validate_items: True

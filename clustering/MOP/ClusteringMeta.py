@@ -26,13 +26,13 @@ def monitor_function(func):
         # Formatare parametri
         formatted_args = format_args(args[1:], kwargs)
 
-        log_to_file(f"Se execută {func.__name__} cu parametrii: {formatted_args}")
+        log_to_file(f"Executin function {func.__name__} with parameters: {formatted_args}")
         result = func(*args, **kwargs)
         end_time = time.time()
 
         formatted_result = result if isinstance(result, (str, int, float, list, dict, tuple)) else repr(result)
-        log_to_file(f"Rezultat {func.__name__}: {formatted_result}")
-        log_to_file(f"Timp execuție {func.__name__}: {end_time - start_time:.4f} secunde")
+        log_to_file(f"Result {func.__name__}: {formatted_result}")
+        log_to_file(f"Execution time {func.__name__}: {end_time - start_time:.4f} seconds")
         return result
 
     return wrapper
