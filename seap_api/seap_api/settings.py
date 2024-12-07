@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "api",
     "custom_auth.apps.CustomAuthConfig",
+    "scraping_tasks.apps.ScrapingTasksConfig",
     "django_mongoengine",
     "corsheaders",
 ]

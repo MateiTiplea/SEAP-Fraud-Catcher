@@ -2,23 +2,23 @@ import json
 import os
 from datetime import datetime, timedelta
 
-from requests.exceptions import ConnectionError, HTTPError, RequestException, Timeout
-
 from aspects.error_handlers import handle_exceptions
 from aspects.loggers import log_method_calls
 from aspects.validation import validate_types
-from scrape.request_strategy import GetRequestStrategy, PostRequestStrategy
+from requests.exceptions import ConnectionError, HTTPError, RequestException, Timeout
+
+from .request_strategy import GetRequestStrategy, PostRequestStrategy
 
 ENV_FILE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".env"))
 
 
 def get_body(
-        start_date,
-        end_date,
-        page_index,
-        page_size=20,
-        acquisition_state_id=None,
-        cpv_code_id=None,
+    start_date,
+    end_date,
+    page_index,
+    page_size=20,
+    acquisition_state_id=None,
+    cpv_code_id=None,
 ):
     body = {
         "pageSize": page_size,
@@ -31,7 +31,7 @@ def get_body(
         body["sysDirectAcquisitionStateId"] = acquisition_state_id
     if cpv_code_id:
         body["cpvCodeId"] = cpv_code_id
-    return json.dumps(body)
+    return json.dumps(body, ensure_ascii=False, separators=(",", ":"))
 
 
 def get_acquisitions_ids(acquisitions):
@@ -54,6 +54,8 @@ class AcquisitionFetcher:
         self.headers = {
             "Content-Type": "application/json;charset=UTF-8",
             "Referer": "https://e-licitatie.ro/pub/notices/contract-notices/list/0/0",
+            "Accept": "application/json",
+            "User-Agent": "Mozilla/5.0",  # Add a more browser-like User-Agent
         }
         self.request_strategies = {
             "GET": GetRequestStrategy(),
@@ -64,7 +66,7 @@ class AcquisitionFetcher:
     @handle_exceptions(
         error_types=(HTTPError, Timeout, ConnectionError, RequestException),
         num_retries=3,
-        reraise=True
+        reraise=True,
     )
     @validate_types
     def call_api(self, url: str, method: str, body: dict = None):
@@ -87,9 +89,10 @@ class AcquisitionFetcher:
         """
         strategy = self.request_strategies.get(method)
         if not strategy:
-            message = f"Error: HTTP method {method} is not supported for this url:{url}."
+            message = (
+                f"Error: HTTP method {method} is not supported for this url:{url}."
+            )
             return [None, message]
-
         response = strategy.make_request(url, headers=self.headers, body=body)
         response.raise_for_status()  # Raise an error for HTTP status codes 4xx/5xx
         return [response, "Success"]
@@ -98,11 +101,11 @@ class AcquisitionFetcher:
     @handle_exceptions(error_types=(ValueError, KeyError))
     @validate_types
     def fetch_data_for_one_day(
-            self,
-            finalization_day: datetime,
-            page_size: int = 200,
-            cpv_code_id: int = None,
-            acquisition_state_id: int = None,
+        self,
+        finalization_day: datetime,
+        page_size: int = 200,
+        cpv_code_id: int = None,
+        acquisition_state_id: int = None,
     ):
         page_index = 0
         has_more_data = True
@@ -117,7 +120,7 @@ class AcquisitionFetcher:
                 acquisition_state_id,
                 cpv_code_id,
             )
-            body = dict(body=json.loads(body))
+            body = json.loads(body)
             response, message = self.call_api(
                 self.API_DICT["acquisition"]["url"],
                 self.API_DICT["acquisition"]["method"],
@@ -138,12 +141,12 @@ class AcquisitionFetcher:
     @handle_exceptions(error_types=(ValueError, KeyError))
     @validate_types
     def fetch_data_from_acquisitions(
-            self,
-            finalization_date_start: datetime,
-            finalization_date_end: datetime,
-            page_size: int = 200,
-            acquisition_state_id: int = 7,
-            cpv_code_id: int = None,
+        self,
+        finalization_date_start: datetime,
+        finalization_date_end: datetime,
+        page_size: int = 200,
+        acquisition_state_id: int = 7,
+        cpv_code_id: int = None,
     ):
         all_acquisitions = []
 
@@ -177,11 +180,11 @@ class AcquisitionFetcher:
     @handle_exceptions(error_types=(ValueError, KeyError))
     @validate_types
     def get_all_acquisitions_data(
-            self,
-            finalization_date_start: datetime,
-            finalization_date_end: datetime,
-            acquisition_state_id: int = 7,
-            cpv_code_id: int = None,
+        self,
+        finalization_date_start: datetime,
+        finalization_date_end: datetime,
+        acquisition_state_id: int = 7,
+        cpv_code_id: int = None,
     ):
         acquisitions = self.fetch_data_from_acquisitions(
             finalization_date_start=finalization_date_start,
