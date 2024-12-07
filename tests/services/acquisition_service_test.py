@@ -1,15 +1,19 @@
-from services.acquisition_service import AcquisitionService
 from unittest.mock import patch
-import pytest
+
 import mongomock
+import pytest
 from mongoengine import connect, disconnect
+
 from models.acquisition import Acquisition
 from models.item import Item
+from services.acquisition_service import AcquisitionService
 
 
 @pytest.fixture(scope="module")
 def mongo_connection():
-    connect('mongoenginetest', host='localhost', mongo_client_class=mongomock.MongoClient)
+    connect(
+        "mongoenginetest", host="localhost", mongo_client_class=mongomock.MongoClient
+    )
     yield
     disconnect()
 
@@ -26,36 +30,64 @@ def acquisition_data():
         "name": "Test Acquisition",
         "description": "Test Description",
         "identification_code": "ID123",
-        "aquisition_id": "A123",
+        "acquisition_id": "A123",
         "cpv_code_id": 123,
-        "cpv_code_text": "Some CPV Text"
+        "cpv_code_text": "Some CPV Text",
     }
 
 
 @pytest.fixture
 def items_data():
     return [
-        {"name": "Item 1", "description": "Item 1 Description", "unit_type": "kg", "quantity": 10.0,
-         "closing_price": 100.0, "cpv_code_id": 123, "cpv_code_text": "Some CPV Text"},
-        {"name": "Item 2", "description": "Item 2 Description", "unit_type": "kg", "quantity": 5.0,
-         "closing_price": 50.0, "cpv_code_id": 124, "cpv_code_text": "Another CPV Text"}
+        {
+            "name": "Item 1",
+            "description": "Item 1 Description",
+            "unit_type": "kg",
+            "quantity": 10.0,
+            "closing_price": 100.0,
+            "cpv_code_id": 123,
+            "cpv_code_text": "Some CPV Text",
+        },
+        {
+            "name": "Item 2",
+            "description": "Item 2 Description",
+            "unit_type": "kg",
+            "quantity": 5.0,
+            "closing_price": 50.0,
+            "cpv_code_id": 124,
+            "cpv_code_text": "Another CPV Text",
+        },
     ]
 
 
 def test_create_acquisition_with_items(mongo_connection, acquisition_data, items_data):
-    acquisition = AcquisitionService.create_acquisition_with_items(acquisition_data, items_data)
+    acquisition = AcquisitionService.create_acquisition_with_items(
+        acquisition_data, items_data
+    )
 
-    assert acquisition.aquisition_id == "A123"
+    assert acquisition.acquisition_id == "A123"
     assert len(Item.objects(acquisition=acquisition)) == len(items_data)
 
 
-
 def test_get_acquisition_with_items(mongo_connection):
-    acquisition = Acquisition(name="Test Acquisition", identification_code="ID123", aquisition_id="A123",
-                              cpv_code_id=123, cpv_code_text="Some CPV Text")
+    acquisition = Acquisition(
+        name="Test Acquisition",
+        identification_code="ID123",
+        acquisition_id="A123",
+        cpv_code_id=123,
+        cpv_code_text="Some CPV Text",
+    )
     acquisition.save()
-    item = Item(name="Item 1", description="Item 1 Description", unit_type="kg", quantity=10.0, closing_price=100.0,
-                cpv_code_id=123, cpv_code_text="Some CPV Text", acquisition=acquisition)
+    item = Item(
+        name="Item 1",
+        description="Item 1 Description",
+        unit_type="kg",
+        quantity=10.0,
+        closing_price=100.0,
+        cpv_code_id=123,
+        cpv_code_text="Some CPV Text",
+        acquisition=acquisition,
+    )
     item.save()
 
     acquisition_data = AcquisitionService.get_acquisition_with_items("A123")
@@ -65,25 +97,21 @@ def test_get_acquisition_with_items(mongo_connection):
     assert len(acquisition_data["items"]) == 1
 
 
-
-
-
 def test_update_acquisition(mongo_connection):
     acquisition = Acquisition(
         name="Initial Acquisition",
         identification_code="ID123",
-        aquisition_id="A123",
+        acquisition_id="A123",
         cpv_code_id=123,
-        cpv_code_text="Initial CPV Text"
+        cpv_code_text="Initial CPV Text",
     )
     acquisition.save()
 
-    update_data = {
-        "name": "Updated Acquisition",
-        "cpv_code_text": "Updated CPV Text"
-    }
+    update_data = {"name": "Updated Acquisition", "cpv_code_text": "Updated CPV Text"}
 
-    with patch('repositories.acquisition_repository.AcquisitionRepository.update_acquisition') as mock_update:
+    with patch(
+        "repositories.acquisition_repository.AcquisitionRepository.update_acquisition"
+    ) as mock_update:
         acquisition.update(**update_data)
         acquisition.reload()
         mock_update.return_value = acquisition
@@ -98,9 +126,9 @@ def test_delete_acquisition(mongo_connection):
     acquisition = Acquisition(
         name="Test Acquisition",
         identification_code="ID123",
-        aquisition_id="A123",
+        acquisition_id="A123",
         cpv_code_id=123,
-        cpv_code_text="Some CPV Text"
+        cpv_code_text="Some CPV Text",
     )
     acquisition.save()
 
@@ -115,18 +143,18 @@ def test_get_all_acquisitions(mongo_connection):
     acquisition1 = Acquisition(
         name="Test Acquisition 1",
         identification_code="ID123",
-        aquisition_id="A123",
+        acquisition_id="A123",
         cpv_code_id=123,
-        cpv_code_text="Some CPV Text"
+        cpv_code_text="Some CPV Text",
     )
     acquisition1.save()
 
     acquisition2 = Acquisition(
         name="Test Acquisition 2",
         identification_code="ID124",
-        aquisition_id="A124",
+        acquisition_id="A124",
         cpv_code_id=124,
-        cpv_code_text="Another CPV Text"
+        cpv_code_text="Another CPV Text",
     )
     acquisition2.save()
 
@@ -136,31 +164,32 @@ def test_get_all_acquisitions(mongo_connection):
     assert acquisitions[0].name == "Test Acquisition 1"
     assert acquisitions[1].name == "Test Acquisition 2"
 
+
 def test_get_acquisitions_by_cpv_code_id(mongo_connection):
-        acquisition1 = Acquisition(
-            name="Test Acquisition 1",
-            identification_code="ID123",
-            aquisition_id="A123",
-            cpv_code_id=123,
-            cpv_code_text="Some CPV Text"
-        )
-        acquisition1.save()
+    acquisition1 = Acquisition(
+        name="Test Acquisition 1",
+        identification_code="ID123",
+        acquisition_id="A123",
+        cpv_code_id=123,
+        cpv_code_text="Some CPV Text",
+    )
+    acquisition1.save()
 
-        acquisition2 = Acquisition(
-            name="Test Acquisition 2",
-            identification_code="ID124",
-            aquisition_id="A124",
-            cpv_code_id=124,
-            cpv_code_text="Another CPV Text"
-        )
-        acquisition2.save()
+    acquisition2 = Acquisition(
+        name="Test Acquisition 2",
+        identification_code="ID124",
+        acquisition_id="A124",
+        cpv_code_id=124,
+        cpv_code_text="Another CPV Text",
+    )
+    acquisition2.save()
 
-        acquisitions = AcquisitionService.get_acquisitions_by_cpv_code_id(123)
+    acquisitions = AcquisitionService.get_acquisitions_by_cpv_code_id(123)
 
-        assert len(acquisitions) == 1
-        assert acquisitions[0].name == "Test Acquisition 1"
+    assert len(acquisitions) == 1
+    assert acquisitions[0].name == "Test Acquisition 1"
 
-        acquisitions = AcquisitionService.get_acquisitions_by_cpv_code_id(124)
+    acquisitions = AcquisitionService.get_acquisitions_by_cpv_code_id(124)
 
-        assert len(acquisitions) == 1
-        assert acquisitions[0].name == "Test Acquisition 2"
+    assert len(acquisitions) == 1
+    assert acquisitions[0].name == "Test Acquisition 2"

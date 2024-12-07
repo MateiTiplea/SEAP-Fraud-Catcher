@@ -32,18 +32,24 @@ def filter_acquisition_data(acquisition_data):
         "finalizationDate",
     ]
     filtered_data = {
-        ACQUISITION_MAPPING[key]: acquisition_data[key] for key in fields_to_keep
+        ACQUISITION_MAPPING[key]: acquisition_data[key]
+        for key in fields_to_keep
+        if key in acquisition_data
     }
-    filtered_data["publication_date"] = parser.isoparse(
-        filtered_data["publication_date"]
-    )
-    filtered_data["finalization_date"] = parser.isoparse(
-        filtered_data["finalization_date"]
-    )
-    filtered_data["cpv_code_id"] = acquisition_data["cpvCode"]["id"]
-    filtered_data["cpv_code_text"] = "{} - {}".format(
-        acquisition_data["cpvCode"]["localeKey"], acquisition_data["cpvCode"]["text"]
-    )
+    if "publication_date" in filtered_data:
+        filtered_data["publication_date"] = parser.isoparse(
+            filtered_data["publication_date"]
+        )
+    if "finalization_date" in filtered_data:
+        filtered_data["finalization_date"] = parser.isoparse(
+            filtered_data["finalization_date"]
+        )
+    if "cpvCode" in acquisition_data:
+        filtered_data["cpv_code_id"] = acquisition_data["cpvCode"]["id"]
+        filtered_data["cpv_code_text"] = "{} - {}".format(
+            acquisition_data["cpvCode"]["localeKey"],
+            acquisition_data["cpvCode"]["text"],
+        )
     return filtered_data
 
 
@@ -55,9 +61,14 @@ def filter_item_data(item_data):
         "itemQuantity",
         "itemClosingPrice",
     ]
-    filtered_data = {ITEM_MAPPING[key]: item_data[key] for key in fields_to_keep}
-    filtered_data["cpv_code_id"] = item_data["cpvCode"]["id"]
-    filtered_data["cpv_code_text"] = "{} - {}".format(
-        item_data["cpvCode"]["localeKey"], item_data["cpvCode"]["text"]
-    )
+    filtered_data = {
+        ITEM_MAPPING[key]: item_data[key] for key in fields_to_keep if key in item_data
+    }
+    if "cpvCode" in item_data:
+        filtered_data["cpv_code_id"] = item_data["cpvCode"]["id"]
+        filtered_data["cpv_code_text"] = "{} - {}".format(
+            item_data["cpvCode"]["localeKey"], item_data["cpvCode"]["text"]
+        )
+    if "directAcquisitionID" in item_data:
+        filtered_data["acquisition"] = item_data["directAcquisitionID"]
     return filtered_data

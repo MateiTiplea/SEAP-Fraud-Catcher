@@ -1,5 +1,11 @@
-from repositories.item_repository import ItemRepository
-from seap_api.api.utils.filter_utils import filter_item_data
+from aspects.error_handlers import handle_exceptions
+from aspects.loggers import log_method_calls
+from aspects.performance import cache_result
+from aspects.validation import validate_types
+from aspects.profile_resources import profile_resources
+from aspects.trace_calls import trace_calls
+from ..repositories.item_repository import ItemRepository
+from ..utils.filter_utils import filter_item_data
 
 
 class ItemService:
@@ -8,7 +14,10 @@ class ItemService:
     """
 
     @staticmethod
-    def create_item(item_data):
+    @log_method_calls
+    @handle_exceptions(error_types=(ValueError, TypeError))
+    @validate_types
+    def create_item(item_data: dict):
         """
         Creates a new item.
 
@@ -26,7 +35,13 @@ class ItemService:
         return ItemRepository.insert_item(filtered_item_data)
 
     @staticmethod
-    def get_items_by_acquisition(acquisition_id):
+    @log_method_calls
+    @handle_exceptions(error_types=(ValueError, KeyError))
+    @validate_types
+    @profile_resources
+    @trace_calls
+    @cache_result(ttl_seconds=200)
+    def get_items_by_acquisition(acquisition_id: str):
         """
         Retrieves all items associated with a given acquisition.
 
@@ -43,7 +58,10 @@ class ItemService:
         return ItemRepository.get_items_by_acquisition(acquisition_id)
 
     @staticmethod
-    def update_item(item_id, update_data):
+    @log_method_calls
+    @handle_exceptions(error_types=(ValueError, TypeError))
+    @validate_types
+    def update_item(item_id: str, update_data: dict):
         """
         Updates an existing item.
 
@@ -63,7 +81,10 @@ class ItemService:
         return ItemRepository.update_item(item_id, filtered_item_data)
 
     @staticmethod
-    def delete_item(item_id):
+    @log_method_calls
+    @handle_exceptions(error_types=(ValueError, TypeError))
+    @validate_types
+    def delete_item(item_id: str):
         """
         Deletes an item by its ID.
 
@@ -80,6 +101,10 @@ class ItemService:
         return ItemRepository.delete_item(item_id)
 
     @staticmethod
+    @log_method_calls
+    @handle_exceptions(error_types=(ValueError, KeyError))
+    @profile_resources
+    @cache_result(ttl_seconds=200)
     def get_all_items():
         """
         Retrieves all items from the database.
@@ -92,7 +117,12 @@ class ItemService:
         return ItemRepository.get_all_items()
 
     @staticmethod
-    def get_items_by_cpv_code_id(cpv_code_id):
+    @log_method_calls
+    @handle_exceptions(error_types=(ValueError, KeyError))
+    @validate_types
+    @profile_resources
+    @cache_result(ttl_seconds=200)
+    def get_items_by_cpv_code_id(cpv_code_id: int):
         """
         Retrieves all items associated with a given cpv_code_id.
 

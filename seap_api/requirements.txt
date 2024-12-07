@@ -1,0 +1,9 @@
+django
+djangorestframework
+django-mongoengine
+python-dotenv
+mongoengine
+werkzeug
+PyJWT
+django-cors-headers
+psutil

@@ -1,5 +1,13 @@
-from models.acquisition import Acquisition
-from models.item import Item
+from aspects.error_handlers import handle_exceptions
+from aspects.loggers import log_method_calls
+from aspects.profile_resources import profile_resources
+from aspects.trace_calls import trace_calls
+from bson import ObjectId
+from mongoengine import ValidationError
+
+from .acquisition_repository import AcquisitionRepository
+from ..models.acquisition import Acquisition
+from ..models.item import Item
 
 
 class ItemRepository:
@@ -8,6 +16,9 @@ class ItemRepository:
     """
 
     @staticmethod
+    @log_method_calls
+    @profile_resources
+    @handle_exceptions(error_types=(ValueError, TypeError))
     def insert_item(item_data):
         """
         Inserts a new item into the database.
@@ -27,6 +38,10 @@ class ItemRepository:
         return item
 
     @staticmethod
+    @log_method_calls
+    @trace_calls
+    @profile_resources
+    @handle_exceptions(error_types=(ValueError, KeyError))
     def get_items_by_acquisition(acquisition_id):
         """
         Retrieves all items associated with a specific acquisition.
@@ -42,11 +57,15 @@ class ItemRepository:
             A list of Items objects associated with the acquisition.
         """
         acquisition = Acquisition.objects(acquisition_id=acquisition_id).first()
+
         if acquisition:
-            return Item.objects(acquisition=acquisition)
+            acquisition_details = AcquisitionRepository.get_acquisition_with_items(acquisition["acquisition_id"])
+            return acquisition_details["items"]
         return []
 
     @staticmethod
+    @log_method_calls
+    @handle_exceptions(error_types=(ValueError, TypeError))
     def update_item(item_id, update_data):
         """
         Updates an existing item in the database.
@@ -65,11 +84,18 @@ class ItemRepository:
         """
         item = Item.objects(id=item_id).first()
         if item:
-            item.update(**update_data)
-            item.reload()  # Reload to get the updated document
+            for field, value in update_data.items():
+                setattr(item, field, value)
+            try:
+                item.save()
+                item.reload()
+            except Exception as e:
+                raise ValueError(f"Error saving the item: {e}")
         return item
 
     @staticmethod
+    @log_method_calls
+    @handle_exceptions(error_types=(ValueError, TypeError))
     def delete_item(item_id):
         """
         Deletes an item from the database by its ID.
@@ -91,6 +117,9 @@ class ItemRepository:
         return False
 
     @staticmethod
+    @log_method_calls
+    @profile_resources
+    @handle_exceptions(error_types=(ValueError, KeyError))
     def get_all_items():
         """
         Retrieves all items from the database.
@@ -103,6 +132,8 @@ class ItemRepository:
         return Item.objects.all()
 
     @staticmethod
+    @log_method_calls
+    @handle_exceptions(error_types=(ValueError, KeyError))
     def get_items_by_cpv_code_id(cpv_code_id):
         """
         Retrieves all items associated with a specific cpv_code_id.

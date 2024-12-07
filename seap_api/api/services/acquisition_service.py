@@ -1,6 +1,13 @@
-from repositories.acquisition_repository import AcquisitionRepository
-from repositories.item_repository import ItemRepository
-from seap_api.api.utils.filter_utils import filter_acquisition_data, filter_item_data
+from aspects.error_handlers import handle_exceptions
+from aspects.loggers import log_method_calls
+from aspects.performance import cache_result
+from aspects.validation import validate_types
+from aspects.profile_resources import profile_resources
+from aspects.trace_calls import trace_calls
+
+from ..repositories.acquisition_repository import AcquisitionRepository
+from ..repositories.item_repository import ItemRepository
+from ..utils.filter_utils import filter_acquisition_data, filter_item_data
 
 
 class AcquisitionService:
@@ -9,7 +16,10 @@ class AcquisitionService:
     """
 
     @staticmethod
-    def create_acquisition_with_items(acquisition_data, items_data):
+    @log_method_calls
+    @handle_exceptions(error_types=(ValueError, TypeError))
+    @validate_types
+    def create_acquisition_with_items(acquisition_data: dict, items_data: list):
         """
         Creates a new acquisition and associates multiple items with it.
 
@@ -43,13 +53,19 @@ class AcquisitionService:
         return acquisition
 
     @staticmethod
-    def get_acquisition_with_items(acquisition_id):
+    @log_method_calls
+    @handle_exceptions(error_types=(ValueError, KeyError))
+    @validate_types
+    @profile_resources
+    @trace_calls
+    # @cache_result(ttl_seconds=300)
+    def get_acquisition_with_items(acquisition_id: int):
         """
         Retrieves an acquisition along with its associated items using an aggregation pipeline.
 
         Parameters:
         -----------
-        acquisition_id : str
+        acquisition_id : int
             The ID of the acquisition to retrieve.
 
         Returns:
@@ -60,7 +76,10 @@ class AcquisitionService:
         return AcquisitionRepository.get_acquisition_with_items(acquisition_id)
 
     @staticmethod
-    def update_acquisition(acquisition_id, update_data):
+    @log_method_calls
+    @handle_exceptions(error_types=(ValueError, TypeError))
+    @validate_types
+    def update_acquisition(acquisition_id: str, update_data: dict):
         """
         Updates an acquisition by its ID.
 
@@ -82,7 +101,10 @@ class AcquisitionService:
         )
 
     @staticmethod
-    def delete_acquisition(acquisition_id):
+    @log_method_calls
+    @handle_exceptions(error_types=(ValueError, TypeError))
+    @validate_types
+    def delete_acquisition(acquisition_id: str):
         """
         Deletes an acquisition and cascades the deletion to all associated items.
 
@@ -96,7 +118,6 @@ class AcquisitionService:
         bool
             True if the acquisition and its items were successfully deleted, False otherwise.
         """
-        # Delete acquisition and all related items
         items = ItemRepository.get_items_by_acquisition(acquisition_id)
         for item in items:
             ItemRepository.delete_item(item.id)
@@ -104,6 +125,11 @@ class AcquisitionService:
         return AcquisitionRepository.delete_acquisition(acquisition_id)
 
     @staticmethod
+    @log_method_calls
+    @handle_exceptions(error_types=(ValueError, KeyError))
+    @profile_resources
+    @trace_calls
+    @cache_result(ttl_seconds=3000)
     def get_all_acquisitions():
         """
         Retrieves all acquisitions from the database.
@@ -116,7 +142,12 @@ class AcquisitionService:
         return AcquisitionRepository.get_all_acquisitions()
 
     @staticmethod
-    def get_acquisitions_by_cpv_code_id(cpv_code_id):
+    @log_method_calls
+    @handle_exceptions(error_types=(ValueError, KeyError))
+    @validate_types
+    @trace_calls
+    @cache_result(ttl_seconds=300)
+    def get_acquisitions_by_cpv_code_id(cpv_code_id: int):
         """
         Retrieves all acquisitions with the specified CPV code ID.
 

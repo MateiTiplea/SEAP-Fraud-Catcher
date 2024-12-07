@@ -1,16 +1,20 @@
-import pytest
-from services.item_service import ItemService
-from models.item import Item
-from models.acquisition import Acquisition
 from unittest.mock import patch
+
 import mongomock
+import pytest
 from mongoengine import connect, disconnect
+
+from models.acquisition import Acquisition
+from models.item import Item
+from services.item_service import ItemService
 
 
 @pytest.fixture(scope="module", autouse=True)
 def mongo_connection():
     # Set up an in-memory MongoDB connection using mongomock
-    connect('mongoenginetest', host='localhost', mongo_client_class=mongomock.MongoClient)
+    connect(
+        "mongoenginetest", host="localhost", mongo_client_class=mongomock.MongoClient
+    )
     yield
     disconnect()
 
@@ -21,6 +25,7 @@ def clear_database():
     Acquisition.objects.delete()
     Item.objects.delete()
 
+
 @pytest.fixture
 def item_data():
     return {
@@ -30,7 +35,7 @@ def item_data():
         "quantity": 10.0,
         "closing_price": 100.0,
         "cpv_code_id": 123,
-        "cpv_code_text": "Some CPV Text"
+        "cpv_code_text": "Some CPV Text",
     }
 
 
@@ -39,16 +44,18 @@ def acquisition():
     acquisition = Acquisition(
         name="Test Acquisition",
         identification_code="ID123",
-        aquisition_id="A123",
+        acquisition_id="A123",
         cpv_code_id=123,
-        cpv_code_text="Some CPV Text"
+        cpv_code_text="Some CPV Text",
     )
     acquisition.save()
     return acquisition
 
 
 def test_create_item(item_data):
-    with patch('repositories.item_repository.ItemRepository.insert_item') as mock_insert:
+    with patch(
+        "repositories.item_repository.ItemRepository.insert_item"
+    ) as mock_insert:
         mock_insert.return_value = Item(**item_data)
 
         item = ItemService.create_item(item_data)
@@ -66,14 +73,16 @@ def test_get_items_by_acquisition(acquisition, item_data):
         closing_price=100.0,
         cpv_code_id=123,
         cpv_code_text="Some CPV Text",
-        acquisition=acquisition
+        acquisition=acquisition,
     )
     item.save()
 
-    with patch('repositories.item_repository.ItemRepository.get_items_by_acquisition') as mock_get:
+    with patch(
+        "repositories.item_repository.ItemRepository.get_items_by_acquisition"
+    ) as mock_get:
         mock_get.return_value = [item]
 
-        items = ItemService.get_items_by_acquisition(acquisition.aquisition_id)
+        items = ItemService.get_items_by_acquisition(acquisition.acquisition_id)
 
         assert len(items) == 1
         assert items[0].name == "Test Item"
@@ -89,18 +98,17 @@ def test_update_item(acquisition, item_data):
         closing_price=100.0,
         cpv_code_id=123,
         cpv_code_text="Initial CPV Text",
-        acquisition=acquisition  # Setăm câmpul acquisition pentru a evita eroarea de validare
+        acquisition=acquisition,  # Setăm câmpul acquisition pentru a evita eroarea de validare
     )
     item.save()
 
     # Datele de actualizare
-    update_data = {
-        "name": "Updated Item",
-        "description": "Updated Item Description"
-    }
+    update_data = {"name": "Updated Item", "description": "Updated Item Description"}
 
     # Patch pentru a simula metoda update din repository
-    with patch('repositories.item_repository.ItemRepository.update_item') as mock_update:
+    with patch(
+        "repositories.item_repository.ItemRepository.update_item"
+    ) as mock_update:
         item.update(**update_data)
         item.reload()
         mock_update.return_value = item
@@ -113,7 +121,6 @@ def test_update_item(acquisition, item_data):
         assert updated_item.description == "Updated Item Description"
 
 
-
 def test_delete_item(acquisition, item_data):
     # Cream un item și îl salvăm în baza de date
     item = Item(
@@ -124,7 +131,7 @@ def test_delete_item(acquisition, item_data):
         closing_price=100.0,
         cpv_code_id=123,
         cpv_code_text="Some CPV Text",
-        acquisition=acquisition
+        acquisition=acquisition,
     )
     item.save()
 
@@ -144,7 +151,7 @@ def test_get_all_items(acquisition, item_data):
         closing_price=100.0,
         cpv_code_id=123,
         cpv_code_text="Some CPV Text",
-        acquisition=acquisition
+        acquisition=acquisition,
     )
     item1.save()
 
@@ -156,7 +163,7 @@ def test_get_all_items(acquisition, item_data):
         closing_price=100.0,
         cpv_code_id=123,
         cpv_code_text="Some CPV Text",
-        acquisition=acquisition
+        acquisition=acquisition,
     )
     item2.save()
 
@@ -165,6 +172,7 @@ def test_get_all_items(acquisition, item_data):
     assert len(items) == 2
     assert items[0].name == "Test Item 1"
     assert items[1].name == "Test Item 2"
+
 
 def test_get_items_by_cpv_code_id(acquisition, item_data):
     item1 = Item(
@@ -175,7 +183,7 @@ def test_get_items_by_cpv_code_id(acquisition, item_data):
         closing_price=100.0,
         cpv_code_id=123,
         cpv_code_text="Some CPV Text",
-        acquisition=acquisition
+        acquisition=acquisition,
     )
     item1.save()
 
@@ -187,7 +195,7 @@ def test_get_items_by_cpv_code_id(acquisition, item_data):
         closing_price=100.0,
         cpv_code_id=123,
         cpv_code_text="Some CPV Text",
-        acquisition=acquisition
+        acquisition=acquisition,
     )
     item2.save()
 
