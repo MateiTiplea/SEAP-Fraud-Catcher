@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import patch
-from scrape.request_strategy import GetRequestStrategy, PostRequestStrategy
+from api.scrape.request_strategy import GetRequestStrategy, PostRequestStrategy
 
 
 @pytest.fixture
@@ -40,7 +40,12 @@ def test_post_request_strategy(url, headers, body):
         strategy = PostRequestStrategy()
         response = strategy.make_request(url, headers, body)
 
-        mock_post.assert_called_once_with(url, headers=headers, data=body)
+        mock_post.assert_called_once_with(
+            url,
+            headers=headers,
+            json=body,
+            verify=True
+        )
 
         assert response.status_code == 201
         assert response.json() == {"message": "created"}

@@ -1,19 +1,16 @@
 import logging
 import time
-from functools import wraps
-from statistics import mean, stdev
 
 import psutil
 
 logger = logging.getLogger(__name__)
 
-# Variabile globale pentru monitorizare
 execution_times = {}
 
 
 def profile_resources(func):
     """
-    Profiler pentru timpul de execuție și utilizarea resurselor.
+    Profiler for execution time and resource usage.
     """
 
     def wrapper(*args, **kwargs):

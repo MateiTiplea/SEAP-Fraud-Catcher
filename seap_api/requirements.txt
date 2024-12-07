@@ -7,3 +7,8 @@ werkzeug
 PyJWT
 django-cors-headers
 psutil
+requests
+pymongo
+pytest
+coverage
+tenacity

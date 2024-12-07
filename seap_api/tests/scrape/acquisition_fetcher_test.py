@@ -2,9 +2,7 @@ import pytest
 from unittest.mock import patch, MagicMock
 from datetime import datetime
 
-from requests import HTTPError
-
-from scrape.acquisition_fetcher import AcquisitionFetcher
+from api.scrape.acquisition_fetcher import AcquisitionFetcher
 
 
 @pytest.fixture
@@ -41,7 +39,13 @@ def test_call_api_post_success(fetcher):
         assert message == "Success"
         assert response.status_code == 201
         assert response.json() == {"message": "Created"}
-        mock_post.assert_called_once_with(url, headers=fetcher.headers, data=body)
+
+        mock_post.assert_called_once_with(
+            url,
+            headers=fetcher.headers,
+            json=body,
+            verify=True
+        )
 
 
 def test_fetch_data_for_one_day(fetcher):
