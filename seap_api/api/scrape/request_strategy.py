@@ -16,4 +16,4 @@ class GetRequestStrategy(RequestStrategy):
 
 class PostRequestStrategy(RequestStrategy):
     def make_request(self, url, headers, body=None):
-        return requests.post(url, headers=headers, data=body)
+        return requests.post(url, headers=headers, json=body, verify=True)

@@ -31,7 +31,7 @@ def get_body(
         body["sysDirectAcquisitionStateId"] = acquisition_state_id
     if cpv_code_id:
         body["cpvCodeId"] = cpv_code_id
-    return json.dumps(body)
+    return json.dumps(body, ensure_ascii=False, separators=(",", ":"))
 
 
 def get_acquisitions_ids(acquisitions):
@@ -54,6 +54,8 @@ class AcquisitionFetcher:
         self.headers = {
             "Content-Type": "application/json;charset=UTF-8",
             "Referer": "https://e-licitatie.ro/pub/notices/contract-notices/list/0/0",
+            "Accept": "application/json",
+            "User-Agent": "Mozilla/5.0",  # Add a more browser-like User-Agent
         }
         self.request_strategies = {
             "GET": GetRequestStrategy(),
@@ -91,7 +93,6 @@ class AcquisitionFetcher:
                 f"Error: HTTP method {method} is not supported for this url:{url}."
             )
             return [None, message]
-
         response = strategy.make_request(url, headers=self.headers, body=body)
         response.raise_for_status()  # Raise an error for HTTP status codes 4xx/5xx
         return [response, "Success"]
@@ -119,7 +120,7 @@ class AcquisitionFetcher:
                 acquisition_state_id,
                 cpv_code_id,
             )
-            body = dict(body=json.loads(body))
+            body = json.loads(body)
             response, message = self.call_api(
                 self.API_DICT["acquisition"]["url"],
                 self.API_DICT["acquisition"]["method"],

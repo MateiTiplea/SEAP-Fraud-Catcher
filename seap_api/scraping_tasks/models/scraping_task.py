@@ -2,7 +2,6 @@
 from custom_auth.models.user import User
 from django_mongoengine import Document
 from mongoengine import (
-    PULL,
     DateTimeField,
     DictField,
     FloatField,
@@ -52,8 +51,8 @@ class ScrapingTask(Document):
     completed_at = DateTimeField()
     message = StringField()
     error = StringField()  # For storing error messages if task fails
-    result_stats = (
-        DictField()
+    result_stats = DictField(
+        default=dict
     )  # For storing task results (e.g. num_acquisitions_scraped)
 
     meta = {"collection": "scraping_tasks", "indexes": ["user", "status", "created_at"]}
