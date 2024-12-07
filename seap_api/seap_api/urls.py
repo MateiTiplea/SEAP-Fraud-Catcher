@@ -17,7 +17,12 @@ Including another URLconf
 
 from django.urls import include, path
 
+v1_patterns = [
+    path("", include("api.urls")),
+    path("scraping/", include("scraping_tasks.urls")),
+]
+
 urlpatterns = [
-    path("api/v1/", include("api.urls")),
+    path("api/v1/", include(v1_patterns)),
     path("api/auth/", include("custom_auth.urls")),
 ]
