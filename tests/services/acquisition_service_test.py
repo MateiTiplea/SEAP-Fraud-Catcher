@@ -26,9 +26,8 @@ def clear_database():
 
 @pytest.fixture
 def acquisition_data():
-    return {
+    return{
         "name": "Test Acquisition",
-        "description": "Test Description",
         "identification_code": "ID123",
         "acquisition_id": "A123",
         "cpv_code_id": 123,
@@ -69,7 +68,7 @@ def test_create_acquisition_with_items(mongo_connection, acquisition_data, items
     assert len(Item.objects(acquisition=acquisition)) == len(items_data)
 
 
-def test_get_acquisition_with_items(mongo_connection):
+def test_get_acquisition_with_items(mongo_connection, acquisition_data):
     acquisition = Acquisition(
         name="Test Acquisition",
         identification_code="ID123",
