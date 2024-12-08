@@ -276,3 +276,4 @@ class FraudScoreAcquisitionView(APIView):
             return Response(current_acquisition, status=status.HTTP_200_OK)
         return Response(
             {"error": "Acquisition not found"}, status=status.HTTP_404_NOT_FOUND)
+
