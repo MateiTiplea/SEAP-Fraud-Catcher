@@ -12,3 +12,5 @@ pymongo
 pytest
 coverage
 tenacity
+mongomock
+requests_mock
