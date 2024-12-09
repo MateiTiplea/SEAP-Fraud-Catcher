@@ -101,6 +101,7 @@ def get_fraud_scor_for_item(item, data):
 
     return None
 
+
 def validate_clusters(clustering_results):
     for cluster_id, items in clustering_results.items():
         if len(items) < 2:
@@ -128,6 +129,7 @@ def main():
     # Obține item-uri din aceeași categorie
     items = find_items_with_cvp_code_id(item.cpv_code_id)
 
+    """
     # Creează instanța de EnhancedClustering
     clustering_strategy = AgglomerativeClusteringStrategy()
     enhanced_clustering = EnhancedClustering(items, clustering_strategy)
@@ -137,10 +139,17 @@ def main():
     if not enhanced_clustering.validate_items():
         print("Validation failed. Exiting.")
         return
-
-    # Execută clustering simplu și scrie rezultatele în fișier
     simple_clusters = enhanced_clustering.get_clusters(hybrid=False)
     write_clusters_to_file("simple_clusters.txt", simple_clusters)
+    """
+
+    clustering_strategy = AgglomerativeClusteringStrategy()
+    simple_clustering = StringClastering(items, clustering_strategy)
+    simple_clusters = simple_clustering.get_clusters(True)
+
+    # Execută clustering simplu și scrie rezultatele în fișier
+    write_clusters_to_file("simple_clusters.txt", simple_clusters)
+
 
     # Validare și scor de fraudă
     cluster_of_item = get_item_cluster(item, simple_clusters)
@@ -149,7 +158,6 @@ def main():
 
     # Închidere conexiune la baza de date
     db_connection.disconnect()
-
 
 
 if __name__ == "__main__":

@@ -1,11 +1,25 @@
+import re
+
 from clustering.AbstractBaseClasses.BaseClusteringTemplate import BaseClusteringTemplate
 from clustering.Algorithms.KMeansClusteringStrategy import KMeansClusteringStrategy
+from clustering.Algorithms.AgglomerativeClusteringStrategy import AgglomerativeClusteringStrategy
+from clustering.Algorithms.KMeansPlusPlusClusteringStrategy import KMeansPlusPlusClusteringStrategy
 from clustering.ClusteringMethod.SimpleClustering import SimpleClustering
 
 
 class HybridClustering(BaseClusteringTemplate):
     def __init__(self, list_of_items, clustering_strategy):
         super().__init__(list_of_items, clustering_strategy)
+
+    def is_not_item_to_recluster(self, members):
+        if all(member.name == members[0].name for member in members):
+            return True
+
+        for member in members:
+            # Verificăm dacă un cuvânt din itemul respectiv este alfanumeric
+            if any(bool(re.search(r'[a-zA-Z]', word) and re.search(r'\d', word)) for word in member.name.split()):
+                return False  # daca gasim un cuvant alfanumeric, reclasterizam
+        return True
 
     def perform_clustering(self, n_clusters):
         #first clustering
@@ -22,13 +36,19 @@ class HybridClustering(BaseClusteringTemplate):
         global_index = 0
 
         for cluster_id, members in sub_cluster_dict.items():
+
+            if self.is_not_item_to_recluster(members):
+                final_cluster_dict[global_index] = members
+                global_index += 1
+                continue
+
             if len(members) < 2:
                 final_cluster_dict[global_index] = members
                 global_index += 1
                 continue
 
             # second clustering
-            simple_clustering_subsequent = SimpleClustering(members, KMeansClusteringStrategy())
+            simple_clustering_subsequent = SimpleClustering(members, KMeansPlusPlusClusteringStrategy())
             optimal_sub_clusters = simple_clustering_subsequent.find_optimal_clusters()
 
             if optimal_sub_clusters is None:

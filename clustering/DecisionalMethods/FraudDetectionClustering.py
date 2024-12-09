@@ -12,12 +12,27 @@ class FraudDetectionClustering:
 
     def detect_fraud(self):
 
+        if len(self.items) < 3:
+            return self.handle_small_clusters(self.items)
+
         distance_matrix = self.get_distance_matrix(self.items)
         cluster_labels = self.clustering_algorithm.cluster(distance_matrix, n_clusters=len(self.items))
         fraud_scores = self.calculate_fraud_scores(self.items, cluster_labels)
 
         item_fraud_pairs = [(item, score) for item, score in zip(self.items, fraud_scores)]
         return item_fraud_pairs
+
+    def handle_small_clusters(self, items):
+        """
+        Tratează cazul în care sunt mai puțin de 3 produse:
+        Calculează scorurile de fraudă pe baza diferențelor față de media prețurilor.
+        """
+        mean_price = np.mean([item.closing_price for item in items])
+        fraud_scores = [
+            min(1, abs(item.closing_price - mean_price) / mean_price) * 100 if mean_price != 0 else 0
+            for item in items
+        ]
+        return [(item, score) for item, score in zip(items, fraud_scores)]
 
     def get_distance_matrix(self, items):
 

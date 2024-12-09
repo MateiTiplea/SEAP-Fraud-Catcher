@@ -2,6 +2,7 @@ from sklearn.cluster import OPTICS
 import numpy as np
 from clustering.AbstractBaseClasses.ClusteringStrategy import ClusteringStrategy
 
+
 class OPTICSClusteringStrategy(ClusteringStrategy):
     def cluster(self, distance_matrix, n_clusters):
 
