@@ -1,6 +1,9 @@
+import warnings
+
 import numpy as np
 from sklearn.cluster import KMeans
 from clustering.AbstractBaseClasses.ClusteringStrategy import ClusteringStrategy
+warnings.filterwarnings("ignore", category=UserWarning, message=".*found smaller than n_clusters.*")
 
 
 class KMeansClusteringStrategy(ClusteringStrategy):

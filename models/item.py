@@ -19,3 +19,9 @@ class Item(Document):
     acquisition = ReferenceField(Acquisition, required=True)
 
     meta = {"collection": "items"}
+
+    def __str__(self):
+        """
+        Return a string representation of the Item.
+        """
+        return self.name
