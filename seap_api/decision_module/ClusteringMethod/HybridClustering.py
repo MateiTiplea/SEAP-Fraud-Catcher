@@ -1,8 +1,12 @@
 import re
 
-from seap_api.decision_module.AbstractBaseClasses.BaseClusteringTemplate import BaseClusteringTemplate
-from seap_api.decision_module.Algorithms.KMeansPlusPlusClusteringStrategy import KMeansPlusPlusClusteringStrategy
-from seap_api.decision_module.ClusteringMethod.SimpleClustering import SimpleClustering
+from decision_module.AbstractBaseClasses.BaseClusteringTemplate import (
+    BaseClusteringTemplate,
+)
+from decision_module.Algorithms.KMeansPlusPlusClusteringStrategy import (
+    KMeansPlusPlusClusteringStrategy,
+)
+from decision_module.ClusteringMethod.SimpleClustering import SimpleClustering
 
 
 class HybridClustering(BaseClusteringTemplate):
@@ -15,13 +19,18 @@ class HybridClustering(BaseClusteringTemplate):
 
         for member in members:
             # Verificăm dacă un cuvânt din itemul respectiv este alfanumeric
-            if any(bool(re.search(r'[a-zA-Z]', word) and re.search(r'\d', word)) for word in member.name.split()):
+            if any(
+                bool(re.search(r"[a-zA-Z]", word) and re.search(r"\d", word))
+                for word in member.name.split()
+            ):
                 return False  # daca gasim un cuvant alfanumeric, reclasterizam
         return True
 
     def perform_clustering(self, n_clusters):
-        #first decision_module
-        initial_labels = self.clustering_strategy.cluster(self.distance_matrix, n_clusters)
+        # first decision_module
+        initial_labels = self.clustering_strategy.cluster(
+            self.distance_matrix, n_clusters
+        )
 
         sub_cluster_dict = {}
         final_cluster_dict = {}
@@ -46,7 +55,9 @@ class HybridClustering(BaseClusteringTemplate):
                 continue
 
             # second decision_module
-            simple_clustering_subsequent = SimpleClustering(members, KMeansPlusPlusClusteringStrategy())
+            simple_clustering_subsequent = SimpleClustering(
+                members, KMeansPlusPlusClusteringStrategy()
+            )
             optimal_sub_clusters = simple_clustering_subsequent.find_optimal_clusters()
 
             if optimal_sub_clusters is None:

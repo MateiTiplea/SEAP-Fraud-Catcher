@@ -2,23 +2,23 @@ import json
 import os
 import sys
 import warnings
+
+from api.services.acquisition_service import AcquisitionService
 from sklearn.exceptions import ConvergenceWarning
-from services.acquisition_service import AcquisitionService
 
 warnings.filterwarnings("ignore", category=ConvergenceWarning)
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))
 
-from seap_api.decision_module.Algorithms.AgglomerativeClusteringStrategy import (
+from api.models.item import Item
+from api.services.item_service import ItemService
+from decision_module.Algorithms.AgglomerativeClusteringStrategy import (
     AgglomerativeClusteringStrategy,
 )
-from seap_api.decision_module.DecisionalMethods.FraudDetectionClustering import (
+from decision_module.DecisionalMethods.FraudDetectionClustering import (
     FraudDetectionClustering,
 )
-from seap_api.decision_module.StringClustering import StringClastering
-from db_connection.MongoDBConnection import MongoDBConnection
-from models.item import Item
-from services.item_service import ItemService
+from decision_module.StringClustering import StringClastering
 
 
 def write_clusters_to_file(filename, clusters):
@@ -107,9 +107,9 @@ def validate_clusters(clustering_results):
 def compute_fraud_score_for_item(item: Item):
 
     # open db connection
-    env_file_path = os.path.join(os.path.dirname(__file__), "../..", ".env")
-    db_connection = MongoDBConnection(env_file=env_file_path)
-    db_connection.connect()
+    # env_file_path = os.path.join(os.path.dirname(__file__), "../..", ".env")
+    # db_connection = MongoDBConnection(env_file=env_file_path)
+    # db_connection.connect()
 
     # get items from the same category
     items = find_items_with_cvp_code_id(item.cpv_code_id)
@@ -142,7 +142,7 @@ def compute_fraud_score_for_item(item: Item):
     # print(f"Fraud Score for {item.name} is: {round(fraud_score_for_item, 2)}%")
 
     # close db connection
-    db_connection.disconnect()
+    # db_connection.disconnect()
 
     return fraud_score_for_item
 
@@ -180,6 +180,5 @@ if __name__ == "__main__":
         cpv_code_text="32250000-0 - Telefoane mobile (Rev.2)",
         acquisition="672bb706b040977dc4dcb9ef",
     )
-      
+
     compute_fraud_score_for_item(example_item)
-    

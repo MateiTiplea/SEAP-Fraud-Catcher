@@ -1,5 +1,5 @@
-from seap_api.decision_module.ClusteringMethod.HybridClustering import HybridClustering
-from seap_api.decision_module.ClusteringMethod.SimpleClustering import SimpleClustering
+from decision_module.ClusteringMethod.HybridClustering import HybridClustering
+from decision_module.ClusteringMethod.SimpleClustering import SimpleClustering
 
 
 class StringClastering:
@@ -9,7 +9,11 @@ class StringClastering:
 
     def get_clusters(self, hybrid=False):
         if hybrid:
-            clustering_process = HybridClustering(self.list_of_items, self.clustering_strategy)
+            clustering_process = HybridClustering(
+                self.list_of_items, self.clustering_strategy
+            )
         else:
-            clustering_process = SimpleClustering(self.list_of_items, self.clustering_strategy)
+            clustering_process = SimpleClustering(
+                self.list_of_items, self.clustering_strategy
+            )
         return clustering_process.execute_clustering()

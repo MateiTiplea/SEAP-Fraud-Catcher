@@ -1,7 +1,7 @@
-import numpy as np
 from collections import defaultdict
 
-from seap_api.decision_module.Algorithms.OPTICSClusteringStrategy import OPTICSClusteringStrategy
+import numpy as np
+from decision_module.Algorithms.OPTICSClusteringStrategy import OPTICSClusteringStrategy
 
 
 class FraudDetectionClustering:
@@ -16,7 +16,9 @@ class FraudDetectionClustering:
             return self.handle_small_clusters(self.list_of_items)
 
         distance_matrix = self.get_distance_matrix(self.list_of_items)
-        cluster_labels = self.clustering_algorithm.cluster(distance_matrix, n_clusters=len(self.list_of_items))
+        cluster_labels = self.clustering_algorithm.cluster(
+            distance_matrix, n_clusters=len(self.list_of_items)
+        )
 
         """
         clusters = {}
@@ -41,13 +43,22 @@ class FraudDetectionClustering:
         cazul in care avem mai putin de 3 produse:
         calculeaza csorul de frauda pe baza diferente fata de media preturilor
         """
-        mean_price = np.mean([item.closing_price/item.quantity if item.quantity != 0 else 0 for item in list_of_items])
+        mean_price = np.mean(
+            [
+                item.closing_price / item.quantity if item.quantity != 0 else 0
+                for item in list_of_items
+            ]
+        )
         mean_price = max(1, mean_price)
         if self.item.quantity != 0:
-            item_price = self.item.closing_price/self.item.quantity
+            item_price = self.item.closing_price / self.item.quantity
         else:
             item_price = 0
-        fraud_score = min(1, abs(item_price - mean_price) / mean_price) * 100 if mean_price != 0 else 0
+        fraud_score = (
+            min(1, abs(item_price - mean_price) / mean_price) * 100
+            if mean_price != 0
+            else 0
+        )
 
         return fraud_score
 
@@ -58,7 +69,9 @@ class FraudDetectionClustering:
 
         for i in range(n):
             for j in range(i + 1, n):
-                distance_matrix[i][j] = abs(list_of_items[i].closing_price - list_of_items[j].closing_price)
+                distance_matrix[i][j] = abs(
+                    list_of_items[i].closing_price - list_of_items[j].closing_price
+                )
                 distance_matrix[j][i] = distance_matrix[i][j]
 
         return distance_matrix
@@ -74,7 +87,10 @@ class FraudDetectionClustering:
         largest_cluster_label = max(clusters, key=lambda label: len(clusters[label]))
         largest_cluster_items = clusters[largest_cluster_label]
 
-        average_price = sum(item.closing_price/item.quantity if item.quantity != 0 else 0 for item in largest_cluster_items) / len(largest_cluster_items)
+        average_price = sum(
+            item.closing_price / item.quantity if item.quantity != 0 else 0
+            for item in largest_cluster_items
+        ) / len(largest_cluster_items)
 
         """
         # compute fraud score for each item
@@ -89,7 +105,7 @@ class FraudDetectionClustering:
         """
         fraud_score = 0
         if self.item.quantity != 0:
-            item_price = self.item.closing_price/self.item.quantity
+            item_price = self.item.closing_price / self.item.quantity
         else:
             item_price = 0
         if average_price != 0:

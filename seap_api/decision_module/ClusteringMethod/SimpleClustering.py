@@ -1,5 +1,7 @@
-from seap_api.decision_module.AbstractBaseClasses.BaseClusteringTemplate import BaseClusteringTemplate
-from seap_api.decision_module.AbstractBaseClasses.ClusteringStrategy import ClusteringStrategy
+from decision_module.AbstractBaseClasses.BaseClusteringTemplate import (
+    BaseClusteringTemplate,
+)
+from decision_module.AbstractBaseClasses.ClusteringStrategy import ClusteringStrategy
 
 
 class SimpleClustering(BaseClusteringTemplate):

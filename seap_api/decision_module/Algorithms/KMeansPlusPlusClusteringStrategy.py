@@ -1,6 +1,6 @@
 import numpy as np
+from decision_module.AbstractBaseClasses.ClusteringStrategy import ClusteringStrategy
 from sklearn.cluster import KMeans
-from seap_api.decision_module.AbstractBaseClasses.ClusteringStrategy import ClusteringStrategy
 
 
 class KMeansPlusPlusClusteringStrategy(ClusteringStrategy):
@@ -14,6 +14,7 @@ class KMeansPlusPlusClusteringStrategy(ClusteringStrategy):
 
         # Reduce dimensionality for better decision_module performance
         from sklearn.decomposition import PCA
+
         pca = PCA(n_components=2)
         reduced_data = pca.fit_transform(similarity_matrix)
 
