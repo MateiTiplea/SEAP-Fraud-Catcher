@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-from clustering.Algorithms.KMeansClusteringStrategy import KMeansClusteringStrategy
+from seap_api.decision_module.Algorithms.KMeansClusteringStrategy import KMeansClusteringStrategy
 
 @pytest.fixture
 def sample_distance_matrix():

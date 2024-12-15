@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-from clustering.Algorithms.AgglomerativeClusteringStrategy import AgglomerativeClusteringStrategy
+from seap_api.decision_module.Algorithms.AgglomerativeClusteringStrategy import AgglomerativeClusteringStrategy
 
 @pytest.fixture
 def sample_distance_matrix():

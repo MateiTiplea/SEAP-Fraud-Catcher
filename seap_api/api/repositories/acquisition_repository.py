@@ -1,10 +1,10 @@
-from aspects.error_handlers import handle_exceptions
-from aspects.loggers import log_method_calls
+from seap_api.aspects.error_handlers import handle_exceptions
+from seap_api.aspects.loggers import log_method_calls
 from ..models.acquisition import Acquisition
-from aspects.profile_resources import profile_resources
-from aspects.trace_calls import trace_calls
+from seap_api.aspects.profile_resources import profile_resources
+from seap_api.aspects.trace_calls import trace_calls
 
-from aspects.performance import cache_result
+from seap_api.aspects.performance import cache_result
 
 
 class AcquisitionRepository:

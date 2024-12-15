@@ -1,9 +1,9 @@
 import pytest
 from unittest.mock import MagicMock, patch
-from clustering.ClusteringMethod.HybridClustering import HybridClustering
-from clustering.ClusteringMethod.SimpleClustering import SimpleClustering
+from seap_api.decision_module.ClusteringMethod.HybridClustering import HybridClustering
+from seap_api.decision_module.ClusteringMethod.SimpleClustering import SimpleClustering
 
-from clustering.AbstractBaseClasses.ClusteringStrategy import ClusteringStrategy
+from seap_api.decision_module.AbstractBaseClasses.ClusteringStrategy import ClusteringStrategy
 
 
 @pytest.fixture
@@ -25,7 +25,7 @@ def test_perform_clustering(sample_strings, mock_strategy):
 
     with patch.object(HybridClustering, 'find_optimal_clusters', return_value=2):
         with patch.object(SimpleClustering, 'find_optimal_clusters', return_value=2):
-            with patch('clustering.ClusteringMethod.SimpleClustering') as simple_clustering_mock:
+            with patch('decision_module.ClusteringMethod.SimpleClustering') as simple_clustering_mock:
                 simple_clustering_mock.return_value.execute_clustering.return_value = {
                     0: ["apple", "apply"],
                     1: ["ape"],

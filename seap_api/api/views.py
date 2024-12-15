@@ -1,6 +1,6 @@
-from aspects.error_handlers import handle_exceptions
-from aspects.loggers import log_method_calls
-from custom_auth.decorators.auth_decorators import require_auth
+from seap_api.aspects.error_handlers import handle_exceptions
+from seap_api.aspects.loggers import log_method_calls
+from seap_api.custom_auth.decorators.auth_decorators import require_auth
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -9,6 +9,7 @@ from .scrape.acquisition_fetcher import AcquisitionFetcher
 from .serializers import AcquisitionSerializer, ItemSerializer
 from .services.acquisition_service import AcquisitionService
 from .services.item_service import ItemService
+from seap_api.decision_module.fraud_scoring import get_fraud_score_for_acquisition
 
 
 class AcquisitionListView(APIView):
@@ -268,11 +269,11 @@ class FraudScoreAcquisitionView(APIView):
                 )
                 current_acquisition = AcquisitionService.get_acquisition_with_items(acquisition_id)
         if current_acquisition:
-            # fraud_score = method that calculates the fraud score of
-            #               an acquisition by acquisition id
-            # return Response(
-            #     {"fraud_score": fraud_score}, status=status.HTTP_200_OK
-            # )
-            return Response(current_acquisition, status=status.HTTP_200_OK)
+
+            fraud_score = get_fraud_score_for_acquisition(acquisition_id)
+            return Response(
+                {"fraud_score": fraud_score}, status=status.HTTP_200_OK)
+
+            # return Response(current_acquisition, status=status.HTTP_200_OK)
         return Response(
             {"error": "Acquisition not found"}, status=status.HTTP_404_NOT_FOUND)

@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import MagicMock
-from clustering.ClusteringMethod.SimpleClustering import SimpleClustering
-from clustering.AbstractBaseClasses.ClusteringStrategy import ClusteringStrategy
+from seap_api.decision_module.ClusteringMethod.SimpleClustering import SimpleClustering
+from seap_api.decision_module.AbstractBaseClasses.ClusteringStrategy import ClusteringStrategy
 
 
 @pytest.fixture

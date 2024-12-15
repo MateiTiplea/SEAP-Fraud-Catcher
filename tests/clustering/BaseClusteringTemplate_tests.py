@@ -1,12 +1,12 @@
 import pytest
 from unittest.mock import MagicMock
 import numpy as np
-from clustering.AbstractBaseClasses.BaseClusteringTemplate import BaseClusteringTemplate
-from clustering.AbstractBaseClasses.ClusteringStrategy import ClusteringStrategy
+from seap_api.decision_module.AbstractBaseClasses.BaseClusteringTemplate import BaseClusteringTemplate
+from seap_api.decision_module.AbstractBaseClasses.ClusteringStrategy import ClusteringStrategy
 
 class MockClustering(BaseClusteringTemplate):
     def perform_clustering(self, n_clusters):
-        # Returnează un dicționar de clustere pentru a simula o funcție de clustering
+        # Returnează un dicționar de clustere pentru a simula o funcție de decision_module
         return {i: [f"element_{i}_{j}" for j in range(n_clusters)] for i in range(n_clusters)}
 
 @pytest.fixture
