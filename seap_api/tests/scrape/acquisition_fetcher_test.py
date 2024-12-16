@@ -1,7 +1,7 @@
-import pytest
-from unittest.mock import patch, MagicMock
 from datetime import datetime
+from unittest.mock import MagicMock, patch
 
+import pytest
 from api.scrape.acquisition_fetcher import AcquisitionFetcher
 
 
@@ -14,7 +14,7 @@ def fetcher():
 def test_call_api_get_success(fetcher):
     """Test a successful GET request in call_api."""
     url = "http://example.com/api/resource"
-    with patch("scrape.request_strategy.requests.get") as mock_get:
+    with patch("api.scrape.request_strategy.requests.get") as mock_get:
         mock_get.return_value.status_code = 200
         mock_get.return_value.json.return_value = {"message": "Success"}
 
@@ -30,7 +30,7 @@ def test_call_api_post_success(fetcher):
     """Test a successful POST request in call_api."""
     url = "http://example.com/api/resource"
     body = {"key": "value"}
-    with patch("scrape.request_strategy.requests.post") as mock_post:
+    with patch("api.scrape.request_strategy.requests.post") as mock_post:
         mock_post.return_value.status_code = 201
         mock_post.return_value.json.return_value = {"message": "Created"}
 
@@ -41,23 +41,22 @@ def test_call_api_post_success(fetcher):
         assert response.json() == {"message": "Created"}
 
         mock_post.assert_called_once_with(
-            url,
-            headers=fetcher.headers,
-            json=body,
-            verify=True
+            url, headers=fetcher.headers, json=body, verify=True
         )
 
 
 def test_fetch_data_for_one_day(fetcher):
     """Test fetching data for a single day with mock data."""
     finalization_day = datetime(2024, 1, 1)
-    mock_response_data = {"items": [{"id": 1, "name": "Item1"}, {"id": 2, "name": "Item2"}]}
+    mock_response_data = {
+        "items": [{"id": 1, "name": "Item1"}, {"id": 2, "name": "Item2"}]
+    }
     empty_response_data = {"items": []}
 
     with patch.object(fetcher, "call_api") as mock_call_api:
         mock_call_api.side_effect = [
             (MagicMock(status_code=200, json=lambda: mock_response_data), "Success"),
-            (MagicMock(status_code=200, json=lambda: empty_response_data), "Success")
+            (MagicMock(status_code=200, json=lambda: empty_response_data), "Success"),
         ]
 
         result = fetcher.fetch_data_for_one_day(finalization_day=finalization_day)
@@ -74,7 +73,9 @@ def test_fetch_data_from_acquisitions(fetcher):
     end_date = datetime(2024, 1, 3)
     mock_daily_data = [{"id": 1, "name": "Item1"}, {"id": 2, "name": "Item2"}]
 
-    with patch.object(fetcher, "fetch_data_for_one_day", return_value=mock_daily_data) as mock_fetch_one_day:
+    with patch.object(
+        fetcher, "fetch_data_for_one_day", return_value=mock_daily_data
+    ) as mock_fetch_one_day:
         result = fetcher.fetch_data_from_acquisitions(start_date, end_date)
 
         assert len(result) == 6
@@ -88,14 +89,20 @@ def test_fetch_data_from_view_success(fetcher):
     acquisition_id = 12345
     mock_response_data = {"details": "Acquisition details"}
 
-    with patch.object(fetcher, "call_api", return_value=(
-            MagicMock(status_code=200, json=lambda: mock_response_data), "Success")) as mock_call_api:
+    with patch.object(
+        fetcher,
+        "call_api",
+        return_value=(
+            MagicMock(status_code=200, json=lambda: mock_response_data),
+            "Success",
+        ),
+    ) as mock_call_api:
         result = fetcher.fetch_data_from_view(acquisition_id)
 
         assert result == mock_response_data
         mock_call_api.assert_called_once_with(
             fetcher.API_DICT["view"]["url"].format(acquisition_id=acquisition_id),
-            fetcher.API_DICT["view"]["method"]
+            fetcher.API_DICT["view"]["method"],
         )
 
 
@@ -104,7 +111,9 @@ def test_fetch_data_from_view_failure(fetcher, capsys):
     acquisition_id = 12345
     error_message = "Error: Connection error"
 
-    with patch.object(fetcher, "call_api", return_value=(None, error_message)) as mock_call_api:
+    with patch.object(
+        fetcher, "call_api", return_value=(None, error_message)
+    ) as mock_call_api:
         result = fetcher.fetch_data_from_view(acquisition_id)
 
         assert result is None
@@ -114,7 +123,7 @@ def test_fetch_data_from_view_failure(fetcher, capsys):
 
         mock_call_api.assert_called_once_with(
             fetcher.API_DICT["view"]["url"].format(acquisition_id=acquisition_id),
-            fetcher.API_DICT["view"]["method"]
+            fetcher.API_DICT["view"]["method"],
         )
 
 
@@ -125,8 +134,11 @@ def test_get_all_acquisitions_data(fetcher):
     mock_acquisition_data = [{"directAcquisitionId": 1}, {"directAcquisitionId": 2}]
     mock_view_data = {"details": "View data for acquisition"}
 
-    with patch.object(fetcher, "fetch_data_from_acquisitions", return_value=mock_acquisition_data) as mock_fetch_acq, \
-            patch.object(fetcher, "fetch_data_from_view", return_value=mock_view_data) as mock_fetch_view:
+    with patch.object(
+        fetcher, "fetch_data_from_acquisitions", return_value=mock_acquisition_data
+    ) as mock_fetch_acq, patch.object(
+        fetcher, "fetch_data_from_view", return_value=mock_view_data
+    ) as mock_fetch_view:
         result = fetcher.get_all_acquisitions_data(start_date, end_date)
 
         assert len(result) == 2
@@ -136,6 +148,6 @@ def test_get_all_acquisitions_data(fetcher):
             finalization_date_start=start_date,
             finalization_date_end=end_date,
             acquisition_state_id=7,
-            cpv_code_id=None
+            cpv_code_id=None,
         )
         mock_fetch_view.assert_called()

@@ -1,5 +1,6 @@
-import pytest
 from unittest.mock import patch
+
+import pytest
 from api.scrape.request_strategy import GetRequestStrategy, PostRequestStrategy
 
 
@@ -19,7 +20,7 @@ def body():
 
 
 def test_get_request_strategy(url, headers):
-    with patch("scrape.request_strategy.requests.get") as mock_get:
+    with patch("api.scrape.request_strategy.requests.get") as mock_get:
         mock_get.return_value.status_code = 200
         mock_get.return_value.json.return_value = {"message": "success"}
 
@@ -33,19 +34,14 @@ def test_get_request_strategy(url, headers):
 
 
 def test_post_request_strategy(url, headers, body):
-    with patch("scrape.request_strategy.requests.post") as mock_post:
+    with patch("api.scrape.request_strategy.requests.post") as mock_post:
         mock_post.return_value.status_code = 201
         mock_post.return_value.json.return_value = {"message": "created"}
 
         strategy = PostRequestStrategy()
         response = strategy.make_request(url, headers, body)
 
-        mock_post.assert_called_once_with(
-            url,
-            headers=headers,
-            json=body,
-            verify=True
-        )
+        mock_post.assert_called_once_with(url, headers=headers, json=body, verify=True)
 
         assert response.status_code == 201
         assert response.json() == {"message": "created"}
