@@ -1,6 +1,7 @@
 from aspects.error_handlers import handle_exceptions
 from aspects.loggers import log_method_calls
 from custom_auth.decorators.auth_decorators import require_auth
+from decision_module.fraud_scoring import get_fraud_score_for_acquisition
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -258,21 +259,24 @@ class FraudScoreAcquisitionView(APIView):
         TO DO: Implement the fraud_score method.
         """
         print("Calculating fraud score for acquisition with ID:", acquisition_id)
-        current_acquisition = AcquisitionService.get_acquisition_with_items(acquisition_id)
+        current_acquisition = AcquisitionService.get_acquisition_with_items(
+            acquisition_id
+        )
         if not current_acquisition:
             fetcher = AcquisitionFetcher()
             view_data = fetcher.fetch_data_from_view(acquisition_id)
             if view_data:
-                acquisition_with_items = AcquisitionService.create_acquisition_with_items(
-                    view_data, view_data["directAcquisitionItems"]
+                acquisition_with_items = (
+                    AcquisitionService.create_acquisition_with_items(
+                        view_data, view_data["directAcquisitionItems"]
+                    )
                 )
-                current_acquisition = AcquisitionService.get_acquisition_with_items(acquisition_id)
+                current_acquisition = AcquisitionService.get_acquisition_with_items(
+                    acquisition_id
+                )
         if current_acquisition:
-            # fraud_score = method that calculates the fraud score of
-            #               an acquisition by acquisition id
-            # return Response(
-            #     {"fraud_score": fraud_score}, status=status.HTTP_200_OK
-            # )
-            return Response(current_acquisition, status=status.HTTP_200_OK)
+            fraud_score_dict = get_fraud_score_for_acquisition(current_acquisition)
+            return Response({"result": fraud_score_dict}, status=status.HTTP_200_OK)
         return Response(
-            {"error": "Acquisition not found"}, status=status.HTTP_404_NOT_FOUND)
+            {"error": "Acquisition not found"}, status=status.HTTP_404_NOT_FOUND
+        )

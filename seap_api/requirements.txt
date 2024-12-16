@@ -7,3 +7,4 @@ werkzeug
 PyJWT
 django-cors-headers
 psutil
+tenacity
