@@ -7,7 +7,6 @@ from aspects.trace_calls import trace_calls
 from ..repositories.item_repository import ItemRepository
 from ..utils.filter_utils import filter_item_data
 
-
 class ItemService:
     """
     A service class that handles business logic for items.
@@ -121,7 +120,7 @@ class ItemService:
     @handle_exceptions(error_types=(ValueError, KeyError))
     @validate_types
     @profile_resources
-    @cache_result(ttl_seconds=200)
+    # @cache_result(ttl_seconds=200)
     def get_items_by_cpv_code_id(cpv_code_id: int):
         """
         Retrieves all items associated with a given cpv_code_id.

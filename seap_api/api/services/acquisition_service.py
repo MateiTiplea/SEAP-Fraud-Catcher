@@ -1,9 +1,9 @@
 from aspects.error_handlers import handle_exceptions
 from aspects.loggers import log_method_calls
 from aspects.performance import cache_result
-from aspects.validation import validate_types
 from aspects.profile_resources import profile_resources
 from aspects.trace_calls import trace_calls
+from aspects.validation import validate_types
 
 from ..repositories.acquisition_repository import AcquisitionRepository
 from ..repositories.item_repository import ItemRepository
