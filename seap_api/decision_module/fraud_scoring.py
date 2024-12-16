@@ -1,14 +1,10 @@
 import json
 import os
-import sys
 import warnings
 
-from api.services.acquisition_service import AcquisitionService
 from sklearn.exceptions import ConvergenceWarning
 
 warnings.filterwarnings("ignore", category=ConvergenceWarning)
-
-sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))
 
 from api.models.item import Item
 from api.services.item_service import ItemService
@@ -44,7 +40,8 @@ def find_items_with_cvp_code_id(cpv_code_id):
     found_items = []
     items_from_the_same_category = find_items_from_the_same_category(cpv_code_id)
     for cpv_item in items_from_the_same_category:
-        found_items.extend(ItemService.get_items_by_cpv_code_id(cpv_item))
+        extracted_items = ItemService.get_items_by_cpv_code_id(int(cpv_item))
+        found_items.extend(extracted_items)
     return found_items
 
 
@@ -53,9 +50,7 @@ def find_items_from_the_same_category(cpv_code_id):
     # read json file
     mapping_path = os.path.join(
         os.path.dirname(__file__),
-        "../..",
-        "scrape",
-        "filter_cpvs",
+        "utils",
         "final_cpv_mapping.json",
     )
     with open(
@@ -66,7 +61,6 @@ def find_items_from_the_same_category(cpv_code_id):
         data = json.load(file)
 
     found = 0
-
     for category, items in data.items():
         result = []
 
@@ -75,10 +69,7 @@ def find_items_from_the_same_category(cpv_code_id):
             if int(item["seap_cpv_id"]) == int(cpv_code_id):
                 found = 1
         if found == 1:
-            # print(result)
-            # print()
             return result
-
     return []
 
 
@@ -105,15 +96,8 @@ def validate_clusters(clustering_results):
 
 
 def compute_fraud_score_for_item(item: Item):
-
-    # open db connection
-    # env_file_path = os.path.join(os.path.dirname(__file__), "../..", ".env")
-    # db_connection = MongoDBConnection(env_file=env_file_path)
-    # db_connection.connect()
-
     # get items from the same category
-    items = find_items_with_cvp_code_id(item.cpv_code_id)
-
+    items = find_items_with_cvp_code_id(item["cpv_code_id"])
     """
     # Creează instanța de EnhancedClustering
     clustering_strategy = AgglomerativeClusteringStrategy()
@@ -141,30 +125,43 @@ def compute_fraud_score_for_item(item: Item):
 
     # print(f"Fraud Score for {item.name} is: {round(fraud_score_for_item, 2)}%")
 
-    # close db connection
-    # db_connection.disconnect()
-
     return fraud_score_for_item
 
 
-def get_fraud_score_for_acquisition(acquisition_id):
+def dict_to_item(item_dict: dict) -> Item:
+    """Convert dictionary to Item object"""
+    return Item(
+        name=item_dict["name"],
+        description=item_dict["description"],
+        unit_type=item_dict["unit_type"],
+        quantity=item_dict["quantity"],
+        closing_price=item_dict["closing_price"],
+        cpv_code_id=item_dict["cpv_code_id"],
+        cpv_code_text=item_dict["cpv_code_text"],
+        acquisition=item_dict["acquisition"],
+    )
 
-    # extract acquisition with items
-    acquisition = AcquisitionService.get_acquisition_with_items(acquisition_id)
 
+def get_fraud_score_for_acquisition(acquisition: dict):
     total_fraud_score = 0
     number_of_items = 0
 
+    response = dict()
+    response["fraud_score"] = 0
+    response["fraud_score_per_item"] = dict()
     # for each item compute fraud score
     for item in acquisition["items"]:
-        current_fraud_score = compute_fraud_score_for_item(item)
+        working_item = dict_to_item(item)
+        current_fraud_score = compute_fraud_score_for_item(working_item)
+        response["fraud_score_per_item"][working_item.name] = round(current_fraud_score, 2)
         total_fraud_score = total_fraud_score + current_fraud_score
         number_of_items = number_of_items + 1
 
     # total_fraud_score will be in [0, 100]
     total_fraud_score = total_fraud_score / number_of_items
+    response["fraud_score"] = round(total_fraud_score, 2)
 
-    return total_fraud_score
+    return response
 
 
 if __name__ == "__main__":

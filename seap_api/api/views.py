@@ -6,11 +6,10 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from scrape.acquisition_fetcher import AcquisitionFetcher
-from services.acquisition_service import AcquisitionService
-from services.item_service import ItemService
-
+from .scrape.acquisition_fetcher import AcquisitionFetcher
 from .serializers import AcquisitionSerializer, ItemSerializer
+from .services.acquisition_service import AcquisitionService
+from .services.item_service import ItemService
 
 
 class AcquisitionListView(APIView):
@@ -276,11 +275,8 @@ class FraudScoreAcquisitionView(APIView):
                     acquisition_id
                 )
         if current_acquisition:
-
-            fraud_score = get_fraud_score_for_acquisition(acquisition_id)
-            return Response({"fraud_score": fraud_score}, status=status.HTTP_200_OK)
-
-            # return Response(current_acquisition, status=status.HTTP_200_OK)
+            fraud_score_dict = get_fraud_score_for_acquisition(current_acquisition)
+            return Response({"result": fraud_score_dict}, status=status.HTTP_200_OK)
         return Response(
             {"error": "Acquisition not found"}, status=status.HTTP_404_NOT_FOUND
         )
