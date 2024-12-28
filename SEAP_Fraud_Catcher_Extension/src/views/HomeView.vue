@@ -26,15 +26,18 @@
       </div>
     </div>
     <div class="p-4m flex flex-col items-center justify-between bg-white px-5 font-mono">
-      <Button :loading="false">Este frauda?</Button>
+      <Button :loading="isLoading" @click="checkIfFraud">
+        Este Frauda?
+      </Button>
     </div>
   </MainLayout>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, watch, computed } from "vue";
 import MainLayout from "@/layouts/MainLayout.vue";
 import Button from "@/components/Button.vue";
+import { useFraudStore } from "@/stores/fraude.store";
 
 const data = ref({
   numeOfertant: "Ofertant necunoscut",
@@ -90,13 +93,29 @@ onMounted(() => {
 
   // Ascultă mesaje noi
   chrome.runtime.onMessage.addListener((message) => {
-    console.log("Mesaj primit:", message);
     actualizeazaDate(message);
 
     // Salvează datele primite
     chrome.storage.local.set(message, () => {
-      console.log("Datele au fost salvate în chrome.storage.");
+      console.log("Datele au fost salvate cu succes în chrome.storage.");
     });
   });
 });
+
+const fraudStore = useFraudStore();
+
+const { error } = fraudStore;
+
+const isLoading = computed(() => fraudStore.loading);
+
+const checkIfFraud = () => {
+  chrome.storage.local.get("acquisitionId", async (result) => {
+    const acquisitionId = result.acquisitionId;
+    if (acquisitionId) {
+      await fraudStore.checkFraud(acquisitionId);
+    } else {
+      console.error("Acquisition ID nu este disponibil în chrome.storage.");
+    }
+  });
+};
 </script>

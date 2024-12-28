@@ -1,5 +1,15 @@
+let lastUrl = location.href;
+
 function trimiteDate() {
   try {
+    const match = lastUrl.match(/direct-acquisition\/view\/(\d+)/);
+    const acquisitionId = match ? match[1] : null;
+
+    if (!acquisitionId) {
+      console.error("Nu am găsit acquisitionId în URL.");
+      return;
+    }
+    
     const numeOfertant = document
       .querySelector(
         "#container-sizing > div.direct-acq-su-view > div:nth-child(1) > div.widget-body > ng-transclude > div > div > div:nth-child(1) > div > span:nth-child(2) > span",
@@ -40,6 +50,7 @@ function trimiteDate() {
     chrome.storage.local.set(
       {
         //chrome storage
+        acquisitionId: acquisitionId,
         numeOfertant: numeOfertant,
         cifOfertant: cifOfertant,
         numeAutoritate: numeAutoritate,
@@ -49,12 +60,13 @@ function trimiteDate() {
         valoareEstimata: valoareEstimata,
       },
       function () {
-        console.log("Datele au fost salvate în chrome.storage");
+        console.log("Datele au fost salvate cu succes în chrome.storage");
       },
     );
 
     chrome.runtime.sendMessage(
       {
+        acquisitionId: acquisitionId,
         numeOfertant: numeOfertant,
         cifOfertant: cifOfertant,
         numeAutoritate: numeAutoritate,
@@ -73,8 +85,6 @@ function trimiteDate() {
 }
 
 // se verifica schimbarea url-ului in fiecare secunda
-let lastUrl = location.href;
-
 function handleUrlChange() {
   const currentUrl = location.href;
   if (currentUrl !== lastUrl) {
@@ -86,7 +96,6 @@ function handleUrlChange() {
 
 // Observă schimbările în DOM
 const observer = new MutationObserver(() => {
-  console.log("DOM-ul s-a modificat, se verifică datele...");
   trimiteDate();
 });
 
@@ -96,7 +105,7 @@ observer.observe(document.body, {
 });
 
 // Verificare periodică a URL-ului
-setInterval(handleUrlChange, 1000);
+setInterval(handleUrlChange, 2000);
 
 // La încărcare
 window.onload = function () {
