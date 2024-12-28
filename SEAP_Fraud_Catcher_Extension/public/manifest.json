@@ -1,0 +1,27 @@
+{
+  "manifest_version": 3,
+  "name": "SEAP-Fraud-Catcher",
+  "description": "Using the public auction site in Romania create a web application that allows the search for fraud in any form (the purchase of products that cannot be justified or at an overpriced price). ",
+  "version": "1.0",
+  "action": {
+    "default_popup": "index.html",
+    "default_title": "SEAP-Fraud-Catcher",
+    "default_icon": "./icons/extension.png"
+  },
+  "background": {
+    "service_worker": "scripts/background.js"
+  },
+  "content_scripts": [
+    {
+      "js": ["scripts/content.js", "jquery-3.7.1.min.js"],
+      "matches": ["https://www.e-licitatie.ro/pub/direct-acquisition/view/*", "https://e-licitatie.ro/pub/direct-acquisition/view/*"],
+      "run_at": "document_end",
+      "all_frames": true
+    }
+  ],
+  "host_permissions": [
+    "https://www.e-licitatie.ro/pub/direct-acquisition/view/*",
+    "https://e-licitatie.ro/pub/direct-acquisition/view/*"
+  ],
+  "permissions": ["activeTab", "scripting", "storage"]
+}
