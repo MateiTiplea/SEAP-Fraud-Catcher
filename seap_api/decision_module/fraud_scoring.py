@@ -2,6 +2,7 @@ import json
 import os
 import warnings
 
+import Levenshtein
 from sklearn.exceptions import ConvergenceWarning
 
 warnings.filterwarnings("ignore", category=ConvergenceWarning)
@@ -36,51 +37,6 @@ def write_item_names_to_file(filename, item_names):
             f.write(f"{item}\n")
 
 
-def find_items_with_cvp_code_id(cpv_code_id):
-    found_items = []
-    items_from_the_same_category = find_items_from_the_same_category(cpv_code_id)
-    for cpv_item in items_from_the_same_category:
-        extracted_items = ItemService.get_items_by_cpv_code_id(int(cpv_item))
-        found_items.extend(extracted_items)
-    return found_items
-
-
-def find_items_from_the_same_category(cpv_code_id):
-
-    # read json file
-    mapping_path = os.path.join(
-        os.path.dirname(__file__),
-        "utils",
-        "final_cpv_mapping.json",
-    )
-    with open(
-        mapping_path,
-        "r",
-        encoding="utf-8",
-    ) as file:
-        data = json.load(file)
-
-    found = 0
-    for category, items in data.items():
-        result = []
-
-        for item in items:
-            result.append(item["seap_cpv_id"])
-            if int(item["seap_cpv_id"]) == int(cpv_code_id):
-                found = 1
-        if found == 1:
-            return result
-    return []
-
-
-def get_item_cluster(item, clusters_results):
-    for key, values in clusters_results.items():
-        for value in values:
-            if item.name == value.name:
-                return values
-    return None
-
-
 def get_fraud_score_for_item(item, data):
 
     fraud_detection = FraudDetectionClustering(item, data)
@@ -96,36 +52,149 @@ def validate_clusters(clustering_results):
 
 
 def compute_fraud_score_for_item(item: Item):
-    # get items from the same category
-    items = find_items_with_cvp_code_id(item["cpv_code_id"])
-    """
-    # Creează instanța de EnhancedClustering
-    clustering_strategy = AgglomerativeClusteringStrategy()
-    enhanced_clustering = EnhancedClustering(items, clustering_strategy)
 
-    # Curăță și validează item-urile înainte de decision_module
-    enhanced_clustering.clean_invalid_items()
-    if not enhanced_clustering.validate_items():
-        print("Validation failed. Exiting.")
-        return
-    simple_clusters = enhanced_clustering.get_clusters(hybrid=False)
-    write_clusters_to_file("simple_clusters.txt", simple_clusters)
-    """
-
-    clustering_strategy = AgglomerativeClusteringStrategy()
-    simple_clustering = StringClastering(items, clustering_strategy)
-    simple_clusters = simple_clustering.get_clusters(True)
-
-    # execute decision_module and write the result
-    # write_clusters_to_file("simple_clusters.txt", simple_clusters)
+    cluster_of_item = search_for_cluster_of_item(item)
 
     # fraud score
-    cluster_of_item = get_item_cluster(item, simple_clusters)
     fraud_score_for_item = get_fraud_score_for_item(item, cluster_of_item)
 
     # print(f"Fraud Score for {item.name} is: {round(fraud_score_for_item, 2)}%")
 
     return fraud_score_for_item
+
+
+def calculate_cluster_center(items):
+    min_total_distance = float("inf")
+    center_item = None
+
+    for item in items:
+        total_distance = sum(
+            Levenshtein.distance(item["name"].lower(), other["name"].lower()) for other in items if item != other
+        )
+
+        if total_distance < min_total_distance:
+            min_total_distance = total_distance
+            center_item = item
+
+    return center_item
+
+
+def split_data_based_on_category(list_of_items):
+    """
+      split items based on category
+      use final_cpv_mapping to extract category
+    """
+    mapping_path = os.path.join(
+        os.path.dirname(__file__),
+        "utils",
+        "final_cpv_mapping.json",
+    )
+    with open(
+            mapping_path,
+            "r",
+            encoding="utf-8",
+    ) as file:
+        data = json.load(file)
+
+    category_items = {}
+
+    for current_item in list_of_items:
+
+        # search for a category
+        found = False
+        for category, items in data.items():
+            for item in items:
+                if int(item["seap_cpv_id"]) == int(current_item["cpv_code_id"]):
+                    if category in category_items:
+                        category_items[category].append(current_item)
+                    else:
+                        category_items[category] = [current_item]
+                    found = True
+                    break
+            if found:
+                break
+
+    return category_items
+
+
+def create_clusters():
+    """
+    this function create/update clusters for all items from db
+    """
+    items = ItemService.get_all_items()
+
+    # split data based on category
+    category_items = split_data_based_on_category(items)
+
+    # create clusters
+    for category, list_of_items in category_items:
+
+        clustering_strategy = AgglomerativeClusteringStrategy()
+        string_clustering = StringClastering(list_of_items, clustering_strategy)
+        clusters = string_clustering.get_clusters(True)
+
+        # save cluster to db
+        for cluster_id, members in clusters:
+            # for each cluster compute the core point
+            core_point = calculate_cluster_center(members)
+            # save cluster : ClusterService.create_cluster(core_point, members) in db
+
+
+def get_max_distance_form_center(current_cluster, core_point):
+    """
+    compute max distance between an item and the center of the cluster
+    """
+    max_distance = 0
+
+    for item in current_cluster["list_of_items"]:
+        item_name = item["name"].lower()
+        current_distance = Levenshtein.distance(core_point["name"].lower(), item_name)
+        if current_distance > max_distance:
+            max_distance = current_distance
+
+    return max_distance
+
+
+def search_for_cluster_of_item(item):
+    """ search if an item already exist in a cluster, else assign it to one"""
+
+    """
+    cluster = ClusterService.get_all_clusters()
+    min_dist = float("inf")
+    for cluster in clusters:
+        if item.name.lower() == cluster.core_point["name"].lower():
+            return cluster
+            
+        current_dist = Levenshtein.distance(item.name.lower(), cluster.core_point["name"].lower())
+        
+        for member in cluster.list_of_items:
+            if member["name"] == item.name:
+                return cluster 
+        
+        if current_dist < min_dist:
+            min_dist = current_dist
+            current_cluster = cluster
+            current_center = cluster["core_point"]
+            
+            ClusterService.add_item(item)
+            # compute the new core point 
+             
+            core_point = calculate_cluster_center(ClusterService.get_all_items())
+            ClusterService.update_core_point(core_point)
+            
+    max_distance_from_centre = get_max_distance_form_center(current_cluster, current_center)
+    
+    if min_dist > (max_distance_from_centre * 2) - 1
+        # create a new cluster for current item
+        
+        item = item.to_dic()
+        ClusterService.create_cluster(item, [item])
+        
+        return {item: item} 
+    
+    return current_cluster
+    
+    """
 
 
 def dict_to_item(item_dict: dict) -> Item:
