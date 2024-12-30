@@ -38,7 +38,6 @@ def write_item_names_to_file(filename, item_names):
 
 
 def get_fraud_score_for_item(item, data):
-
     fraud_detection = FraudDetectionClustering(item, data)
     fraud_score = fraud_detection.detect_fraud()
 
@@ -52,7 +51,6 @@ def validate_clusters(clustering_results):
 
 
 def compute_fraud_score_for_item(item: Item):
-
     cluster_of_item = search_for_cluster_of_item(item)
 
     # fraud score
@@ -234,7 +232,6 @@ def get_fraud_score_for_acquisition(acquisition: dict):
 
 
 if __name__ == "__main__":
-
     # Exemplu de item
     example_item = Item(
         name="Telefon mobil Samsung Galaxy S24, Dual SIM, 8GB RAM, 128GB, 5G, Onyx Black",
