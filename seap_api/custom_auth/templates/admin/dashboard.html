@@ -1,0 +1,45 @@
+{% extends "admin/base.html" %} {% block title %}Admin Dashboard{% endblock %}
+{% block content %}
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+  <!-- Statistics Cards -->
+  <div class="bg-white p-4 rounded-lg shadow">
+    <h2 class="text-xl font-bold mb-2">Users</h2>
+    <p class="text-3xl">{{ total_users }}</p>
+  </div>
+  <div class="bg-white p-4 rounded-lg shadow">
+    <h2 class="text-xl font-bold mb-2">Acquisitions</h2>
+    <p class="text-3xl">{{ total_acquisitions }}</p>
+  </div>
+  <div class="bg-white p-4 rounded-lg shadow">
+    <h2 class="text-xl font-bold mb-2">Items</h2>
+    <p class="text-3xl">{{ total_items }}</p>
+  </div>
+
+  <!-- Recent Tasks -->
+  <div class="bg-white p-4 rounded-lg shadow col-span-full">
+    <h2 class="text-xl font-bold mb-2">Recent Tasks</h2>
+    <div class="overflow-x-auto">
+      <table class="min-w-full">
+        <thead>
+          <tr>
+            <th class="px-4 py-2">ID</th>
+            <th class="px-4 py-2">Status</th>
+            <th class="px-4 py-2">Created</th>
+            <th class="px-4 py-2">Progress</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for task in recent_tasks %}
+          <tr>
+            <td class="border px-4 py-2">{{ task.task_id }}</td>
+            <td class="border px-4 py-2">{{ task.status }}</td>
+            <td class="border px-4 py-2">{{ task.created_at }}</td>
+            <td class="border px-4 py-2">{{ task.progress }}%</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

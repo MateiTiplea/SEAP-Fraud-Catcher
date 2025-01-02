@@ -11,6 +11,8 @@ class JWTAuthMiddleware:
             "/api/auth/login",
             "/api/auth/register",
             "/api/auth/refresh-token",
+            # Add admin login if you want to use a separate login for admin
+            "/admin/login/",
         ]
 
     def __call__(self, request):
