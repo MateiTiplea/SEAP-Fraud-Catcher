@@ -1,6 +1,7 @@
 <template>
   <MainLayout>
-    <div class="items-left m-4 flex flex-col justify-between bg-white p-2 px-5 font-mono">
+    <!-- Afișează detalii tranzacție sau turometrul în funcție de stare -->
+    <div v-if="!isFraudCheckActive" class="items-left m-4 flex flex-col justify-between bg-white p-2 px-5 font-mono">
       <div id="data-container">
         <div class="achizitie">
           <div class="ofertant mb-4">
@@ -24,27 +25,23 @@
           </div>
         </div>
       </div>
-    </div>
-    <div class="p-4m flex flex-col items-center justify-between bg-white px-5 font-mono">
-      <Button :loading="isLoading" @click="checkIfFraud">
-        Este Frauda?
-      </Button>
+      <div class="p-4m flex flex-col items-center justify-between bg-white px-5 font-mono">
+        <Button :loading="isLoading" @click="startFraudCheck">
+          Este Frauda?
+        </Button>
+      </div>
     </div>
 
-    <!-- Blocul cu informații despre fraudă -->
-    <div v-if="fraudStore.fraudScore !== null" class="detalii-frauda mt-4 p-4 bg-gray-100 rounded">
-      <h2 class="font-semibold text-[#1AC2FF]">Scor total de fraudă: {{ fraudStore.fraudScore }}</h2>
-      <div v-if="Object.keys(fraudStore.fraudScorePerItem).length">
-        <h3 class="font-semibold text-[#1AC2FF]">Scoruri pe item:</h3>
-        <ul>
-          <li v-for="(score, item) in fraudStore.fraudScorePerItem" :key="item">
-            <span class="font-bold">{{ item }}:</span> {{ score }}
-          </li>
-        </ul>
-      </div>
+    <!-- Afișează turometrul -->
+    <div v-else class="items-center flex flex-col justify-center bg-white p-4">
+      <FraudMeter :score="fraudStore.fraudScore ?? 0" />
+      <Button @click="goBack" class="mt-4">
+        Go Back
+      </Button>
     </div>
   </MainLayout>
 </template>
+
 
 
 <script setup lang="ts">
@@ -53,6 +50,7 @@ import MainLayout from "@/layouts/MainLayout.vue";
 import Button from "@/components/Button.vue";
 import { useFraudStore } from "@/stores/fraude.store";
 import { useToast } from "vue-toastification";
+import FraudMeter from "@/components/FraudMetter.vue"; // Import componenta
 
 const data = ref({
   numeOfertant: "Ofertant necunoscut",
@@ -63,6 +61,27 @@ const data = ref({
   descriereAchizitie: "Descriere indisponibilă",
   valoareEstimata: "Valoare estimată necunoscută",
 });
+
+const isFraudCheckActive = ref(false);
+
+const startFraudCheck = async () => {
+  chrome.storage.local.get("acquisitionId", async (result) => {
+    const acquisitionId = result.acquisitionId;
+    if (acquisitionId) {
+      await fraudStore.checkFraud(acquisitionId);
+      isFraudCheckActive.value = true; // Afișează turometrul
+    } else {
+      console.error("Acquisition ID nu este disponibil în chrome.storage.");
+    }
+  });
+};
+
+const goBack = () => {
+  isFraudCheckActive.value = false; 
+};
+
+
+
 
 const actualizeazaDate = (newData: any) => {
   data.value = {
@@ -76,13 +95,11 @@ const actualizeazaDate = (newData: any) => {
   };
 };
 
-// Watch pentru actualizarea datelor
 watch(data, (newData, oldData) => {
   console.log("Datele au fost actualizate:");
   console.log("Date vechi:", oldData);
   console.log("Date noi:", newData);
 
-  // Logică suplimentară dacă este necesar
 }, { deep: true });
 
 onMounted(() => {
@@ -106,11 +123,9 @@ onMounted(() => {
     }
   );
 
-  // Ascultă mesaje noi
   chrome.runtime.onMessage.addListener((message) => {
     actualizeazaDate(message);
 
-    // Salvează datele primite
     chrome.storage.local.set(message, () => {
       console.log("Datele au fost salvate cu succes în chrome.storage.");
     });
