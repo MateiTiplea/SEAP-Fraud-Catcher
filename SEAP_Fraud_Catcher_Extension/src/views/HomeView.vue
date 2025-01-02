@@ -30,14 +30,29 @@
         Este Frauda?
       </Button>
     </div>
+
+    <!-- Blocul cu informații despre fraudă -->
+    <div v-if="fraudStore.fraudScore !== null" class="detalii-frauda mt-4 p-4 bg-gray-100 rounded">
+      <h2 class="font-semibold text-[#1AC2FF]">Scor total de fraudă: {{ fraudStore.fraudScore }}</h2>
+      <div v-if="Object.keys(fraudStore.fraudScorePerItem).length">
+        <h3 class="font-semibold text-[#1AC2FF]">Scoruri pe item:</h3>
+        <ul>
+          <li v-for="(score, item) in fraudStore.fraudScorePerItem" :key="item">
+            <span class="font-bold">{{ item }}:</span> {{ score }}
+          </li>
+        </ul>
+      </div>
+    </div>
   </MainLayout>
 </template>
+
 
 <script setup lang="ts">
 import { ref, onMounted, watch, computed } from "vue";
 import MainLayout from "@/layouts/MainLayout.vue";
 import Button from "@/components/Button.vue";
 import { useFraudStore } from "@/stores/fraude.store";
+import { useToast } from "vue-toastification";
 
 const data = ref({
   numeOfertant: "Ofertant necunoscut",
@@ -103,7 +118,7 @@ onMounted(() => {
 });
 
 const fraudStore = useFraudStore();
-
+const toast = useToast();
 const { error } = fraudStore;
 
 const isLoading = computed(() => fraudStore.loading);
@@ -111,9 +126,11 @@ const isLoading = computed(() => fraudStore.loading);
 const checkIfFraud = () => {
   chrome.storage.local.get("acquisitionId", async (result) => {
     const acquisitionId = result.acquisitionId;
+    console.log("CHECKING")
     if (acquisitionId) {
       await fraudStore.checkFraud(acquisitionId);
     } else {
+      toast.error("Teapa")
       console.error("Acquisition ID nu este disponibil în chrome.storage.");
     }
   });
