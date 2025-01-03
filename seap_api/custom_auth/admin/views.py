@@ -1,6 +1,9 @@
 # custom_auth/admin/views.py
+import subprocess
+import uuid
 from datetime import datetime
 
+from django.conf import settings
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from rest_framework import status
@@ -12,7 +15,7 @@ from api.models.item import Item
 from custom_auth.decorators.auth_decorators import require_auth
 from custom_auth.models.user import User
 from custom_auth.services.auth_service import AuthenticationService
-from scraping_tasks.models.scraping_task import ScrapingTask
+from scraping_tasks.models.scraping_task import ScrapingTask, TaskStatus
 
 
 class AdminDashboardView(APIView):
@@ -148,3 +151,115 @@ class AdminLoginView(APIView):
             "admin/login.html",
             {"error": "Invalid credentials or insufficient permissions"},
         )
+
+
+class AdminTasksView(APIView):
+    @require_auth(roles=["admin"])
+    def get(self, request):
+        """Tasks management view showing all tasks"""
+        try:
+            tasks = ScrapingTask.objects.order_by("-created_at")
+            return render(request, "admin/tasks.html", {"tasks": tasks})
+        except Exception as e:
+            return Response(
+                {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+    @require_auth(roles=["admin"])
+    def post(self, request):
+        """Create a new scraping task"""
+        try:
+            # Get user from database
+            user = User.objects.get(id=request.user_id)
+
+            # Parse dates
+            start_date = datetime.fromisoformat(request.data["start_date"])
+            end_date = datetime.fromisoformat(request.data["end_date"])
+
+            # Create task
+            task = ScrapingTask(
+                task_id=str(uuid.uuid4()),
+                user=user,
+                start_date=start_date,
+                end_date=end_date,
+                cpv_codes=request.data["cpv_codes"],
+                created_at=datetime.now(),
+                updated_at=datetime.now(),
+            )
+            task.save()
+
+            # Start the scraping process
+            process = subprocess.Popen(
+                [
+                    "python",
+                    "manage.py",
+                    "run_scraping",
+                    "--task_id",
+                    task.task_id,
+                    "--start_date",
+                    request.data["start_date"],
+                    "--end_date",
+                    request.data["end_date"],
+                    "--cpv_codes",
+                    ",".join(map(str, request.data["cpv_codes"])),
+                ],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                cwd=settings.BASE_DIR,
+            )
+
+            # Update task with process ID
+            task.pid = process.pid
+            task.status = TaskStatus.RUNNING
+            task.save()
+
+            return Response({"task_id": task.task_id}, status=status.HTTP_201_CREATED)
+        except ValueError as e:
+            return Response(
+                {"error": f"Invalid data format: {str(e)}"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        except Exception as e:
+            return Response(
+                {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
+class AdminTaskDetailView(APIView):
+    @require_auth(roles=["admin"])
+    def get(self, request, task_id):
+        """Detailed view for a specific task"""
+        try:
+            task = ScrapingTask.objects.get(task_id=task_id)
+            print(task.result_stats)
+            # Get related acquisition data
+            acquisitions = []
+            if task.result_stats and "total_acquisitions_inserted" in task.result_stats:
+                # Set time to start of day for start_date and end of day for end_date
+                start_of_day = datetime.combine(
+                    task.start_date.date(), datetime.min.time()
+                )
+                end_of_day = datetime.combine(task.end_date.date(), datetime.max.time())
+
+                acquisitions = Acquisition.objects(
+                    finalization_date__gte=start_of_day,
+                    finalization_date__lte=end_of_day,
+                    cpv_code_id__in=task.cpv_codes,
+                ).order_by("-finalization_date")[
+                    :50
+                ]  # Limit to most recent 50
+
+            context = {
+                "task": task,
+                "acquisitions": acquisitions,
+                "stats": task.result_stats or {},
+            }
+            return render(request, "admin/task_detail.html", context)
+        except ScrapingTask.DoesNotExist:
+            return Response(
+                {"error": "Task not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+        except Exception as e:
+            return Response(
+                {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )

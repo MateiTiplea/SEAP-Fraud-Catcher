@@ -22,7 +22,54 @@
             class="hover:text-gray-300"
             >Users</a
           >
-          <a href="{% url 'logout' %}" class="hover:text-gray-300">Logout</a>
+          <a
+            href="{% url 'custom_admin:admin-tasks' %}"
+            class="hover:text-gray-300"
+            >Scraping Tasks</a
+          >
+          <a href="#" onclick="handleLogout(event)" class="hover:text-gray-300"
+            >Logout</a
+          >
+
+          <script>
+            async function handleLogout(event) {
+              event.preventDefault();
+              try {
+                const response = await fetch("/api/auth/logout/", {
+                  method: "POST",
+                  headers: {
+                    "X-CSRFToken": getCookie("csrftoken"),
+                    "Content-Type": "application/json",
+                  },
+                });
+
+                if (response.ok) {
+                  window.location.href = "/admin/login/";
+                } else {
+                  console.error("Logout failed");
+                }
+              } catch (error) {
+                console.error("Error:", error);
+              }
+            }
+
+            function getCookie(name) {
+              let cookieValue = null;
+              if (document.cookie && document.cookie !== "") {
+                const cookies = document.cookie.split(";");
+                for (let i = 0; i < cookies.length; i++) {
+                  const cookie = cookies[i].trim();
+                  if (cookie.substring(0, name.length + 1) === name + "=") {
+                    cookieValue = decodeURIComponent(
+                      cookie.substring(name.length + 1)
+                    );
+                    break;
+                  }
+                }
+              }
+              return cookieValue;
+            }
+          </script>
         </div>
       </div>
     </nav>
