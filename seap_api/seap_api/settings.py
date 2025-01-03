@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "api",
     "custom_auth.apps.CustomAuthConfig",
     "scraping_tasks.apps.ScrapingTasksConfig",
+    "clustering_tasks.apps.ClusteringTasksConfig",
     "django_mongoengine",
     "corsheaders",
 ]

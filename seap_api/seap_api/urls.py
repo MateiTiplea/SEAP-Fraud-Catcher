@@ -20,6 +20,8 @@ from django.urls import include, path
 v1_patterns = [
     path("", include("api.urls")),
     path("scraping/", include("scraping_tasks.urls")),
+
+    path("clustering/", include("clustering_tasks.urls")),
 ]
 
 urlpatterns = [
