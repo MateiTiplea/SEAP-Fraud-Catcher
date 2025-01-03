@@ -3,7 +3,10 @@ import os
 import warnings
 
 import Levenshtein
+from bson import ObjectId
 from sklearn.exceptions import ConvergenceWarning
+
+from api.services.cluster_service import ClusterService
 
 warnings.filterwarnings("ignore", category=ConvergenceWarning)
 
@@ -51,13 +54,11 @@ def validate_clusters(clustering_results):
 
 
 def compute_fraud_score_for_item(item: Item):
+    if not isinstance(item, Item) or not item.id:
+        item = Item.objects.get(id=item.id)
+
     cluster_of_item = search_for_cluster_of_item(item)
-
-    # fraud score
-    fraud_score_for_item = get_fraud_score_for_item(item, cluster_of_item)
-
-    # print(f"Fraud Score for {item.name} is: {round(fraud_score_for_item, 2)}%")
-
+    fraud_score_for_item = get_fraud_score_for_item(item, cluster_of_item.list_of_items)
     return fraud_score_for_item
 
 
@@ -135,10 +136,10 @@ def create_clusters():
         for cluster_id, members in clusters:
             # for each cluster compute the core point
             core_point = calculate_cluster_center(members)
-            # save cluster : ClusterService.create_cluster(core_point, members) in db
+            ClusterService.create_cluster(core_point, members)
 
 
-def get_max_distance_form_center(current_cluster, core_point):
+def get_max_distance_from_center(current_cluster, core_point):
     """
     compute max distance between an item and the center of the cluster
     """
@@ -154,45 +155,41 @@ def get_max_distance_form_center(current_cluster, core_point):
 
 
 def search_for_cluster_of_item(item):
-    """ search if an item already exist in a cluster, else assign it to one"""
-
-    """
-    cluster = ClusterService.get_all_clusters()
+    """ Search if an item already exists in a cluster, else assign it to one. """
+    clusters = ClusterService.get_all_clusters()
+    best_cluster = None
     min_dist = float("inf")
+
     for cluster in clusters:
-        if item.name.lower() == cluster.core_point["name"].lower():
-            return cluster
-            
-        current_dist = Levenshtein.distance(item.name.lower(), cluster.core_point["name"].lower())
-        
         for member in cluster.list_of_items:
-            if member["name"] == item.name:
-                return cluster 
-        
+            if isinstance(member, ObjectId):
+                member = Item.objects.get(id=member)
+            if member.name == item.name:
+                return cluster
+
+        current_dist = Levenshtein.distance(item.name.lower(), cluster.core_point.name.lower())
+
         if current_dist < min_dist:
             min_dist = current_dist
-            current_cluster = cluster
-            current_center = cluster["core_point"]
-            
-            ClusterService.add_item(item)
-            # compute the new core point 
-             
-            core_point = calculate_cluster_center(ClusterService.get_all_items())
-            ClusterService.update_core_point(core_point)
-            
-    max_distance_from_centre = get_max_distance_form_center(current_cluster, current_center)
-    
-    if min_dist > (max_distance_from_centre * 2) - 1
-        # create a new cluster for current item
-        
-        item = item.to_dic()
-        ClusterService.create_cluster(item, [item])
-        
-        return {item: item} 
-    
-    return current_cluster
-    
-    """
+            best_cluster = cluster
+
+    if best_cluster:
+        max_distance_from_center = get_max_distance_from_center(best_cluster, best_cluster.core_point)
+        if min_dist > (max_distance_from_center * 2) - 1:
+            # The item is too far from any existing cluster centers, create a new cluster
+            new_cluster = ClusterService.create_cluster(item, [item])
+            return new_cluster
+
+        # Otherwise, add the item to the closest cluster
+        ClusterService.add_item(best_cluster.id, item)
+        # Recalculate and update the core point for this cluster
+        new_core_point = calculate_cluster_center(ClusterService.get_all_items_in_cluster(best_cluster.id))
+        ClusterService.update_core_point(best_cluster.id, new_core_point)
+
+        return best_cluster
+
+    # If no clusters exist yet, create the first one
+    return ClusterService.create_cluster(item, [item])
 
 
 def dict_to_item(item_dict: dict) -> Item:
