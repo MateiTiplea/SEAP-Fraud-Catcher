@@ -1,7 +1,7 @@
 # Create your models here.
 from django_mongoengine import Document
 from mongoengine import (
-    DateTimeField, DictField, FloatField, StringField, ReferenceField
+    DateTimeField, DictField, FloatField, StringField, ReferenceField, IntField
 )
 
 from custom_auth.models.user import User
@@ -23,9 +23,11 @@ class ClusteringTask(Document):
         default=TaskStatus.PENDING,
     )
     progress = FloatField(min_value=0, max_value=100, default=0)
+    pid = IntField()
     created_at = DateTimeField(required=True)
     updated_at = DateTimeField(required=True)
     completed_at = DateTimeField()
+    message = StringField()
     error = StringField()
     result_stats = DictField(default=dict)
 

@@ -7,6 +7,7 @@ from aspects.loggers import log_method_calls
 from clustering_tasks.models import ClusteringTask, TaskStatus
 from clustering_tasks.serializers import ClusteringTaskSerializer
 from custom_auth.decorators.auth_decorators import require_auth
+from django.conf import settings
 from custom_auth.models.user import User
 import subprocess
 import uuid
@@ -24,10 +25,12 @@ class ClusteringTaskListView(APIView):
             # Generate a unique task ID
             task_id = str(uuid.uuid4())
 
+            user = User.objects.get(id=request.user_id)
+
             # Create the task
             task = ClusteringTask(
                 task_id=task_id,
-                user=request.user,
+                user=user,
                 status=TaskStatus.PENDING,
                 created_at=datetime.now(),
                 updated_at=datetime.now(),
@@ -35,7 +38,7 @@ class ClusteringTaskListView(APIView):
             task.save()
 
             # Start the clustering task in the background
-            subprocess.Popen(
+            process = subprocess.Popen(
                 [
                     "python",
                     "manage.py",
@@ -45,8 +48,11 @@ class ClusteringTaskListView(APIView):
                 ],
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL,
+                cwd=settings.BASE_DIR,
             )
 
+            # Save the process ID
+            task.pid = process.pid
             # Update task status
             task.status = TaskStatus.RUNNING
             task.save()
@@ -64,7 +70,7 @@ class ClusteringTaskListView(APIView):
     def get(self, request):
         """List all clustering tasks"""
         try:
-            tasks = ClusteringTask.objects.filter(user=request.user).order_by("-created_at")
+            tasks = ClusteringTask.objects().order_by("-created_at")
             serializer = ClusteringTaskSerializer(tasks, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -80,7 +86,7 @@ class ClusteringTaskDetailView(APIView):
     def get(self, request, task_id):
         """Retrieve a specific clustering task"""
         try:
-            task = ClusteringTask.objects.get(task_id=task_id, user=request.user)
+            task = ClusteringTask.objects().get(task_id=task_id)
             serializer = ClusteringTaskSerializer(task)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except ClusteringTask.DoesNotExist:
@@ -95,7 +101,7 @@ class ClusteringTaskDetailView(APIView):
     def delete(self, request, task_id):
         """Delete a specific clustering task"""
         try:
-            task = ClusteringTask.objects.get(task_id=task_id, user=request.user)
+            task = ClusteringTask.objects().get(task_id=task_id, user=request.user)
             task.delete()
             return Response({"message": "Task deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
         except ClusteringTask.DoesNotExist:

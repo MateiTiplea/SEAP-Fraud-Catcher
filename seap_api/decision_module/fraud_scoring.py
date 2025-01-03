@@ -121,13 +121,16 @@ def create_clusters():
     this function create/update clusters for all items from db
     """
     items = ItemService.get_all_items()
-
+    print(f"Total items: {len(items)}")
     # split data based on category
     category_items = split_data_based_on_category(items)
+
+    print(f"Total categories: {len(category_items)}")
 
     # create clusters
     for category, list_of_items in category_items:
 
+        print(f"Category: {category} - Total items: {len(list_of_items)}")
         clustering_strategy = AgglomerativeClusteringStrategy()
         string_clustering = StringClastering(list_of_items, clustering_strategy)
         clusters = string_clustering.get_clusters(True)

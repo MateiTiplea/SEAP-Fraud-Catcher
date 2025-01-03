@@ -60,9 +60,10 @@ class Command(BaseCommand):
 
         try:
             self.logger.info("Initiating clustering process")
-            create_clusters()  # Invoke your clustering logic here
+            # create_clusters()
 
             task.status = TaskStatus.COMPLETED
+            task.progress = 100
             task.completed_at = datetime.now()
             task.message = "Clustering completed successfully."
             task.save()
