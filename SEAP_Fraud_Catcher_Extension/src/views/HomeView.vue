@@ -68,13 +68,28 @@ const startFraudCheck = async () => {
   chrome.storage.local.get("acquisitionId", async (result) => {
     const acquisitionId = result.acquisitionId;
     if (acquisitionId) {
-      await fraudStore.checkFraud(acquisitionId);
-      isFraudCheckActive.value = true; // Afișează turometrul
+      try {
+        await fraudStore.checkFraud(acquisitionId);
+
+        // Verifică dacă există erori
+        if (fraudStore.error) {
+          isFraudCheckActive.value = false; // Nu afișa turometrul
+          toast.error(fraudStore.error); // Afișează mesajul de eroare
+          console.log("Fraud check failed:", fraudStore.error);
+        } else {
+          isFraudCheckActive.value = true; // Afișează turometrul doar dacă nu există erori
+          console.log("Fraud check passed");
+        }
+      } catch (e) {
+        toast.error("A apărut o eroare neașteptată.");
+        console.error(e);
+      }
     } else {
-      console.error("Acquisition ID nu este disponibil în chrome.storage.");
+      toast.error("Acquisition ID nu este disponibil în chrome.storage.");
     }
   });
 };
+
 
 const goBack = () => {
   isFraudCheckActive.value = false; 
@@ -138,16 +153,5 @@ const { error } = fraudStore;
 
 const isLoading = computed(() => fraudStore.loading);
 
-const checkIfFraud = () => {
-  chrome.storage.local.get("acquisitionId", async (result) => {
-    const acquisitionId = result.acquisitionId;
-    console.log("CHECKING")
-    if (acquisitionId) {
-      await fraudStore.checkFraud(acquisitionId);
-    } else {
-      toast.error("Teapa")
-      console.error("Acquisition ID nu este disponibil în chrome.storage.");
-    }
-  });
-};
+
 </script>

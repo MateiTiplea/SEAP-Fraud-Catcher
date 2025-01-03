@@ -20,47 +20,36 @@ export const useFraudStore = defineStore({
     async checkFraud(acquisitionId: number) {
       this.loading = true;
       this.error = null;
-  
-      // Verifică cache-ul din chrome.storage.local
-      chrome.storage.local.get(`fraud_${acquisitionId}`, async (cachedData) => {
-        if (cachedData[`fraud_${acquisitionId}`]) {
-          console.log("Date recuperate din cache:", cachedData[`fraud_${acquisitionId}`]);
-          const data = cachedData[`fraud_${acquisitionId}`];
-          this.fraudScore = data.fraud_score ?? null;
-          this.fraudScorePerItem = data.fraud_score_per_item ?? {};
-          this.loading = false;
-          return;
-        }
-  
-        // Dacă nu există în cache, fă cererea către API
-        const baseUrl = import.meta.env.VITE_API_ENDPOINT;
-        try {
-          const response = await fetch(
-            `${baseUrl}/acquisitions/${acquisitionId}/fraud_score`
-          );
-  
-          if (!response.ok) {
-            toast.error("Eroare la încărcare scor fraudă");
-            throw new Error(`Failed to fetch fraud score: ${response.status}`);
+    
+      const baseUrl = import.meta.env.VITE_API_ENDPOINT;
+      try {
+        const response = await fetch(`${baseUrl}/acquisitions/${acquisitionId}/fraud_score`);
+    
+        if (!response.ok) {
+          if (response.status === 404) {
+            this.error = "Tranzacția nu a fost găsită în baza de date.";
+          } else if (response.status === 500) {
+            this.error = "Eroare internă a serverului. Te rugăm să încerci din nou.";
+          } else {
+            this.error = `Eroare necunoscută: ${response.status}`;
           }
-  
-          const data = await response.json();
-          this.fraudScore = data.result.fraud_score ?? null;
-          this.fraudScorePerItem = data.result.fraud_score_per_item ?? {};
-  
-          // Salvează datele în cache
-          chrome.storage.local.set({ [`fraud_${acquisitionId}`]: data.result }, () => {
-            console.log("Datele au fost salvate în cache.");
-          });
-  
-        } catch (err: unknown) {
-          toast.error("Eroare la încărcare scor fraudă");
-          this.error = err instanceof Error ? err.message : "Unknown error";
-          console.error("Error fetching fraud score:", this.error);
-        } finally {
-          this.loading = false;
+          throw new Error(this.error); // Aruncă eroarea pentru a opri fluxul
         }
-      });
+    
+        const data = await response.json();
+        this.fraudScore = data.result.fraud_score ?? null;
+        this.fraudScorePerItem = data.result.fraud_score_per_item ?? {};
+    
+        chrome.storage.local.set({ [`fraud_${acquisitionId}`]: data.result }, () => {
+          console.log("Datele au fost salvate în cache.");
+        });
+    
+      } catch (err: unknown) {
+        console.error("Error fetching fraud score:", err);
+        this.error = this.error ?? "Eroare necunoscută la încărcarea scorului.";
+      } finally {
+        this.loading = false;
+      }
     },
   },
   
