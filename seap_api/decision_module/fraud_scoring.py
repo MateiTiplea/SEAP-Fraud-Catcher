@@ -10,6 +10,10 @@ from api.services.cluster_service import ClusterService
 
 warnings.filterwarnings("ignore", category=ConvergenceWarning)
 
+import logging
+from datetime import datetime
+from logging import FileHandler, Formatter
+
 from api.models.item import Item
 from api.services.item_service import ItemService
 from decision_module.Algorithms.AgglomerativeClusteringStrategy import (
@@ -19,11 +23,6 @@ from decision_module.DecisionalMethods.FraudDetectionClustering import (
     FraudDetectionClustering,
 )
 from decision_module.StringClustering import StringClastering
-from datetime import datetime
-import logging
-from logging import FileHandler, Formatter
-
-
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -94,7 +93,9 @@ def calculate_cluster_center(items):
 
     for item in items:
         total_distance = sum(
-            Levenshtein.distance(item["name"].lower(), other["name"].lower()) for other in items if item != other
+            Levenshtein.distance(item["name"].lower(), other["name"].lower())
+            for other in items
+            if item != other
         )
 
         if total_distance < min_total_distance:
@@ -106,9 +107,9 @@ def calculate_cluster_center(items):
 
 def split_data_based_on_category(list_of_items):
     """
-      split items based on category
-      use final_cpv_mapping to extract category
-      return items from "Telefoane mobile" category
+    split items based on category
+    use final_cpv_mapping to extract category
+    return items from "Telefoane mobile" category
     """
     mapping_path = os.path.join(
         os.path.dirname(__file__),
@@ -116,9 +117,9 @@ def split_data_based_on_category(list_of_items):
         "final_cpv_mapping.json",
     )
     with open(
-            mapping_path,
-            "r",
-            encoding="utf-8",
+        mapping_path,
+        "r",
+        encoding="utf-8",
     ) as file:
         data = json.load(file)
 
@@ -126,13 +127,13 @@ def split_data_based_on_category(list_of_items):
 
     # create the key for phones
     category_items["Telefoane mobile"] = []
-    
+
     phones_category = data["Telefoane mobile"]
     logger.info(f"phone category items {phones_category}")
 
     # extract all ids for "Telefoane mobile"
     valid_ids = {int(item["seap_cpv_id"]) for item in phones_category}
-    logger.info (f"valid ids for phone category items: {valid_ids}")
+    logger.info(f"valid ids for phone category items: {valid_ids}")
 
     for current_item in list_of_items:
         if int(current_item["cpv_code_id"]) in valid_ids:
@@ -145,7 +146,7 @@ def create_clusters():
     """
     this function create/update clusters for all items from db
     """
-    items = ItemService.get_all_items(limit = 500)
+    items = ItemService.get_all_items()
     logger.info(f"Total items: {len(items)}")
 
     # split data based on category and extract items from "Telefoane mobile" category
@@ -158,7 +159,7 @@ def create_clusters():
         clustering_strategy = AgglomerativeClusteringStrategy()
         string_clustering = StringClastering(list_of_items, clustering_strategy)
         clusters = string_clustering.get_clusters(True)
-        logger.info(f"Created clusters : {clusters}") 
+        logger.info(f"Created clusters : {clusters}")
 
         # save cluster to db
         for cluster_id, members in clusters.items():
@@ -184,7 +185,7 @@ def get_max_distance_from_center(current_cluster, core_point):
 
 
 def search_for_cluster_of_item(item):
-    """ Search if an item already exists in a cluster, else assign it to one. """
+    """Search if an item already exists in a cluster, else assign it to one."""
     clusters = ClusterService.get_all_clusters()
     best_cluster = None
     min_dist = float("inf")
@@ -196,14 +197,18 @@ def search_for_cluster_of_item(item):
             if member.name == item.name:
                 return cluster
 
-        current_dist = Levenshtein.distance(item.name.lower(), cluster.core_point.name.lower())
+        current_dist = Levenshtein.distance(
+            item.name.lower(), cluster.core_point.name.lower()
+        )
 
         if current_dist < min_dist:
             min_dist = current_dist
             best_cluster = cluster
 
     if best_cluster:
-        max_distance_from_center = get_max_distance_from_center(best_cluster, best_cluster.core_point)
+        max_distance_from_center = get_max_distance_from_center(
+            best_cluster, best_cluster.core_point
+        )
         if min_dist > (max_distance_from_center * 2) - 1:
             # The item is too far from any existing cluster centers, create a new cluster
             new_cluster = ClusterService.create_cluster(item, [item])
@@ -212,7 +217,9 @@ def search_for_cluster_of_item(item):
         # Otherwise, add the item to the closest cluster
         ClusterService.add_item(best_cluster.id, item)
         # Recalculate and update the core point for this cluster
-        new_core_point = calculate_cluster_center(ClusterService.get_all_items_in_cluster(best_cluster.id))
+        new_core_point = calculate_cluster_center(
+            ClusterService.get_all_items_in_cluster(best_cluster.id)
+        )
         ClusterService.update_core_point(best_cluster.id, new_core_point)
 
         return best_cluster
@@ -224,7 +231,7 @@ def search_for_cluster_of_item(item):
 def dict_to_item(item_dict: dict) -> Item:
     """Convert dictionary to Item object"""
     return Item(
-        id = item_dict.id,
+        id=item_dict.id,
         name=item_dict["name"],
         description=item_dict["description"],
         unit_type=item_dict["unit_type"],
@@ -247,7 +254,9 @@ def get_fraud_score_for_acquisition(acquisition: dict):
     for item in acquisition["items"]:
         working_item = dict_to_item(item)
         current_fraud_score = compute_fraud_score_for_item(working_item)
-        response["fraud_score_per_item"][working_item.name] = round(current_fraud_score, 2)
+        response["fraud_score_per_item"][working_item.name] = round(
+            current_fraud_score, 2
+        )
         total_fraud_score = total_fraud_score + current_fraud_score
         number_of_items = number_of_items + 1
 
@@ -256,7 +265,3 @@ def get_fraud_score_for_acquisition(acquisition: dict):
     response["fraud_score"] = round(total_fraud_score, 2)
 
     return response
-
-
-
-create_clusters()

@@ -1,7 +1,9 @@
 import logging
 import os
 from datetime import datetime
+
 from django.core.management.base import BaseCommand
+
 from clustering_tasks.models import ClusteringTask, TaskStatus
 from decision_module.fraud_scoring import create_clusters
 
@@ -10,6 +12,7 @@ class Command(BaseCommand):
     """
     Command to run the clustering task in the background
     """
+
     help = "Run clustering task with given parameters"
 
     def __init__(self):
@@ -60,7 +63,7 @@ class Command(BaseCommand):
 
         try:
             self.logger.info("Initiating clustering process")
-            # create_clusters()
+            create_clusters()
 
             task.status = TaskStatus.COMPLETED
             task.progress = 100
