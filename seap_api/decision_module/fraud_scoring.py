@@ -19,6 +19,32 @@ from decision_module.DecisionalMethods.FraudDetectionClustering import (
     FraudDetectionClustering,
 )
 from decision_module.StringClustering import StringClastering
+from datetime import datetime
+import logging
+from logging import FileHandler, Formatter
+
+
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+logs_dir = "logs"
+if not os.path.exists(logs_dir):
+    os.makedirs(logs_dir)
+
+log_file = os.path.join(
+    logs_dir, f'fraud_score_handler_{datetime.now().strftime("%Y%m%d")}.log'
+)
+handler = FileHandler(log_file)
+handler.setLevel(logging.INFO)
+
+formatter = Formatter(
+    "%(asctime)s - %(module)s.%(funcName)s - %(levelname)s - %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+logger.info("Test logger config")
 
 
 def write_clusters_to_file(filename, clusters):
@@ -82,7 +108,9 @@ def split_data_based_on_category(list_of_items):
     """
       split items based on category
       use final_cpv_mapping to extract category
+      return items from "Telefoane mobile" category
     """
+    logger.info ("s a apelat spli data")
     mapping_path = os.path.join(
         os.path.dirname(__file__),
         "utils",
@@ -97,21 +125,20 @@ def split_data_based_on_category(list_of_items):
 
     category_items = {}
 
-    for current_item in list_of_items:
+    # create the key for phones
+    category_items["Telefoane mobile"] = []
+    
+    phones_category = data["Telefoane mobile"]
+    logger.info(f"phone category items {phones_category}")
 
-        # search for a category
-        found = False
-        for category, items in data.items():
-            for item in items:
-                if int(item["seap_cpv_id"]) == int(current_item["cpv_code_id"]):
-                    if category in category_items:
-                        category_items[category].append(current_item)
-                    else:
-                        category_items[category] = [current_item]
-                    found = True
-                    break
-            if found:
-                break
+    # extract all ids for "Telefoane mobile"
+    valid_ids = {int(item["seap_cpv_id"]) for item in phones_category}
+    logger.info (f"valid ids for phone category items: {valid_ids}")
+
+    for current_item in list_of_items:
+        if int(current_item["cpv_code_id"]) in valid_ids:
+            converted_item = dict_to_item(current_item)
+            category_items["Telefoane mobile"].append(converted_item)
 
     return category_items
 
@@ -120,26 +147,27 @@ def create_clusters():
     """
     this function create/update clusters for all items from db
     """
-    items = ItemService.get_all_items()
-    print(f"Total items: {len(items)}")
-    # split data based on category
+    items = ItemService.get_all_items(limit = 500)
+    logger.info(f"Total items: {len(items)}")
+
+    # split data based on category and extract items from "Telefoane mobile" category
     category_items = split_data_based_on_category(items)
 
-    print(f"Total categories: {len(category_items)}")
-
     # create clusters
-    for category, list_of_items in category_items:
+    for category, list_of_items in category_items.items():
 
-        print(f"Category: {category} - Total items: {len(list_of_items)}")
+        logger.info(f"Category: {category} - Total items: {len(list_of_items)}")
         clustering_strategy = AgglomerativeClusteringStrategy()
         string_clustering = StringClastering(list_of_items, clustering_strategy)
         clusters = string_clustering.get_clusters(True)
+        logger.info(f"Created clusters : {clusters}") 
 
         # save cluster to db
-        for cluster_id, members in clusters:
+        for cluster_id, members in clusters.items():
             # for each cluster compute the core point
             core_point = calculate_cluster_center(members)
-            ClusterService.create_cluster(core_point, members)
+            logger.info(f"Core point for {cluster_id} is  {core_point["name"]}")
+            # ClusterService.create_cluster(core_point, members)
 
 
 def get_max_distance_from_center(current_cluster, core_point):
@@ -231,17 +259,6 @@ def get_fraud_score_for_acquisition(acquisition: dict):
     return response
 
 
-if __name__ == "__main__":
-    # Exemplu de item
-    example_item = Item(
-        name="Telefon mobil Samsung Galaxy S24, Dual SIM, 8GB RAM, 128GB, 5G, Onyx Black",
-        description="Telefon mobil Samsung Galaxy S24, Dual SIM, 8GB RAM, 128GB, 5G, Onyx Black",
-        unit_type="bucata",
-        quantity=24,
-        closing_price=2436.96,
-        cpv_code_id=12468,
-        cpv_code_text="32250000-0 - Telefoane mobile (Rev.2)",
-        acquisition="672bb706b040977dc4dcb9ef",
-    )
 
-    compute_fraud_score_for_item(example_item)
+logger.info("se apeleaza create clusters")
+create_clusters()

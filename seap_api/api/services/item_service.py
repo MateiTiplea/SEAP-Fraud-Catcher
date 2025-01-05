@@ -104,7 +104,7 @@ class ItemService:
     @handle_exceptions(error_types=(ValueError, KeyError))
     @profile_resources
     @cache_result(ttl_seconds=200)
-    def get_all_items():
+    def get_all_items(limit=None):
         """
         Retrieves all items from the database.
 
@@ -113,7 +113,7 @@ class ItemService:
         list
             A list of all items.
         """
-        return ItemRepository.get_all_items()
+        return ItemRepository.get_all_items(limit)
 
     @staticmethod
     @log_method_calls
