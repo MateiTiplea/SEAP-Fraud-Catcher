@@ -120,7 +120,7 @@ class ItemRepository:
     @log_method_calls
     @profile_resources
     @handle_exceptions(error_types=(ValueError, KeyError))
-    def get_all_items():
+    def get_all_items(limit=None):
         """
         Retrieves all items from the database.
 
@@ -129,6 +129,8 @@ class ItemRepository:
         list
             A list of Items objects.
         """
+        if limit:
+            return Item.objects.limit(limit)
         return Item.objects.all()
 
     @staticmethod

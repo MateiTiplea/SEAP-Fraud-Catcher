@@ -15,3 +15,5 @@ tenacity
 mongomock
 requests_mock
 locust
+scikit-learn
+levenshtein

@@ -2,9 +2,8 @@ import warnings
 
 import numpy as np
 from sklearn.cluster import KMeans
-from seap_api.decision_module.AbstractBaseClasses.ClusteringStrategy import ClusteringStrategy
+from AbstractBaseClasses.ClusteringStrategy import ClusteringStrategy
 warnings.filterwarnings("ignore", category=UserWarning, message=".*found smaller than n_clusters.*")
-
 
 class KMeansClusteringStrategy(ClusteringStrategy):
     def cluster(self, distance_matrix, n_clusters):
