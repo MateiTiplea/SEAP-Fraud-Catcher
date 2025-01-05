@@ -231,7 +231,7 @@ def search_for_cluster_of_item(item):
 def dict_to_item(item_dict: dict) -> Item:
     """Convert dictionary to Item object"""
     return Item(
-        id=item_dict.id,
+        id=item_dict["_id"],
         name=item_dict["name"],
         description=item_dict["description"],
         unit_type=item_dict["unit_type"],

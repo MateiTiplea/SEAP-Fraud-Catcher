@@ -1,10 +1,15 @@
-from aspects.error_handlers import handle_exceptions
-from aspects.loggers import log_method_calls
-from custom_auth.decorators.auth_decorators import require_auth
-from decision_module.fraud_scoring import get_fraud_score_for_acquisition, compute_fraud_score_for_item, dict_to_item
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
+from aspects.error_handlers import handle_exceptions
+from aspects.loggers import log_method_calls
+from custom_auth.decorators.auth_decorators import require_auth
+from decision_module.fraud_scoring import (
+    compute_fraud_score_for_item,
+    dict_to_item,
+    get_fraud_score_for_acquisition,
+)
 
 from .scrape.acquisition_fetcher import AcquisitionFetcher
 from .serializers import AcquisitionSerializer, ItemSerializer
@@ -275,12 +280,8 @@ class FraudScoreAcquisitionView(APIView):
                     acquisition_id
                 )
         if current_acquisition:
-            item = current_acquisition["items"][0]
-            item = dict_to_item(item)
-            if not item.id:
-                item.save()
-            fraud_score_dict = compute_fraud_score_for_item(item)
-            return Response({"result": fraud_score_dict}, status=status.HTTP_200_OK)
+            response = get_fraud_score_for_acquisition(current_acquisition)
+            return Response(response, status=status.HTTP_200_OK)
         return Response(
             {"error": "Acquisition not found"}, status=status.HTTP_404_NOT_FOUND
         )
