@@ -110,7 +110,6 @@ def split_data_based_on_category(list_of_items):
       use final_cpv_mapping to extract category
       return items from "Telefoane mobile" category
     """
-    logger.info ("s a apelat spli data")
     mapping_path = os.path.join(
         os.path.dirname(__file__),
         "utils",
@@ -137,8 +136,7 @@ def split_data_based_on_category(list_of_items):
 
     for current_item in list_of_items:
         if int(current_item["cpv_code_id"]) in valid_ids:
-            converted_item = dict_to_item(current_item)
-            category_items["Telefoane mobile"].append(converted_item)
+            category_items["Telefoane mobile"].append(current_item)
 
     return category_items
 
@@ -166,8 +164,8 @@ def create_clusters():
         for cluster_id, members in clusters.items():
             # for each cluster compute the core point
             core_point = calculate_cluster_center(members)
-            logger.info(f"Core point for {cluster_id} is  {core_point["name"]}")
-            # ClusterService.create_cluster(core_point, members)
+            logger.info(f"Core point for {cluster_id} is  {core_point.pk}")
+            ClusterService.create_cluster(core_point, members)
 
 
 def get_max_distance_from_center(current_cluster, core_point):
@@ -226,6 +224,7 @@ def search_for_cluster_of_item(item):
 def dict_to_item(item_dict: dict) -> Item:
     """Convert dictionary to Item object"""
     return Item(
+        id = item_dict.id,
         name=item_dict["name"],
         description=item_dict["description"],
         unit_type=item_dict["unit_type"],
@@ -260,5 +259,4 @@ def get_fraud_score_for_acquisition(acquisition: dict):
 
 
 
-logger.info("se apeleaza create clusters")
 create_clusters()

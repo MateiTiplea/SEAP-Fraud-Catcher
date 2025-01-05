@@ -1,9 +1,16 @@
 from api.models.cluster import Cluster
-
+from mongoengine import ValidationError
 
 class ClusterRepository:
     @staticmethod
     def save(cluster):
+        if not cluster.core_point.pk:
+         raise ValidationError("core_point must must must be saved before saving the cluster")
+    
+        for item in cluster.list_of_items:
+            if not item.pk:
+                raise ValidationError(f"Item {item} must must must be saved before saving the cluster")
+    
         cluster.save()
 
     @staticmethod
