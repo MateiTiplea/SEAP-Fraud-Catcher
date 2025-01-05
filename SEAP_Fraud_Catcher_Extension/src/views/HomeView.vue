@@ -25,7 +25,7 @@
           </div>
         </div>
       </div>
-      <div class="p-4m flex flex-col items-center justify-between bg-white px-5 font-mono">
+      <div class="p-4 flex flex-col items-center justify-between bg-white px-5 font-mono">
         <Button :loading="isLoading" @click="startFraudCheck">
           Este Frauda?
         </Button>
@@ -92,10 +92,8 @@ const startFraudCheck = async () => {
 
 
 const goBack = () => {
-  isFraudCheckActive.value = false; 
+  isFraudCheckActive.value = false;
 };
-
-
 
 
 const actualizeazaDate = (newData: any) => {
