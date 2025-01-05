@@ -9,13 +9,13 @@ function trimiteDate() {
       console.error("Nu am găsit acquisitionId în URL.");
       return;
     }
-    
+
     const numeOfertant = document
       .querySelector(
         "#container-sizing > div.direct-acq-su-view > div:nth-child(1) > div.widget-body > ng-transclude > div > div > div:nth-child(1) > div > span:nth-child(2) > span",
       )
       .textContent.trim();
-      console.log(numeOfertant);
+    console.log(numeOfertant);
     const cifOfertant = document
       .querySelector(
         "#container-sizing > div.direct-acq-su-view > div:nth-child(1) > div.widget-body > ng-transclude > div > div > div:nth-child(1) > div > span.u-displayfield__field.ng-binding",

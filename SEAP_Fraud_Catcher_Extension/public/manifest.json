@@ -14,7 +14,10 @@
   "content_scripts": [
     {
       "js": ["scripts/content.js", "jquery-3.7.1.min.js"],
-      "matches": ["https://www.e-licitatie.ro/pub/direct-acquisition/view/*", "https://e-licitatie.ro/pub/direct-acquisition/view/*"],
+      "matches": [
+        "https://www.e-licitatie.ro/pub/direct-acquisition/view/*",
+        "https://e-licitatie.ro/pub/direct-acquisition/view/*"
+      ],
       "run_at": "document_end",
       "all_frames": true
     }
@@ -23,5 +26,5 @@
     "https://www.e-licitatie.ro/pub/direct-acquisition/view/*",
     "https://e-licitatie.ro/pub/direct-acquisition/view/*"
   ],
-  "permissions": ["activeTab", "scripting", "storage"]
+  "permissions": ["tabs", "activeTab", "scripting", "storage"]
 }

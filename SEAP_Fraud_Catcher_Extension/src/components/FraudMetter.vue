@@ -26,7 +26,6 @@
   </div>
 </template>
 
-
 <script setup lang="ts">
 import { ref, watch, defineProps, computed } from "vue";
 
@@ -49,21 +48,21 @@ const gaugeColor = computed(() => {
 watch(
   () => props.score,
   (newScore) => {
-    animatedScore.value = 0; 
-    const duration = 2000; 
-    const step = newScore / (duration / 50); 
+    animatedScore.value = 0;
+    const duration = 2000;
+    const step = newScore / (duration / 50);
 
     let currentScore = 0;
     const interval = setInterval(() => {
       if (currentScore >= newScore) {
-        clearInterval(interval); 
+        clearInterval(interval);
       } else {
         currentScore += step;
         animatedScore.value = Math.round(currentScore);
       }
-    }, 50); 
+    }, 50);
   },
-  { immediate: true }
+  { immediate: true },
 );
 </script>
 
@@ -85,7 +84,7 @@ watch(
 .gauge {
   width: 100%;
   height: 100%;
-  transform: rotate(0deg); 
+  transform: rotate(0deg);
 }
 
 .score-container {
@@ -104,5 +103,4 @@ watch(
   font-size: 1.5rem;
   color: #666;
 }
-
 </style>

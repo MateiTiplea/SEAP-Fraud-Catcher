@@ -44,7 +44,7 @@ import ProfileAvatar from "./ProfileAvatar.vue";
 const toast = useToast();
 
 const menuItems = computed(() => [
-  { name: "Log Out", icon: "IconLogout", action: "logout" },
+  { name: "Go to login page", icon: "IconAdmin", action: "login" },
 ]);
 
 const router = useRouter();
@@ -52,15 +52,15 @@ const router = useRouter();
 const handleAction = async ({
   action,
   id,
+  name,
 }: {
   action: string;
   id?: number;
   name?: string;
 }) => {
-  if (action === "logout") {
-    //await authStore.logout();
-    toast.success("Logout succesful!");
-    await router.push("/login");
+  if (action === "login") {
+    toast.success("Redirecting to admin login...");
+    window.open("http://127.0.0.1:8000/admin/login/", "_blank");
   }
 };
 </script>
