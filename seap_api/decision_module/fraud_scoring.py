@@ -146,6 +146,11 @@ def create_clusters():
     """
     this function create/update clusters for all items from db
     """
+
+    # before creating new clusters, delete all existing clusters from db
+    ClusterService.delete_all_clusters()
+    logger.info("Clusters deleted")
+
     items = ItemService.get_all_items()
     logger.info(f"Total items: {len(items)}")
 
@@ -265,3 +270,4 @@ def get_fraud_score_for_acquisition(acquisition: dict):
     response["fraud_score"] = round(total_fraud_score, 2)
 
     return response
+
