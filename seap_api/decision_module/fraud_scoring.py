@@ -151,7 +151,7 @@ def create_clusters():
     ClusterService.delete_all_clusters()
     logger.info("Clusters deleted")
 
-    items = ItemService.get_all_items(limit = 500)
+    items = ItemService.get_all_items()
     logger.info(f"Total items: {len(items)}")
 
     # split data based on category and extract items from "Telefoane mobile" category
