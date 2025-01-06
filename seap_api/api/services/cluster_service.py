@@ -57,3 +57,9 @@ class ClusterService:
         """Retrieve all items in a specific cluster."""
         cluster = ClusterRepository.find_by_id(cluster_id)
         return list(cluster.list_of_items)
+
+    @classmethod
+    def delete_all_clusters():
+        """Delete all clusters from database."""
+        ClusterRepository.delete_all()
+        

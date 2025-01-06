@@ -28,3 +28,7 @@ class ClusterRepository:
     @staticmethod
     def delete(cluster):
         cluster.delete()
+
+    @staticmethod
+    def delete_all():
+        Cluster.objects.delete()
