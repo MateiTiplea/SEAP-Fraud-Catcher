@@ -1,0 +1,211 @@
+{% extends "admin/base.html" %} {% block title %}Scraping Tasks{% endblock %}
+{%block content %}
+<div class="bg-white p-4 rounded-lg shadow">
+  <div class="flex justify-between items-center mb-4">
+    <h2 class="text-xl font-bold">Scraping Tasks</h2>
+    <button
+      onclick="showCreateTaskModal()"
+      class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+    >
+      New Task
+    </button>
+  </div>
+
+  <div class="overflow-x-auto">
+    <table class="min-w-full">
+      <thead>
+        <tr>
+          <th class="px-4 py-2">Task ID</th>
+          <th class="px-4 py-2">Status</th>
+          <th class="px-4 py-2">Progress</th>
+          <th class="px-4 py-2">Created By</th>
+          <th class="px-4 py-2">Created At</th>
+          <th class="px-4 py-2">Completed At</th>
+          <th class="px-4 py-2">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for task in tasks %}
+        <tr
+          class="{% if task.status == 'failed' %}bg-red-50{% elif task.status == 'completed' %}bg-green-50{% endif %}"
+        >
+          <td class="border px-4 py-2">{{ task.task_id }}</td>
+          <td class="border px-4 py-2">
+            <span
+              class="px-2 py-1 rounded text-sm {% if task.status == 'pending' %}bg-gray-200 text-gray-800 {% elif task.status == 'running' %}bg-blue-200 text-blue-800 {% elif task.status == 'completed' %}bg-green-200 text-green-800 {% elif task.status == 'failed' %}bg-red-200 text-red-800 {% endif %}"
+            >
+              {{ task.status }}
+            </span>
+          </td>
+          <td class="border px-4 py-2">
+            <div class="w-full bg-gray-200 rounded-full h-2.5">
+              <div
+                class="bg-blue-600 h-2.5 rounded-full"
+                style="width: {{ task.progress }}%"
+              ></div>
+            </div>
+            <span class="text-sm text-gray-600"
+              >{{ task.progress|floatformat:1 }}%</span
+            >
+          </td>
+          <td class="border px-4 py-2">{{ task.user.username }}</td>
+          <td class="border px-4 py-2">
+            {{ task.created_at|date:"Y-m-d H:i:s" }}
+          </td>
+          <td class="border px-4 py-2">
+            {{ task.completed_at|date:"Y-m-d H:i:s"|default:"-" }}
+          </td>
+          <td class="border px-4 py-2">
+            <a
+              href="{% url 'custom_admin:admin-task-detail' task.task_id %}"
+              class="text-blue-500 hover:text-blue-700"
+            >
+              View Details
+            </a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="7" class="border px-4 py-2 text-center text-gray-500">
+            No tasks found
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Task Creation Modal -->
+<div id="taskModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden">
+  <div class="bg-white p-4 max-w-md mx-auto mt-20 rounded-lg">
+    <h3 class="text-xl font-bold mb-4">Create New Scraping Task</h3>
+    <form id="taskForm" onsubmit="handleTaskSubmit(event)">
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2">
+          Start Date
+        </label>
+        <input
+          type="date"
+          id="start_date"
+          name="start_date"
+          class="w-full border p-2 rounded"
+          required
+        />
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2">
+          End Date
+        </label>
+        <input
+          type="date"
+          id="end_date"
+          name="end_date"
+          class="w-full border p-2 rounded"
+          required
+        />
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2">
+          CPV Codes (comma-separated)
+        </label>
+        <input
+          type="text"
+          id="cpv_codes"
+          name="cpv_codes"
+          class="w-full border p-2 rounded"
+          placeholder="e.g., 45000000, 50000000"
+          required
+        />
+        <p class="text-sm text-gray-500 mt-1">
+          Enter CPV codes separated by commas
+        </p>
+      </div>
+
+      <div class="flex justify-end">
+        <button
+          type="button"
+          onclick="closeTaskModal()"
+          class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mr-2"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        >
+          Create Task
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  function showCreateTaskModal() {
+    document.getElementById("taskModal").classList.remove("hidden");
+
+    // Set default dates
+    const today = new Date().toISOString().split("T")[0];
+    document.getElementById("start_date").value = today;
+    document.getElementById("end_date").value = today;
+  }
+
+  function closeTaskModal() {
+    document.getElementById("taskModal").classList.add("hidden");
+  }
+
+  async function handleTaskSubmit(event) {
+    event.preventDefault();
+
+    const formData = new FormData(event.target);
+    const data = {
+      start_date: formData.get("start_date"),
+      end_date: formData.get("end_date"),
+      cpv_codes: formData
+        .get("cpv_codes")
+        .split(",")
+        .map((code) => parseInt(code.trim())),
+    };
+
+    try {
+      const response = await fetch(window.location.href, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": getCookie("csrftoken"),
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (response.ok) {
+        closeTaskModal();
+        window.location.reload();
+      } else {
+        const error = await response.json();
+        alert(error.error || "Error creating task");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Error creating task");
+    }
+  }
+
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== "") {
+      const cookies = document.cookie.split(";");
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === name + "=") {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+</script>
+{% endblock %}

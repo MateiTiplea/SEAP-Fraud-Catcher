@@ -1,4 +1,5 @@
 from django.http import JsonResponse
+from django.shortcuts import redirect
 
 from ..services.auth_service import AuthenticationService
 
@@ -11,25 +12,40 @@ class JWTAuthMiddleware:
             "/api/auth/login",
             "/api/auth/register",
             "/api/auth/refresh-token",
+            # Add admin login if you want to use a separate login for admin
+            "/admin/login/",
         ]
 
     def __call__(self, request):
-        if request.path in self.public_paths:
+        # Special handling for admin routes
+        if request.path.startswith("/admin/") and request.path != "/admin/login/":
+            token = request.COOKIES.get("access_token")
+
+            if not token:
+                return redirect("custom_admin:admin-login")
+
+            payload = self.auth_service.verify_token(token)
+            if not payload or "admin" not in payload.get("roles", []):
+                return redirect("custom_admin:admin-login")
+
+            request.user_id = payload.get("user_id")
+            request.user_roles = payload.get("roles", [])
             return self.get_response(request)
 
-        # Try to get token from cookie first, then fallback to Authorization header
-        token = request.COOKIES.get("access_token")
+        # Handle API routes
+        if request.path.startswith("/api/") and request.path not in self.public_paths:
+            token = request.COOKIES.get("access_token")
 
-        if not token:
-            auth_header = request.headers.get("Authorization")
-            if auth_header and auth_header.startswith("Bearer "):
-                token = auth_header.split(" ")[1]
+            if not token:
+                auth_header = request.headers.get("Authorization")
+                if auth_header and auth_header.startswith("Bearer "):
+                    token = auth_header.split(" ")[1]
 
-        if token:
-            payload = self.auth_service.verify_token(token)
-            if payload:
-                request.user_id = payload.get("user_id")
-                request.user_roles = payload.get("roles", [])
+            if token:
+                payload = self.auth_service.verify_token(token)
+                if payload:
+                    request.user_id = payload.get("user_id")
+                    request.user_roles = payload.get("roles", [])
 
         return self.get_response(request)
 

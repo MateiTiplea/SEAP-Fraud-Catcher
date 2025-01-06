@@ -27,4 +27,8 @@ v1_patterns = [
 urlpatterns = [
     path("api/v1/", include(v1_patterns)),
     path("api/auth/", include("custom_auth.urls")),
+    path(
+        "admin/",
+        include(("custom_auth.admin.urls", "custom_admin"), namespace="custom_admin"),
+    ),
 ]

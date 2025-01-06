@@ -1,0 +1,67 @@
+{% extends "admin/base.html" %} {% block title %}Clustering Task
+Details{%endblock %} {% block content %}
+<div class="space-y-6">
+  <!-- Task Overview -->
+  <div class="bg-white p-6 rounded-lg shadow">
+    <div class="flex justify-between items-start mb-4">
+      <h2 class="text-xl font-bold">Task Details</h2>
+      <span
+        class="px-3 py-1 rounded-full text-sm {% if task.status == 'pending' %}bg-gray-200 text-gray-800 {% elif task.status == 'running' %}bg-blue-200 text-blue-800 {% elif task.status == 'completed' %}bg-green-200 text-green-800 {% elif task.status == 'failed' %}bg-red-200 text-red-800 {% endif %}"
+      >
+        {{ task.status }}
+      </span>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div class="space-y-2">
+        <p class="text-sm text-gray-600">Task ID</p>
+        <p class="font-medium">{{ task.task_id }}</p>
+      </div>
+      <div class="space-y-2">
+        <p class="text-sm text-gray-600">Created By</p>
+        <p class="font-medium">{{ task.user.username }}</p>
+      </div>
+      <div class="space-y-2">
+        <p class="text-sm text-gray-600">Progress</p>
+        <div class="w-full bg-gray-200 rounded-full h-2.5">
+          <div
+            class="bg-blue-600 h-2.5 rounded-full"
+            style="width: {{ task.progress }}%"
+          ></div>
+        </div>
+        <span class="text-sm text-gray-600"
+          >{{ task.progress|floatformat:1 }}%</span
+        >
+      </div>
+      <div class="space-y-2">
+        <p class="text-sm text-gray-600">Created At</p>
+        <p class="font-medium">{{ task.created_at|date:"Y-m-d H:i:s" }}</p>
+      </div>
+      <div class="space-y-2">
+        <p class="text-sm text-gray-600">Completed At</p>
+        <p class="font-medium">
+          {{ task.completed_at|date:"Y-m-d H:i:s"|default:"-" }}
+        </p>
+      </div>
+      {% if duration %}
+      <div class="space-y-2">
+        <p class="text-sm text-gray-600">Duration</p>
+        <p class="font-medium">{{ duration }}</p>
+      </div>
+      {% endif %}
+    </div>
+
+    {% if task.message %}
+    <div class="mt-4 p-4 bg-green-50 text-green-700 rounded-lg">
+      <h3 class="font-bold mb-2">Task Message:</h3>
+      <p class="whitespace-pre-wrap">{{ task.message }}</p>
+    </div>
+    {% endif %} {% if task.error %}
+    <div class="mt-4 p-4 bg-red-50 text-red-700 rounded-lg">
+      <h3 class="font-bold mb-2">Error Message:</h3>
+      <pre class="whitespace-pre-wrap">{{ task.error }}</pre>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
