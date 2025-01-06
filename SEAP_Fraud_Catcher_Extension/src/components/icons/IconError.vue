@@ -1,0 +1,11 @@
+<template>
+  <svg xmlns="http://www.w3.org/2000/svg" height="150px" viewBox="0 -960 960 960" width="150px" fill="url(#gradient)">
+  <defs>
+    <linearGradient id="gradient" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="50%" stop-color="#1AC2FF" />
+      <stop offset="100%" stop-color="#1B8EFF" />
+    </linearGradient>
+  </defs>
+  <path d="m40-120 440-760 440 760H40Zm115.33-66.67h649.34L480-746.67l-324.67 560ZM482.78-238q14.22 0 23.72-9.62 9.5-9.61 9.5-23.83 0-14.22-9.62-23.72-9.61-9.5-23.83-9.5-14.22 0-23.72 9.62-9.5 9.62-9.5 23.83 0 14.22 9.62 23.72 9.62 9.5 23.83 9.5Zm-33.45-114H516v-216h-66.67v216ZM480-466.67Z"/>
+</svg>
+</template>
