@@ -38,3 +38,5 @@ vite.config.*.timestamp-*
 
 # hide dist archives
 dist.rar
+
+.codegpt

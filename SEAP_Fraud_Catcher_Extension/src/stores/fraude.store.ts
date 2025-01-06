@@ -39,8 +39,8 @@ export const useFraudStore = defineStore({
         }
 
         const data = await response.json();
-        this.fraudScore = data.result.fraud_score ?? null;
-        this.fraudScorePerItem = data.result.fraud_score_per_item ?? {};
+        this.fraudScore = data.fraud_score ?? null;
+        this.fraudScorePerItem = data.fraud_score_per_item ?? {};
 
         chrome.storage.local.set(
           { [`fraud_${acquisitionId}`]: data.result },
