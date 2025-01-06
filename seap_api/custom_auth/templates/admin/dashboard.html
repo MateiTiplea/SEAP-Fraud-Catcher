@@ -1,0 +1,150 @@
+{% extends "admin/base.html" %} {% block title %}Admin Dashboard{% endblock %}
+{% block content %}
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+  <!-- Statistics Cards -->
+  <div class="bg-white p-4 rounded-lg shadow">
+    <h2 class="text-xl font-bold mb-2">Users</h2>
+    <p class="text-3xl">{{ total_users }}</p>
+  </div>
+  <div class="bg-white p-4 rounded-lg shadow">
+    <h2 class="text-xl font-bold mb-2">Acquisitions</h2>
+    <p class="text-3xl">{{ total_acquisitions }}</p>
+  </div>
+  <div class="bg-white p-4 rounded-lg shadow">
+    <h2 class="text-xl font-bold mb-2">Items</h2>
+    <p class="text-3xl">{{ total_items }}</p>
+  </div>
+
+  <!-- Recent Scraping Tasks -->
+  <div class="bg-white p-4 rounded-lg shadow col-span-full">
+    <div class="flex justify-between items-center mb-2">
+      <h2 class="text-xl font-bold">Recent Scraping Tasks</h2>
+      <a
+        href="{% url 'custom_admin:admin-tasks' %}"
+        class="text-blue-500 hover:text-blue-700"
+        >View All</a
+      >
+    </div>
+    <div class="overflow-x-auto">
+      <table class="min-w-full">
+        <thead>
+          <tr>
+            <th class="px-4 py-2">ID</th>
+            <th class="px-4 py-2">Status</th>
+            <th class="px-4 py-2">Created</th>
+            <th class="px-4 py-2">Progress</th>
+            <th class="px-4 py-2">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for task in recent_scraping_tasks %}
+          <tr>
+            <td class="border px-4 py-2">{{ task.task_id }}</td>
+            <td class="border px-4 py-2">
+              <span
+                class="px-2 py-1 rounded text-sm {% if task.status == 'pending' %}bg-gray-200 text-gray-800 {% elif task.status == 'running' %}bg-blue-200 text-blue-800 {% elif task.status == 'completed' %}bg-green-200 text-green-800 {% elif task.status == 'failed' %}bg-red-200 text-red-800 {% endif %}"
+              >
+                {{ task.status }}
+              </span>
+            </td>
+            <td class="border px-4 py-2">
+              {{ task.created_at|date:"Y-m-d H:i:s" }}
+            </td>
+            <td class="border px-4 py-2">
+              <div class="w-full bg-gray-200 rounded-full h-2.5">
+                <div
+                  class="bg-blue-600 h-2.5 rounded-full"
+                  style="width: {{ task.progress }}%"
+                ></div>
+              </div>
+              <span class="text-sm text-gray-600"
+                >{{ task.progress|floatformat:1 }}%</span
+              >
+            </td>
+            <td class="border px-4 py-2">
+              <a
+                href="{% url 'custom_admin:admin-task-detail' task.task_id %}"
+                class="text-blue-500 hover:text-blue-700"
+                >View Details</a
+              >
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="5" class="border px-4 py-2 text-center text-gray-500">
+              No tasks found
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Recent Clustering Tasks -->
+  <div class="bg-white p-4 rounded-lg shadow col-span-full">
+    <div class="flex justify-between items-center mb-2">
+      <h2 class="text-xl font-bold">Recent Clustering Tasks</h2>
+      <a
+        href="{% url 'custom_admin:admin-clustering-tasks' %}"
+        class="text-blue-500 hover:text-blue-700"
+        >View All</a
+      >
+    </div>
+    <div class="overflow-x-auto">
+      <table class="min-w-full">
+        <thead>
+          <tr>
+            <th class="px-4 py-2">ID</th>
+            <th class="px-4 py-2">Status</th>
+            <th class="px-4 py-2">Created</th>
+            <th class="px-4 py-2">Progress</th>
+            <th class="px-4 py-2">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for task in recent_clustering_tasks %}
+          <tr>
+            <td class="border px-4 py-2">{{ task.task_id }}</td>
+            <td class="border px-4 py-2">
+              <span
+                class="px-2 py-1 rounded text-sm {% if task.status == 'pending' %}bg-gray-200 text-gray-800 {% elif task.status == 'running' %}bg-blue-200 text-blue-800 {% elif task.status == 'completed' %}bg-green-200 text-green-800 {% elif task.status == 'failed' %}bg-red-200 text-red-800 {% endif %}"
+              >
+                {{ task.status }}
+              </span>
+            </td>
+            <td class="border px-4 py-2">
+              {{ task.created_at|date:"Y-m-d H:i:s" }}
+            </td>
+            <td class="border px-4 py-2">
+              <div class="w-full bg-gray-200 rounded-full h-2.5">
+                <div
+                  class="bg-blue-600 h-2.5 rounded-full"
+                  style="width: {{ task.progress }}%"
+                ></div>
+              </div>
+              <span class="text-sm text-gray-600"
+                >{{ task.progress|floatformat:1 }}%</span
+              >
+            </td>
+            <td class="border px-4 py-2">
+              <a
+                href="{% url 'custom_admin:admin-clustering-task-detail' task.task_id %}"
+                class="text-blue-500 hover:text-blue-700"
+                >View Details</a
+              >
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="5" class="border px-4 py-2 text-center text-gray-500">
+              No tasks found
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

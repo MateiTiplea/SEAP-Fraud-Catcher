@@ -66,7 +66,9 @@ ROOT_URLCONF = "seap_api.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [
+            os.path.join(BASE_DIR, "custom_auth", "templates"),
+        ],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -86,6 +88,13 @@ WSGI_APPLICATION = "seap_api.wsgi.application"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 ENV_FILE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.env"))
 load_dotenv(ENV_FILE_PATH)
+
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
+    }
+}
 
 MONGODB_DATABASES = {
     "default": {
