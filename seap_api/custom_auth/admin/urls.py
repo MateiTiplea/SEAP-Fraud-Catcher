@@ -1,6 +1,10 @@
 from django.urls import path
 
 from .views import (
+    AdminClusterDetailView,
+    AdminClusteringTaskDetailView,
+    AdminClusteringTasksView,
+    AdminClustersView,
     AdminDashboardView,
     AdminLoginView,
     AdminTaskDetailView,
@@ -15,5 +19,21 @@ urlpatterns = [
     path("tasks/", AdminTasksView.as_view(), name="admin-tasks"),
     path(
         "tasks/<str:task_id>/", AdminTaskDetailView.as_view(), name="admin-task-detail"
+    ),
+    path(
+        "clustering-tasks/",
+        AdminClusteringTasksView.as_view(),
+        name="admin-clustering-tasks",
+    ),
+    path(
+        "clustering-tasks/<str:task_id>/",
+        AdminClusteringTaskDetailView.as_view(),
+        name="admin-clustering-task-detail",
+    ),
+    path("clusters/", AdminClustersView.as_view(), name="admin-clusters"),
+    path(
+        "clusters/<str:cluster_id>/",
+        AdminClusterDetailView.as_view(),
+        name="admin-cluster-detail",
     ),
 ]

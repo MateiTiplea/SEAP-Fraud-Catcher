@@ -89,6 +89,13 @@ WSGI_APPLICATION = "seap_api.wsgi.application"
 ENV_FILE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.env"))
 load_dotenv(ENV_FILE_PATH)
 
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
+    }
+}
+
 MONGODB_DATABASES = {
     "default": {
         "name": os.getenv("MONGO_AUTH_DB"),

@@ -1,0 +1,88 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Cluster Details{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Overview -->
+    <div class="bg-white p-6 rounded-lg shadow">
+        <div class="flex justify-between items-start mb-4">
+            <h2 class="text-xl font-bold">Cluster Details</h2>
+            <a href="{% url 'custom_admin:admin-clusters' %}" 
+               class="text-blue-500 hover:text-blue-700">
+                Back to Clusters
+            </a>
+        </div>
+
+        <!-- Core Point Details -->
+        <div class="mb-6">
+            <h3 class="text-lg font-bold mb-2">Core Point</h3>
+            <div class="bg-gray-50 p-4 rounded-lg">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div>
+                        <p class="text-sm text-gray-600">Name</p>
+                        <p class="font-medium">{{ core_point.name }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-600">Price</p>
+                        <p class="font-medium">{{ core_point.closing_price }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-600">Unit Type</p>
+                        <p class="font-medium">{{ core_point.unit_type }}</p>
+                    </div>
+                </div>
+                <div class="mt-2">
+                    <p class="text-sm text-gray-600">Description</p>
+                    <p class="font-medium">{{ core_point.description }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Items List -->
+        <div class="mb-4">
+            <div class="flex justify-between items-center mb-2">
+                <h3 class="text-lg font-bold">Cluster Items</h3>
+                <span class="text-gray-600">Total: {{ total_items }} items</span>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="min-w-full">
+                    <thead>
+                        <tr>
+                            <th class="px-4 py-2">ID</th>
+                            <th class="px-4 py-2">Name</th>
+                            <th class="px-4 py-2">Description</th>
+                            <th class="px-4 py-2">Unit Type</th>
+                            <th class="px-4 py-2">Price</th>
+                            <th class="px-4 py-2">CPV Code</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in items %}
+                        <tr {% if item.id == core_point.id %}class="bg-blue-50"{% endif %}>
+                            <td class="border px-4 py-2">{{ item.id }}</td>
+                            <td class="border px-4 py-2">{{ item.name }}</td>
+                            <td class="border px-4 py-2">
+                                <div class="max-w-md overflow-hidden overflow-ellipsis whitespace-nowrap" 
+                                     title="{{ item.description }}">
+                                    {{ item.description }}
+                                </div>
+                            </td>
+                            <td class="border px-4 py-2">{{ item.unit_type }}</td>
+                            <td class="border px-4 py-2">{{ item.closing_price }}</td>
+                            <td class="border px-4 py-2">{{ item.cpv_code_text }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="border px-4 py-2 text-center text-gray-500">
+                                No items in this cluster
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

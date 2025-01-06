@@ -11,7 +11,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from api.models.acquisition import Acquisition
+from api.models.cluster import Cluster
 from api.models.item import Item
+from clustering_tasks.models import ClusteringTask, TaskStatus
 from custom_auth.decorators.auth_decorators import require_auth
 from custom_auth.models.user import User
 from custom_auth.services.auth_service import AuthenticationService
@@ -28,7 +30,12 @@ class AdminDashboardView(APIView):
                 "total_users": User.objects.count(),
                 "total_acquisitions": Acquisition.objects.count(),
                 "total_items": Item.objects.count(),
-                "recent_tasks": ScrapingTask.objects.order_by("-created_at")[:5],
+                "recent_scraping_tasks": ScrapingTask.objects.order_by("-created_at")[
+                    :5
+                ],
+                "recent_clustering_tasks": ClusteringTask.objects.order_by(
+                    "-created_at"
+                )[:5],
                 "recent_users": User.objects.order_by("-created_at")[:5],
                 "recent_acquisitions": Acquisition.objects.order_by(
                     "-publication_date"
@@ -258,6 +265,125 @@ class AdminTaskDetailView(APIView):
         except ScrapingTask.DoesNotExist:
             return Response(
                 {"error": "Task not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+        except Exception as e:
+            return Response(
+                {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
+class AdminClusteringTasksView(APIView):
+    @require_auth(roles=["admin"])
+    def get(self, request):
+        """Clustering tasks management view"""
+        try:
+            tasks = ClusteringTask.objects.order_by("-created_at")
+            return render(request, "admin/clustering_tasks.html", {"tasks": tasks})
+        except Exception as e:
+            return Response(
+                {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+    @require_auth(roles=["admin"])
+    def post(self, request):
+        """Create a new clustering task"""
+        try:
+            # Get user from database
+            user = User.objects.get(id=request.user_id)
+
+            # Create task
+            task = ClusteringTask(
+                task_id=str(uuid.uuid4()),
+                user=user,
+                status=TaskStatus.PENDING,
+                created_at=datetime.now(),
+                updated_at=datetime.now(),
+            )
+            task.save()
+
+            # Start the clustering process
+            process = subprocess.Popen(
+                [
+                    "python",
+                    "manage.py",
+                    "run_clustering",
+                    "--task_id",
+                    task.task_id,
+                ],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                cwd=settings.BASE_DIR,
+            )
+
+            # Update task with process ID
+            task.pid = process.pid
+            task.status = TaskStatus.RUNNING
+            task.save()
+
+            return Response({"task_id": task.task_id}, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response(
+                {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
+class AdminClusteringTaskDetailView(APIView):
+    @require_auth(roles=["admin"])
+    def get(self, request, task_id):
+        """Detailed view for a specific clustering task"""
+        try:
+            task = ClusteringTask.objects.get(task_id=task_id)
+
+            # Calculate duration if both timestamps exist
+            duration = None
+            if task.completed_at and task.created_at:
+                duration = task.completed_at - task.created_at
+
+            context = {"task": task, "duration": duration}
+            return render(request, "admin/clustering_task_detail.html", context)
+        except ClusteringTask.DoesNotExist:
+            return Response(
+                {"error": "Task not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+        except Exception as e:
+            return Response(
+                {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
+class AdminClustersView(APIView):
+    @require_auth(roles=["admin"])
+    def get(self, request):
+        """View for displaying all clusters"""
+        try:
+            clusters = Cluster.objects.all()
+            context = {
+                "clusters": clusters,
+                "total_clusters": clusters.count(),
+            }
+            return render(request, "admin/clusters.html", context)
+        except Exception as e:
+            return Response(
+                {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
+class AdminClusterDetailView(APIView):
+    @require_auth(roles=["admin"])
+    def get(self, request, cluster_id):
+        """Detailed view for a specific cluster"""
+        try:
+            cluster = Cluster.objects.get(id=cluster_id)
+            context = {
+                "cluster": cluster,
+                "core_point": cluster.core_point,
+                "items": cluster.list_of_items,
+                "total_items": len(cluster.list_of_items),
+            }
+            return render(request, "admin/cluster_detail.html", context)
+        except Cluster.DoesNotExist:
+            return Response(
+                {"error": "Cluster not found"}, status=status.HTTP_404_NOT_FOUND
             )
         except Exception as e:
             return Response(
