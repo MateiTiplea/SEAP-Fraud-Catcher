@@ -23,3 +23,5 @@ The output should be an application that can list (at least when searching for a
 ## State-Of-The-Art - [Google Docs](https://docs.google.com/document/d/1khW6D4M9_Q3xdARc4_Uziu9aKsAsyfqkWWYO639XdLI/edit)
 
 ## Google Drive with diagrams, SOTA, and requirements - [Drive](https://drive.google.com/drive/folders/1qoijonkZfgt1s5aCTOXRW_iH9reyWwHP)
+
+## Technical Report - [Article](SEAP-Fraud-Catcher-Article.pdf)
